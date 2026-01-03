@@ -381,22 +381,91 @@ curl -X POST http://localhost:3000/api/render \
             
             <div class="code-wrapper" style="border: 2px solid var(--accent);">
                 <button class="copy-btn" onclick="copyCode(this)">COPY</button>
-<pre style="white-space: pre-wrap;">YOU ARE A DARE ENGINE EXPERT. You will generate PDF layout code using DARE syntax ONLY.
+<pre style="white-space: pre-wrap;">TOOL NAME: DARE PDF Language
 
-RULES:
-1.  **STRUCTURE**: Always start with `@setup {...}` then `@doc { page {...} }`.
-2.  **SYNTAX**: Use braces `{}`. Attributes are in `()`. NO closing tags.
-3.  **UNITS**: Use `mm` for all physical dimensions (`h=50mm`, `p=10mm`). Use `pt` for font sizes (`size=12`).
-4.  **LAYOUT**: Use `display=flex` for rows/columns. Use `h=fill` on one child per page for dynamic height.
-5.  **VARIABLES**: Define reusable styles in `@setup` with `$`. Example: `$card: bg=#eee p=10mm;`.
+DESCRIPTION:
+A simplified, token-efficient language for defining PDF layouts. It uses a hierarchy of braces {} instead of HTML tags. It is strict and deterministic.
 
-COMPONENTS:
--   `box(w=, h=, bg=, p=, display=flex)`: Main container.
--   `txt(size=, bold, color=)`: For all text.
--   `img(src="url_or_path")`: Embeds an image.
--   `qr(data="string", w=30mm)`: Generates a QR code.
--   `bar(data="Label:10;Label:20", h=40mm, color=blue)`: SVG bar chart.
--   `tbl(cols="1fr 2fr")`: Table. Rows separated by `;`, columns by `,`.
+CORE RULES:
+1. Units: Always use "mm" for layout dimensions (e.g., h=50mm). Use "pt" for text size.
+2. Variables: Define styles in @setup with "$" (e.g., $style: color=red;) to save tokens.
+3. Layout: The page is a fixed canvas. Use "h=fill" on the main content box to maximize space usage.
+
+---
+
+1. BASIC STRUCTURE (Required)
+Every file must look like this:
+
+@setup {
+  format: A4;
+  $my_style: size=12 color=#333;
+}
+
+@doc {
+  page {
+    box(h=fill, p=20mm) {
+      txt($my_style) { Hello World }
+    }
+  }
+}
+
+---
+
+2. COMPONENT REFERENCE
+
+A. Layout & Text (Use for everything)
+- box(...): A container (like a div).
+  Attributes: w=, h=, bg=, p= (padding), m= (margin), border=, rounded=.
+  Flexbox: display=flex, justify=space-between, align=center.
+
+- txt(...): Holds text.
+  Attributes: size=, color=, bold, italic, align=.
+
+Example:
+box(h=20mm, bg=#000, display=flex, align=center) {
+  txt(color=white, bold) { Title }
+}
+
+B. Images (Use if user provides an image)
+- img(...): Embeds an image.
+  Attributes: src="path_or_url", w=, h=.
+
+Example:
+img(src="logo.png", w=30mm) {}
+
+C. Tables (Use ONLY for structured data)
+- tbl(...): A grid table.
+  Attributes: cols="ratio ratio", border=1.
+  Syntax: Do not nest tags inside. Use simple text separated by ; (rows) and , (columns).
+
+Example:
+tbl(cols="2fr 1fr 1fr") {
+  Item, Qty, Price;
+  Apple, 5, $2.00;
+  Banana, 10, $5.00
+}
+
+D. Charts (Use ONLY if user asks for a graph)
+- bar(...): A vector bar chart.
+  Attributes: data="Label:Value; Label:Value", color=.
+
+Example:
+bar(data="Jan:100; Feb:250; Mar:180", color=blue) {}
+
+E. QR Codes (Use ONLY if user asks for a link)
+- qr(...): Generates a QR code.
+  Attributes: data="url_string", w=.
+
+Example:
+qr(data="https://google.com", w=25mm) {}
+
+---
+
+3. SCENARIO GUIDE
+
+- User asks for a letter: Use "page", "box", and "txt". Do NOT use charts or tables.
+- User asks for an invoice: Use "box" for layout and "tbl" for the item list.
+- User asks for a dashboard: Use "bar" charts and "box(display=flex)" for columns.
 </pre>
             </div>
         </section>
