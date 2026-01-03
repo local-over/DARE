@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DARE WORKBENCH | Compiler</title>
-    <!-- Client-Side QR Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- THEME VARIABLES --- */
+        /* --- THEME --- */
         :root {
             --bg-dark: #000000;
             --bg-panel: #0d1117;
@@ -25,11 +25,14 @@
         /* --- HEADER --- */
         header {
             height: 60px; background: #0f172a; border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 10;
         }
-        .brand { font-family: var(--font-mono); font-weight: bold; color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 10px; }
-        .brand span { color: white; font-size: 0.8rem; opacity: 0.7; }
-        .brand:hover { color: white; }
+        .brand { 
+            font-family: var(--font-mono); font-weight: bold; color: var(--text-main); 
+            text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1.2rem;
+        }
+        .brand img { height: 32px; width: auto; }
+        .brand span { color: var(--accent); }
         
         .toolbar { display: flex; gap: 15px; align-items: center; }
         button {
@@ -38,27 +41,18 @@
             transition: 0.2s; border-radius: 4px;
         }
         button:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-primary { background: var(--accent); color: black; border-color: var(--accent); font-weight: bold; }
-        .btn-primary:hover { background: white; color: black; }
-        
         .btn-donate {
             background: linear-gradient(135deg, #f7931a 0%, #ffb74d 100%);
             color: white; border: none; font-weight: bold;
-            padding: 8px 16px; border-radius: 4px;
-            cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem;
-            box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
+            display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
         }
-        .btn-donate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(247, 147, 26, 0.5);
-            background: linear-gradient(135deg, #ffb74d 0%, #f7931a 100%);
-        }
+        .btn-donate:hover { transform: translateY(-2px); color: white; border: none; }
 
         /* --- WORKSPACE --- */
         .workspace { flex: 1; display: flex; overflow: hidden; }
 
-        /* EDITOR (LEFT) */
-        .editor-container { width: 45%; display: flex; border-right: 1px solid var(--border); background: var(--bg-panel); position: relative; }
+        /* EDITOR */
+        .editor-container { width: 45%; display: flex; border-right: 1px solid var(--border); background: var(--bg-panel); }
         .line-numbers {
             width: 45px; background: var(--bg-panel); border-right: 1px solid #222;
             color: var(--text-muted); text-align: right; padding: 20px 8px;
@@ -69,64 +63,70 @@
             padding: 20px; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; white-space: pre;
         }
 
-        /* PREVIEW (RIGHT) */
-        .preview-container { width: 55%; background: #525659; overflow: auto; display: flex; justify-content: center; padding: 40px; }
-        #paper {
-            width: 210mm; min-height: 297mm; background: white; 
-            box-shadow: 0 0 40px rgba(0,0,0,0.5); color: black; position: relative;
-            transform-origin: top center;
+        /* --- PREVIEW AREA (The "Desk") --- */
+        .preview-container { 
+            width: 55%; 
+            background: #525659; /* Acrobat Gray */
+            overflow: auto; 
+            padding: 40px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center pages */
         }
 
-        /* --- PDF GENERATION STYLES (MATCHING PARSER.JS LOGIC) --- */
-        .dare-page { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-        .dare-box { display: block; position: relative; }
-        .dare-txt { white-space: pre-wrap; position: relative; }
+        /* This is the transparent wrapper for all pages */
+        #doc-root {
+            display: flex;
+            flex-direction: column;
+            gap: 30px; /* SPACE BETWEEN PAGES */
+            padding-bottom: 50px;
+        }
+
+        /* --- THE PHYSICAL PAGE (The "Paper") --- */
+        .dare-page {
+            width: 210mm; 
+            height: 297mm; 
+            background: white; 
+            color: black; 
+            position: relative;
+            overflow: hidden;
+            display: flex; 
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Drop Shadow */
+            flex-shrink: 0;
+        }
+
+        /* DARE UTILS */
+        .dare-box { display: block; position: relative; box-sizing: border-box; }
+        .dare-txt { white-space: pre-wrap; position: relative; box-sizing: border-box; }
         .flex-fill { flex: 1; }
         .dare-tbl { display: grid; width: 100%; border-top: 1px solid #ccc; border-left: 1px solid #ccc; }
         .cell { padding: 4px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; font-size: 10pt; }
         .dare-chart-wrap { page-break-inside: avoid; }
 
-        /* --- MODAL FOR DONATE --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;
-        }
-        .modal-overlay.show { display: flex; }
-        .modal-content {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 2px solid rgba(247, 147, 26, 0.4); border-radius: 16px;
-            padding: 40px; text-align: center; max-width: 400px;
-            position: relative;
-        }
-        .modal-content::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0;
-            height: 4px; background: linear-gradient(90deg, #f7931a, #ffb74d);
-        }
-        .modal-close {
-            position: absolute; top: 15px; right: 15px; background: none; border: none;
-            color: var(--text-muted); font-size: 1.5rem; cursor: pointer;
-        }
-        .modal-close:hover { color: white; }
-        .modal-icon { font-size: 3rem; margin-bottom: 15px; }
-        .modal-content h3 { color: white; margin: 0 0 10px 0; }
-        .modal-content p { color: var(--text-muted); margin-bottom: 20px; }
-        .modal-wallet {
-            background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px;
-            font-family: var(--font-mono); font-size: 0.8rem; word-break: break-all;
-            cursor: pointer; border: 2px dashed var(--accent-orange); color: #fbbf24;
-            margin-bottom: 15px;
-        }
-        .modal-wallet:hover { border-color: #ffb74d; background: rgba(247, 147, 26, 0.1); }
-        .modal-label { font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 5px; }
-        .modal-copied { color: #22c55e; font-size: 0.85rem; margin-top: 10px; display: none; }
-        .modal-wallet.copied ~ .modal-copied { display: block; }
-
-        /* --- PRINT MODE --- */
+        /* --- PRINT OVERRIDES --- */
         @media print {
-            header, .editor-container, .line-numbers, .modal-overlay { display: none !important; }
-            .workspace, .preview-container { display: block !important; width: 100%; height: auto; padding: 0; background: white; overflow: visible; }
-            #paper { box-shadow: none; margin: 0; width: 210mm; height: 297mm; }
+            body * { visibility: hidden; }
+            #doc-root, #doc-root * { visibility: visible; }
+            #doc-root { position: absolute; left: 0; top: 0; gap: 0; }
+            .dare-page { 
+                box-shadow: none; 
+                margin: 0; 
+                page-break-after: always; 
+                break-after: page;
+            }
+            /* Hide scrollbars and UI */
+            ::-webkit-scrollbar { display: none; }
         }
+
+        /* MODAL (Same as before) */
+        .modal-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: #1e293b; border: 2px solid #f7931a; border-radius: 16px; padding: 40px; text-align: center; max-width: 400px; color:white;}
+        .modal-close { position:absolute; top:10px; right:15px; border:none; background:none; color:#aaa; font-size:1.5rem; cursor:pointer;}
+        .modal-wallet { background:#000; padding:10px; margin-top:10px; font-family:monospace; border:1px dashed #555; word-break:break-all; cursor:pointer;}
+        .modal-copied { color:#4ade80; display:none; margin-top:5px;}
+        .modal-wallet.copied ~ .modal-copied { display:block;}
     </style>
 </head>
 <body>
@@ -135,26 +135,27 @@
     <div class="modal-overlay" id="donateModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeDonateModal()">×</button>
-            <div class="modal-icon">☕</div>
-            <h3>Enjoying DARE Engine?</h3>
-            <p>Buy me a coffee to support continued development!</p>
+            <h3>Support DARE</h3>
+            <p>Buy me a coffee!</p>
             <div class="modal-wallet" onclick="copyDonateAddress(this)">
                 UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-
-                <span class="modal-label">USDT (TON Network) - Click to copy</span>
+                <div style="font-size:0.7rem; color:#888; margin-top:5px;">USDT (TON) - Click to Copy</div>
             </div>
-            <div class="modal-copied">✓ Copied to clipboard!</div>
+            <div class="modal-copied">Copied!</div>
         </div>
     </div>
 
     <header>
-        <a href="index.html" class="brand">
+        <a href="docs.html" class="brand">
+             <img src="logo.png" alt="DARE">
              DARE<span>COMPILER</span>
         </a>
         <div class="toolbar">
-            <span id="status" style="color:var(--text-muted); font-size:0.8rem; margin-right:10px; align-self:center;">READY</span>
-            <button onclick="loadDemo()">RESET CODE</button>
+            <span id="status" style="color:var(--text-muted); font-size:0.8rem;">READY</span>
+            <button onclick="loadDemo()">RESET</button>
             <button class="btn-donate" onclick="showDonateModal()">
-                <i class="fa-solid fa-mug-hot"></i> Donate
+                <i class="fa-solid fa-heart"></i> Donate
+            </button>
         </div>
     </header>
 
@@ -164,39 +165,21 @@
             <textarea id="code" spellcheck="false" oninput="handleInput()" onkeydown="handleTab(event)"></textarea>
         </div>
         <div class="preview-container">
-            <div id="paper"></div>
+            <div id="doc-root"></div>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // DONATE MODAL FUNCTIONS
-        // ==========================================
-        function showDonateModal() {
-            document.getElementById('donateModal').classList.add('show');
-        }
-        
-        function closeDonateModal() {
-            document.getElementById('donateModal').classList.remove('show');
-        }
-        
+        // --- UI LOGIC ---
+        function showDonateModal() { document.getElementById('donateModal').classList.add('show'); }
+        function closeDonateModal() { document.getElementById('donateModal').classList.remove('show'); }
         function copyDonateAddress(el) {
-            const address = 'UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-';
-            navigator.clipboard.writeText(address).then(() => {
-                el.classList.add('copied');
-                setTimeout(() => el.classList.remove('copied'), 2000);
-            });
+            navigator.clipboard.writeText('UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-');
+            el.classList.add('copied'); setTimeout(()=>el.classList.remove('copied'),2000);
         }
-        
-        // Close modal on click outside
-        document.getElementById('donateModal').addEventListener('click', function(e) {
-            if (e.target === this) closeDonateModal();
-        });
+        document.getElementById('donateModal').onclick = (e) => { if(e.target === document.getElementById('donateModal')) closeDonateModal() };
 
-        // ==========================================
-        // 1. DARE ENGINE CORE (Ported from Node.js)
-        // ==========================================
-        
+        // --- COMPILER LOGIC (Client-Side) ---
         const CSS_MAP = {
             w: 'width', h: 'height', bg: 'background-color', p: 'padding',
             m: 'margin', mb: 'margin-bottom', mt: 'margin-top',
@@ -208,7 +191,6 @@
 
         let styleMap = {};
 
-        // ATTRIBUTE RESOLVER
         function resolveAttributes(attrStr) {
             let combined = {};
             if (!attrStr) return combined;
@@ -229,7 +211,6 @@
             return combined;
         }
 
-        // CSS GENERATOR
         function generateCSS(props) {
             let css = "";
             Object.keys(props).forEach(k => {
@@ -241,7 +222,7 @@
                 }
                 if (['data', 'cols', 'format', 'src', 'color'].includes(k)) return;
                 const isNum = /^\d+(\.\d+)?$/.test(v);
-                const noUnit = ['flex', 'line', 'opacity', 'z-index', 'font-weight'].includes(k);
+                const noUnit = ['flex', 'line', 'opacity', 'z-index'].includes(k);
                 const val = (isNum && !noUnit) ? v + 'mm' : v;
 
                 if (CSS_MAP[k]) css += `${CSS_MAP[k]}:${val};`;
@@ -254,23 +235,18 @@
             return css;
         }
 
-        // BLOCK PARSER (Recursive)
         function parseBlock(str) {
             let output = '';
             let i = 0;
             while (i < str.length) {
                 const tail = str.substring(i);
-                // Regex: Find word + optional (attrs) + {
                 const match = tail.match(/^([a-z0-9]+)\s*(?:\(([\s\S]*?)\))?\s*\{/);
 
                 if (match) {
                     const tag = match[1];
                     const attrStr = match[2] || "";
                     const openBraceIndex = i + match[0].length - 1;
-                    
-                    // Balance Braces
-                    let bal = 1;
-                    let j = openBraceIndex + 1;
+                    let bal = 1, j = openBraceIndex + 1;
                     while (j < str.length && bal > 0) {
                         if (str[j] === '{') bal++;
                         if (str[j] === '}') bal--;
@@ -281,121 +257,80 @@
                     const props = resolveAttributes(attrStr);
                     const css = generateCSS(props);
 
-                    // --- COMPONENT LOGIC ---
-                    if (tag === 'page') {
-                        output += `<div class="dare-page" style="${css}">${parseBlock(innerContent)}</div>`;
-                    }
-                    else if (tag === 'txt') {
-                        output += `<div class="dare-txt" style="${css}">${innerContent.trim()}</div>`;
-                    }
-                    else if (tag === 'img') {
-                        // Browser handles src URL directly
-                        output += `<img src="${props.src || ''}" style="display:block; ${css}" />`;
-                    }
+                    if (tag === 'page') output += `<div class="dare-page" style="${css}">${parseBlock(innerContent)}</div>`;
+                    else if (tag === 'txt') output += `<div class="dare-txt" style="${css}">${innerContent.trim()}</div>`;
+                    else if (tag === 'img') output += `<img src="${props.src || ''}" style="display:block; ${css}" />`;
                     else if (tag === 'qr') {
-                        // QR Handler: We insert a div with a unique ID
-                        // The actual QR render happens after DOM injection
                         const uid = 'qr-' + Math.random().toString(36).substr(2,9);
                         const size = props.w || props.h || '30mm';
                         setTimeout(() => {
                             const el = document.getElementById(uid);
-                            if(el) {
-                                el.innerHTML = '';
-                                new QRCode(el, { text: props.data || "DARE", width: 128, height: 128 });
-                            }
-                        }, 50); // Small delay to allow DOM paint
+                            if(el) { el.innerHTML = ''; new QRCode(el, { text: props.data||"DARE", width:128, height:128 }); }
+                        }, 50);
                         output += `<div id="${uid}" style="width:${size}; height:${size}; ${css} display:flex; justify-content:center; align-items:center;"></div>`;
                     }
                     else if (tag === 'bar') {
-                        // SVG CHART GENERATOR (From your Parser.js)
                         const barColor = props.color || props.bg || '#38bdf8'; 
-                        let items = props.data.split(';').map(x => x.split(':'));
-                        let max = Math.max(...items.map(x => parseFloat(x[1])));
-                        
+                        let items = props.data ? props.data.split(';').map(x => x.split(':')) : [];
+                        let max = Math.max(1, ...items.map(x => parseFloat(x[1])));
                         let svg = `<svg width="100%" height="100%" preserveAspectRatio="none" style="overflow:visible;">`;
-                        let barW = 100 / items.length;
-                        
+                        let barW = items.length > 0 ? 100 / items.length : 0;
                         items.forEach(([l, v], idx) => {
                             let h = (parseFloat(v)/max) * 100;
                             let x = (idx * barW);
-                            let finalW = barW - (barW * 0.2); 
-                            
+                            let finalW = barW * 0.8;
                             svg += `<rect x="${x}%" y="${100-h}%" width="${finalW}%" height="${h}%" fill="${barColor}" rx="2" ry="2" />`;
-                            
-                            // Labels inside SVG
                             let valY = h > 15 ? (100-h+8) : (100-h-2);
                             let valColor = h > 15 ? 'white' : barColor;
                             svg += `<text x="${x + finalW/2}%" y="${valY}%" fill="${valColor}" font-size="12" font-family="Arial" font-weight="bold" text-anchor="middle">${v}</text>`;
                         });
                         svg += `</svg>`;
-                        let labels = items.map(([l, v]) => `<div style="flex:1; text-align:center; font-size:9pt; margin-top:5px; opacity:0.8;">${l}</div>`).join('');
-                        
-                        output += `
-                        <div class="dare-chart-wrap" style="${css} display:flex; flex-direction:column;">
-                            <div style="flex:1; width:100%;">${svg}</div>
-                            <div style="display:flex; width:100%; height:20px;">${labels}</div>
-                        </div>`;
+                        let labels = items.map(([l]) => `<div style="flex:1;text-align:center;font-size:9pt;margin-top:5px;">${l}</div>`).join('');
+                        output += `<div class="dare-chart-wrap" style="${css} display:flex; flex-direction:column;"><div style="flex:1;">${svg}</div><div style="display:flex;width:100%;height:20px;">${labels}</div></div>`;
                     }
                     else if (tag === 'tbl') {
-                        let rows = innerContent.split(';').map(r => {
-                            if(!r.trim()) return '';
-                            let cells = r.split(',').map(c => `<div class="cell">${c.trim()}</div>`).join('');
-                            return cells;
-                        }).join('');
+                        let rows = innerContent.split(';').map(r => r.trim() ? r.split(',').map(c => `<div class="cell">${c.trim()}</div>`).join('') : '').join('');
                         let cols = props.cols ? `grid-template-columns:${props.cols};` : '';
                         output += `<div class="dare-tbl" style="${css}${cols}">${rows}</div>`;
                     }
-                    else {
-                        // Default Box
+                    else { // Box
                         let classes = "dare-box";
                         if (props.h === 'fill') classes += " flex-fill";
                         output += `<div class="${classes}" style="${css}">${parseBlock(innerContent)}</div>`;
                     }
-
                     i = j;
-                } else {
-                    i++;
-                }
+                } else { i++; }
             }
             return output;
         }
-
-        // ==========================================
-        // 2. UI LOGIC & EVENTS
-        // ==========================================
 
         function compile() {
             const raw = document.getElementById('code').value;
             const status = document.getElementById('status');
             
-            // 1. Remove comments
-            const cleanCode = raw.replace(/\/\/.*$/gm, '');
-
-            // 2. Parse Setup
-            styleMap = {};
-            const setupMatch = cleanCode.match(/@setup\s*\{([\s\S]*?)\}(?=\s*@doc)/);
-            if (setupMatch) {
-                setupMatch[1].split(';').forEach(line => {
-                    let [k, v] = line.split(':');
-                    if (k && v) styleMap[k.trim()] = v.trim();
-                });
-            }
-
-            // 3. Parse Doc
-            const docMatch = cleanCode.match(/@doc\s*\{([\s\S]*)\}/);
-            const paper = document.getElementById('paper');
-            
-            if (docMatch) {
-                try {
-                    paper.innerHTML = parseBlock(docMatch[1].trim());
-                    status.innerText = "COMPILED";
-                    status.style.color = "#4ade80"; // Green
-                } catch(e) {
-                    status.innerText = "ERROR";
-                    status.style.color = "#f87171"; // Red
+            try {
+                styleMap = {};
+                const cleanCode = raw.replace(/\/\/.*$/gm, '');
+                const setupMatch = cleanCode.match(/@setup\s*\{([\s\S]*?)\}(?=\s*@doc)/);
+                if (setupMatch) {
+                    setupMatch[1].split(';').forEach(line => {
+                        let [k, v] = line.split(':');
+                        if (k && v) styleMap[k.trim()] = v.trim();
+                    });
                 }
-            } else {
-                paper.innerHTML = '<div style="padding:20mm; color:#ccc;">Waiting for @doc block...</div>';
+
+                const docMatch = cleanCode.match(/@doc\s*\{([\s\S]*)\}/);
+                const root = document.getElementById('doc-root');
+                
+                if (docMatch) {
+                    root.innerHTML = parseBlock(docMatch[1].trim());
+                    status.innerText = "COMPILED"; status.style.color = "#4ade80";
+                } else {
+                    root.innerHTML = '<div style="padding:20mm; color:#ccc; text-align:center;">Waiting for @doc block...</div>';
+                }
+            } catch(e) {
+                status.innerText = "ERROR"; status.style.color = "#f87171";
+                console.error(e);
             }
         }
 
@@ -406,53 +341,42 @@
         }
 
         function handleTab(e) {
-            if (e.key == 'Tab') {
-                e.preventDefault();
-                document.execCommand('insertText', false, '  ');
-            }
-        }
-
-        function printPDF() {
-            compile();
-            setTimeout(() => window.print(), 300);
+            if (e.key == 'Tab') { e.preventDefault(); document.execCommand('insertText', false, '  '); }
         }
 
         function loadDemo() {
             const demo = `@setup {
   format: A4;
   $brand: color=#2563eb;      
-  $dark: bg=#0f172a color=white;
-  $gray: bg=#f8fafc border=1 border_color=#e2e8f0;
   $header: h=25mm bg=#1e293b display=flex align=center justify=space-between p=10mm;
 }
 
 @doc {
   page {
-    // COVER HEADER
-    box($dark, p=20mm, display=flex, justify=space-between) {
-       box {
-          txt(size=12, color=#38bdf8, bold) { CONFIDENTIAL }
-          txt(size=24, bold, font=Helvetica) { TECH AUDIT }
-       }
-       qr(data="https://github.com", w=25mm, bg=white, p=2mm, rounded=2mm) {}
+    // PAGE 1 HEADER
+    box($header) {
+       txt(size=14, bold, color=white) { REPORT P1 }
+       qr(data="Page 1", w=15mm, bg=white, p=1mm) {}
     }
-
-    // CONTENT
+    
     box(h=fill, p=20mm) {
-       txt(size=14, bold, color=#475569, mb=5mm) { REVENUE STREAMS }
-       
-       // CHART
-       box($gray, p=5mm, h=60mm, mb=10mm, rounded=3mm) {
-          bar(data="SaaS:120; License:200; API:150", $brand) {}
+       txt(size=24, bold, $brand) { Page One Content }
+       txt { This page is separated from the next one. }
+       box(h=50mm, border=1, mt=10mm) {
+          bar(data="A:10;B:20", $brand) {}
        }
+    }
+  }
 
-       // TABLE
-       txt(size=14, bold, color=#475569, mb=5mm) { MANIFEST }
-       tbl(cols="2fr 1fr", border=1, border_color=#e2e8f0) {
-          Source, Status;
-          Parser v1.0, Stable;
-          Recursion, Fixed
-       }
+  page {
+    // PAGE 2 HEADER
+    box($header) {
+       txt(size=14, bold, color=white) { REPORT P2 }
+    }
+    
+    box(h=fill, p=20mm) {
+       txt(size=24, bold, color=red) { Page Two Content }
+       txt { Scroll down to see the separation! }
     }
   }
 }`;
@@ -460,9 +384,7 @@
             handleInput();
         }
 
-        // Init
         window.onload = loadDemo;
     </script>
 </body>
 </html>
-
