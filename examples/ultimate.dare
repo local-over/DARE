@@ -1,0 +1,510 @@
+@setup {
+  format: A4;
+
+  // --- PALETTE ---
+  $mars:    color=#c2410c; // Rust Orange
+  $black:   bg=#020617 color=white;
+  $paper:   bg=white color=#0f172a;
+  $grid:    bg=#f8fafc border=1 border-color=#e2e8f0;
+  $glass:   bg=white border=1 border-color=#cbd5e1 rounded=2mm p=4mm shadow="0 4px 6px -1px rgba(0,0,0,0.05)";
+  $alert:   color=#dc2626; // Red
+  $ok:      color=#16a34a; // Green
+  $cyan:    color=#0891b2;
+
+  // --- TYPOGRAPHY ---
+  $h1:      font=Helvetica size=32 bold line=1;
+  $h2:      font=Helvetica size=18 bold color=#475569 mb=5mm uppercase letter-spacing=1;
+  $h3:      font=Helvetica size=12 bold color=#0f172a mb=2mm;
+  $p:       font=Arial size=10 color=#334155 line=1.5 mb=3mm;
+  $mono:    font=Courier size=9 color=#64748b;
+  $big_num: font=Helvetica size=40 bold color=#0f172a;
+
+  // --- LAYOUTS ---
+  $header:  h=25mm bg=#0f172a display=flex align=center justify=space-between p=10mm;
+  $footer:  h=15mm bg=#f1f5f9 border-top=1 border-color=#e2e8f0 display=flex align=center justify=space-between p=5mm size=8 color=#94a3b8;
+  
+  // --- SHAPES ---
+  $circle:  rounded=50 border=2 display=flex align=center justify=center;
+  $badge:   p=2mm rounded=1mm size=8 bold bg=#e0f2fe color=#0369a1;
+}
+
+@doc {
+
+  // ==========================================
+  // PAGE 1: COVER
+  // ==========================================
+  page {
+    box(h=fill, $black, p=20mm, display=flex, flex-direction=column, justify=center) {
+       
+       // Decorative Circle System
+       box(w=60mm, h=60mm, $circle, border-color=#c2410c, mb=20mm) {
+          box(w=40mm, h=40mm, $circle, border-color=#fb923c) {
+             box(w=20mm, h=20mm, bg=#c2410c, rounded=50) {}
+          }
+       }
+       
+       txt(size=60, bold, color=white) { PROJECT }
+       txt(size=60, bold, $mars) { ARES }
+       
+       box(w=100%, h=1mm, bg=#334155, mt=10mm, mb=10mm) {}
+       
+       txt(size=18, color=#94a3b8) { TERRAFORMING INITIATIVE }
+       txt(size=14, color=#64748b) { MASTER PLAN v12.0 }
+       
+       box(mt=40mm) {
+         txt(size=12, bold, color=white) { AUTHORIZED BY }
+         txt(size=16, bold, $mars) { HASSAN ELKADY }
+         txt(size=12, color=#94a3b8) { github.com/local-over }
+       }
+    }
+  }
+
+  // ==========================================
+  // PAGE 2: LEGAL & TOC
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){LEGAL} txt($mars){CONFIDENTIAL} }
+    box(h=fill, p=20mm) {
+       txt($h2) { 1. Non-Disclosure Agreement }
+       txt($p) {
+         This document contains classified schematics regarding the ARES Life Support System. 
+         Unauthorized distribution is punishable by interplanetary law (Article 7, Section 9).
+         By reading past this page, you agree to the terms set forth by the Mars Colonial Administration.
+       }
+       
+       txt($h2, mt=10mm) { 2. Table of Contents }
+       tbl(cols="1fr 4fr 1fr", border=0, mt=5mm) {
+          PG, SECTION, STATUS;
+          01, Cover, Public;
+          03, Mission Overview, Public;
+          04, Atmospheric Data, Classified;
+          06, Blueprint: Hab Module, Secret;
+          10, Supply Manifest, Secret;
+          15, Personnel Roster, Restricted;
+          20, Final Approval, Signed
+       }
+       
+       // Signature Line
+       box(mt=30mm) {
+          box(w=100%, h=1, bg=#ccc, mb=2mm) {}
+          txt(size=8, color=#666) { DIGITAL SIGNATURE VALIDATED: HASSAN-KEY-99283 }
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 2} }
+  }
+
+  // ==========================================
+  // PAGE 3: MISSION OVERVIEW
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){OVERVIEW} }
+    box(h=fill, p=15mm) {
+       txt($h1) { MISSION GOALS }
+       
+       box(display=grid, cols="1fr 1fr", gap=10mm, mt=10mm) {
+          box($glass) {
+             txt($h3) { PHASE 1: DEPLOYMENT }
+             txt($p) { Establish a stable landing zone in the Cydonia region. Deploy autonomous rovers for soil analysis. }
+             bar(data="Progress:100; Risk:20", $ok) {}
+          }
+          box($glass) {
+             txt($h3) { PHASE 2: HABITATION }
+             txt($p) { Construct pressurized domes. Activate oxygen scrubbers. Begin hydroponic farming. }
+             bar(data="Progress:65; Risk:40", $cyan) {}
+          }
+          box($glass) {
+             txt($h3) { PHASE 3: INDUSTRY }
+             txt($p) { Begin mining operations for water ice and iron. Establish fuel refinery. }
+             bar(data="Progress:15; Risk:80", $mars) {}
+          }
+          box($glass) {
+             txt($h3) { PHASE 4: TERRAFORMING }
+             txt($p) { Release atmospheric thickeners. Raise global temp by 5 degrees. }
+             bar(data="Progress:0; Risk:99", color=#333) {}
+          }
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 3} }
+  }
+
+  // ==========================================
+  // PAGE 4: ATMOSPHERIC DATA (Charts)
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){SCIENCE} txt($badge){LIVE DATA} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Surface Conditions }
+       
+       box($glass, h=60mm, mb=10mm) {
+          txt(bold, mb=5mm) { Gas Composition (ppm) }
+          // DARE v12 SVG Charts
+          bar(data="CO2:950; Nitrogen:27; Argon:16; Oxygen:1; Water:0.3", $mars) {}
+       }
+       
+       box(display=grid, cols="1fr 1fr", gap=5mm) {
+          box($glass) {
+             txt($p) { Avg Temperature }
+             txt($big_num, $alert) { -60°C }
+             txt(size=10) { Critical Low }
+          }
+          box($glass) {
+             txt($p) { Radiation Levels }
+             txt($big_num, $mars) { 240 }
+             txt(size=10) { mSv/Year }
+          }
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 4} }
+  }
+
+  // ==========================================
+  // PAGE 5: ENERGY GRID
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){ENERGY} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Reactor Output }
+       
+       box($glass, h=60mm, mb=10mm) {
+          txt(bold, mb=5mm) { Fusion Core Efficiency (%) }
+          bar(data="Core A:98; Core B:96; Core C:45; Backup:100", $ok) {}
+       }
+       
+       txt($p) { "Core C is showing signs of thermal instability. Recommend immediate maintenance cycle." }
+       
+       tbl(cols="2fr 1fr 1fr", border=1, mt=5mm) {
+          System, Output, Status;
+          Solar Array Alpha, 500kW, Optimal;
+          Solar Array Beta, 480kW, Optimal;
+          RTG Backup, 120kW, Standby;
+          Fusion Core, 2.1GW, Warning
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 5} }
+  }
+
+  // ==========================================
+  // PAGE 6: BLUEPRINTS (Shapes)
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){SCHEMATICS} }
+    box(h=fill, bg=#1e293b, p=10mm) {
+       txt(color=white, bold, size=18, mb=10mm) { HABITAT MODULE ALPHA }
+       
+       // DRAWING A BLUEPRINT USING BOXES
+       box(h=100mm, border=2, border-color=#0ea5e9, p=5mm, display=flex, justify=center, align=center) {
+          
+          // Central Hub
+          box(w=40mm, h=40mm, rounded=50, border=2, border-color=white, display=flex, justify=center, align=center) {
+             txt(color=#0ea5e9, bold) { HUB }
+          }
+          
+          // Connecting Tunnels (Absolute positioning logic simulated via margin/flex)
+          box(pos=absolute, w=80mm, h=5mm, bg=#334155) {}
+          box(pos=absolute, w=5mm, h=80mm, bg=#334155) {}
+          
+          // Pods
+          box(pos=absolute, top=10mm, w=20mm, h=20mm, bg=#0f172a, border=1, border-color=white) { txt(size=8, color=white, align=center){O2} }
+          box(pos=absolute, bottom=10mm, w=20mm, h=20mm, bg=#0f172a, border=1, border-color=white) { txt(size=8, color=white, align=center){H2O} }
+          box(pos=absolute, left=10mm, w=20mm, h=20mm, bg=#0f172a, border=1, border-color=white) { txt(size=8, color=white, align=center){LAB} }
+          box(pos=absolute, right=10mm, w=20mm, h=20mm, bg=#0f172a, border=1, border-color=white) { txt(size=8, color=white, align=center){DORM} }
+       }
+       
+       txt(color=#94a3b8, mt=5mm, align=center) { *Not to scale. Engineering use only. }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 6} }
+  }
+
+  // ==========================================
+  // PAGE 7: SUPPLY MANIFEST A
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){LOGISTICS} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Food & Water }
+       
+       tbl(cols="1fr 3fr 1fr", border=1, border-color=#e2e8f0) {
+          ID, ITEM, QTY (Tons);
+          F-001, Dehydrated Protein, 50;
+          F-002, Vitamin Supplements, 2;
+          F-003, Hydroponic Seeds, 0.5;
+          W-001, Filtered Water, 200;
+          W-002, Recycling Filters, 5
+       }
+       
+       // QR Code for inventory tracking
+       box(mt=20mm, display=flex, align=center, gap=5mm) {
+         qr(data="INVENTORY-LIST-A", w=20mm) {}
+         txt($mono) { SCAN FOR DIGITAL MANIFEST }
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 7} }
+  }
+
+  // ==========================================
+  // PAGE 8: SUPPLY MANIFEST B
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){LOGISTICS} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Construction Materials }
+       
+       tbl(cols="1fr 3fr 1fr", border=1, border-color=#e2e8f0) {
+          ID, ITEM, QTY;
+          C-101, Titanium Sheets, 500;
+          C-102, Carbon Nanotubes, 200;
+          C-103, Glass Panes (Rad-Proof), 50;
+          C-104, Sealant Foam, 1000
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 8} }
+  }
+
+  // ==========================================
+  // PAGE 9: SUPPLY MANIFEST C
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){LOGISTICS} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Electronics }
+       
+       tbl(cols="1fr 3fr 1fr", border=1, border-color=#e2e8f0) {
+          ID, ITEM, QTY;
+          E-201, Server Blades (AI), 20;
+          E-202, Sensor Arrays, 500;
+          E-203, Communication Dish, 2;
+          E-204, Personal Tablets, 150
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 9} }
+  }
+
+  // ==========================================
+  // PAGE 10: SUPPLY MANIFEST D
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){LOGISTICS} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Medical Supplies }
+       
+       tbl(cols="1fr 3fr 1fr", border=1, border-color=#e2e8f0) {
+          ID, ITEM, QTY;
+          M-301, Trauma Kits, 100;
+          M-302, Rad-X Injectors, 500;
+          M-303, Surgical Bots, 5;
+          M-304, Cryo-Stasis Fluid, 200L
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 10} }
+  }
+
+  // ==========================================
+  // PAGE 11: PERSONNEL (Command)
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){ROSTER} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Command Staff }
+       
+       box(display=grid, cols="1fr 1fr", gap=5mm) {
+          box($glass) { txt(bold){CDR. Hassan Elkady} txt($mono){Mission Commander} }
+          box($glass) { txt(bold){XO. Sarah Vance} txt($mono){Executive Officer} }
+          box($glass) { txt(bold){Dr. Arinze Okafor} txt($mono){Chief Scientist} }
+          box($glass) { txt(bold){Eng. Liu Wei} txt($mono){Chief Engineer} }
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 11} }
+  }
+
+  // ==========================================
+  // PAGE 12: PERSONNEL (Engineering)
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){ROSTER} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Engineering Team }
+       
+       tbl(cols="1fr 2fr 1fr", border=1) {
+          ID, Name, Specialty;
+          EN-01, John Doe, Propulsion;
+          EN-02, Jane Smith, Structural;
+          EN-03, Bob Jones, Electrical;
+          EN-04, Alice Wong, Systems;
+          EN-05, Charlie Brown, Maintenance;
+          EN-06, David White, Robotics;
+          EN-07, Eva Green, Life Support;
+          EN-08, Frank Black, Networks
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 12} }
+  }
+
+  // ==========================================
+  // PAGE 13: PERSONNEL (Science)
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){ROSTER} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Science Team }
+       
+       tbl(cols="1fr 2fr 1fr", border=1) {
+          ID, Name, Specialty;
+          SC-01, Mary Curie, Geology;
+          SC-02, Isaac Newton, Physics;
+          SC-03, Charles Darwin, Biology;
+          SC-04, Albert Einstein, Theory;
+          SC-05, Rosalind Franklin, DNA;
+          SC-06, Carl Sagan, Astro;
+          SC-07, Neil Tyson, Comm;
+          SC-08, Stephen Hawking, Quantum
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 13} }
+  }
+
+  // ==========================================
+  // PAGE 14: PERSONNEL (Security)
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){ROSTER} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Security Detail }
+       
+       tbl(cols="1fr 2fr 1fr", border=1) {
+          ID, Name, Rank;
+          SE-01, Jack O'Neill, Colonel;
+          SE-02, Sam Carter, Major;
+          SE-03, Teal'c, Specialist;
+          SE-04, Daniel Jackson, Consultant
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 14} }
+  }
+
+  // ==========================================
+  // PAGE 15: RISK ASSESSMENT
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){RISK ANALYSIS} txt($badge, bg=red, color=white){CLASS A} }
+    box(h=fill, p=15mm) {
+       
+       box($glass, border-color=red, h=60mm, mb=10mm) {
+          txt(bold, color=red, mb=5mm) { Threat Levels }
+          bar(data="Radiation:80; Meteor:20; Psych:60; Equipment:40", color=red) {}
+       }
+       
+       txt($p) {
+         "The primary risk to mission success remains long-term radiation exposure.
+          Shielding integrity must be maintained above 90% at all times."
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 15} }
+  }
+
+  // ==========================================
+  // PAGE 16: INCIDENT LOGS
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){LOGS} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Recent Incidents }
+       
+       box(mb=5mm, bg=#fef2f2, p=5mm, border=1, border-color=red) {
+          txt(bold, color=red) { INCIDENT #9921 }
+          txt($mono) { Airlock malfunction in Sector 4. Manual override required. No injuries. }
+       }
+       
+       box(mb=5mm, bg=#fffbeb, p=5mm, border=1, border-color=orange) {
+          txt(bold, color=orange) { INCIDENT #9922 }
+          txt($mono) { Power fluctuation in Hydroponics. 5% crop loss. }
+       }
+       
+       box(mb=5mm, bg=#f0fdf4, p=5mm, border=1, border-color=green) {
+          txt(bold, color=green) { INCIDENT #9923 }
+          txt($mono) { Successful rover return. Sample A-92 processed. }
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 16} }
+  }
+
+  // ==========================================
+  // PAGE 17: COMMUNICATIONS
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){COMMS} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Earth Link Status }
+       
+       box($glass, display=flex, align=center, justify=center, h=40mm, mb=10mm) {
+          txt(size=24, bold, $ok) { CONNECTED }
+       }
+       
+       tbl(cols="1fr 2fr", border=1) {
+          Metric, Value;
+          Signal Strength, 82%;
+          Latency, 14m 32s;
+          Bandwidth, 50 Mbps;
+          Next Window, 4h 20m
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 17} }
+  }
+
+  // ==========================================
+  // PAGE 18: FUTURE EXPANSION
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){FUTURE} }
+    box(h=fill, p=15mm) {
+       txt($h2) { 5-Year Projection }
+       
+       box($glass, h=80mm) {
+          txt(bold, mb=5mm) { Population Growth }
+          bar(data="Year 1:150; Year 2:300; Year 3:600; Year 4:1200; Year 5:2500", $cyan) {}
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 18} }
+  }
+
+  // ==========================================
+  // PAGE 19: BUDGET
+  // ==========================================
+  page {
+    box($header) { txt(color=white, bold){FINANCE} }
+    box(h=fill, p=15mm) {
+       txt($h2) { Cost Analysis (Billions) }
+       
+       tbl(cols="2fr 1fr", border=1) {
+          Department, Cost;
+          Launch Logistics, $50B;
+          R&D, $20B;
+          Construction, $30B;
+          Personnel, $10B;
+          Contingency, $15B;
+          TOTAL, $125B
+       }
+    }
+    box($footer) { txt{ARES-DOC-001} txt{Page 19} }
+  }
+
+  // ==========================================
+  // PAGE 20: FINAL SIGNOFF
+  // ==========================================
+  page {
+    box(h=fill, $black, p=20mm, display=flex, flex-direction=column, justify=center, align=center) {
+       
+       qr(data="APPROVED-BY-COMMAND", w=40mm, h=40mm, bg=white, p=2mm, rounded=2mm) {}
+       
+       txt(size=20, bold, color=white, mt=10mm) { MISSION APPROVED }
+       
+       txt(size=12, color=#94a3b8, mt=5mm) { "Ad Astra Per Aspera" }
+       
+       box(w=80mm, h=1, bg=white, mt=20mm, mb=5mm) {}
+       txt(size=14, bold, $mars) { HASSAN ELKADY }
+       txt(size=10, color=white) { MISSION COMMANDER }
+       
+       txt(size=8, color=#334155, mt=30mm) { Generated by DARE Engine v12.0 }
+    }
+  }
+
+}

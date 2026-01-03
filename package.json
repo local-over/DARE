@@ -1,0 +1,12 @@
+{
+  "name": "DARE",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mime-types": "^2.1.35",
+    "puppeteer": "^24.34.0",
+    "qrcode": "^1.5.3",
+    "yargs": "^17.7.2"
+  }
+}

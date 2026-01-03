@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARE ENGINE | The AI-Native PDF Standard</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           1. DESIGN SYSTEM
+           ========================================= */
+        :root {
+            --bg-body: #020617;
+            --bg-card: #0f172a;
+            --bg-card-hover: #1e293b;
+            
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --secondary: #6366f1;
+            
+            --success: #22c55e;
+            --danger: #ef4444;
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --container: 1200px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+        
+        body { 
+            background: var(--bg-body); color: var(--text-main); font-family: var(--font-sans);
+            overflow-x: hidden; line-height: 1.6;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* SCROLL ANIMATION UTILITY */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* =========================================
+           2. NAVIGATION
+           ========================================= */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: 80px; z-index: 1000;
+            background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .nav-container {
+            max-width: var(--container); margin: 0 auto; height: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo { font-family: var(--font-mono); font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; color: white; display: flex; align-items: center; gap: 10px; }
+        .logo i { color: var(--primary); }
+        
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+        .nav-links a:hover { color: white; }
+
+        .btn-nav {
+            padding: 8px 20px; border-radius: 6px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); font-weight: 600; font-size: 0.85rem;
+        }
+        .btn-nav:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        /* DONATE BUTTON STYLES */
+        .btn-donate {
+            padding: 8px 20px; border-radius: 6px; background: linear-gradient(135deg, #f7931a 0%, #ffb74d 100%);
+            color: white !important; font-weight: 700; font-size: 0.85rem;
+            display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
+        }
+        .btn-donate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(247, 147, 26, 0.5);
+        }
+
+        /* =========================================
+           3. HERO SECTION
+           ========================================= */
+        .hero {
+            padding: 180px 20px 100px 20px;
+            max-width: var(--container); margin: 0 auto;
+            display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 50px; align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(56, 189, 248, 0.1); color: var(--primary);
+            padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+            margin-bottom: 25px; border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        h1 {
+            font-size: 4rem; line-height: 1.1; font-weight: 800; letter-spacing: -2px; margin-bottom: 20px;
+        }
+        h1 span {
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .highlight { color: var(--primary); -webkit-text-fill-color: var(--primary) !important; }
+
+        .hero p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 40px; max-width: 550px; }
+
+        .cta-group { display: flex; gap: 15px; }
+        .btn-primary {
+            padding: 15px 35px; background: var(--primary); color: #000; font-weight: 700;
+            border-radius: 8px; box-shadow: 0 0 20px var(--primary-glow);
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px var(--primary-glow); }
+        
+        .btn-outline {
+            padding: 15px 35px; background: transparent; color: white; font-weight: 600;
+            border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: white; }
+
+        /* Hero Visual */
+        .hero-visual { position: relative; }
+        .code-window {
+            background: #000; border-radius: 12px; border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden;
+            animation: float 6s ease-in-out infinite;
+        }
+        .win-header { background: #111; padding: 10px 15px; display: flex; gap: 8px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .red { background: #ef4444; } .yellow { background: #eab308; } .green { background: #22c55e; }
+        .win-body { padding: 20px; font-family: var(--font-mono); font-size: 0.85rem; color: #a5b4fc; }
+
+        /* =========================================
+           4. FEATURES GRID
+           ========================================= */
+        .features { padding: 100px 20px; max-width: var(--container); margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 2.5rem; margin-bottom: 15px; }
+        .section-header p { color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .feature-card {
+            background: var(--bg-card); padding: 40px 30px; border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05); transition: 0.3s;
+        }
+        .feature-card:hover { background: var(--bg-card-hover); transform: translateY(-10px); border-color: var(--primary); }
+        
+        .icon-box {
+            width: 50px; height: 50px; background: rgba(56, 189, 248, 0.1);
+            color: var(--primary); display: flex; align-items: center; justify-content: center;
+            border-radius: 10px; font-size: 1.5rem; margin-bottom: 25px;
+        }
+        .feature-card h3 { font-size: 1.25rem; margin-bottom: 15px; }
+        .feature-card p { font-size: 0.95rem; color: var(--text-muted); }
+
+        /* =========================================
+           5. CODE COMPARISON (The Wars)
+           ========================================= */
+        .comparison { background: #0b1120; padding: 100px 20px; border-top: 1px solid #1e293b; border-bottom: 1px solid #1e293b; }
+        .comp-container { max-width: var(--container); margin: 0 auto; }
+        
+        .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; }
+        .comp-box { background: black; border-radius: 12px; border: 1px solid #333; overflow: hidden; height: 350px; display: flex; flex-direction: column; }
+        
+        .comp-head { 
+            padding: 15px 20px; background: #111; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; 
+        }
+        .badge { font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono); }
+        .bad { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .good { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+        
+        .comp-body { padding: 20px; font-family: var(--font-mono); font-size: 0.85rem; color: #cbd5e1; white-space: pre-wrap; overflow: hidden; flex: 1; }
+
+        /* =========================================
+           6. STATS & BENCHMARKS
+           ========================================= */
+        .stats { padding: 100px 20px; max-width: var(--container); margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .stat-item { text-align: center; padding: 30px; background: var(--bg-card); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-num { font-size: 3rem; font-weight: 800; color: white; display: block; margin-bottom: 5px; }
+        .stat-desc { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; }
+
+        /* =========================================
+           7. DONATION SECTION
+           ========================================= */
+        .donation-section {
+            padding: 80px 20px; max-width: var(--container); margin: 0 auto;
+            text-align: center;
+        }
+        .donation-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 2px solid rgba(247, 147, 26, 0.3); border-radius: 20px;
+            padding: 60px 40px; position: relative; overflow: hidden;
+        }
+        .donation-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 4px; background: linear-gradient(90deg, #f7931a, #ffb74d);
+        }
+        .donation-icon {
+            font-size: 3rem; margin-bottom: 20px;
+        }
+        .donation-card h3 {
+            font-size: 2rem; margin-bottom: 15px; color: white;
+        }
+        .donation-card p {
+            color: var(--text-muted); max-width: 500px; margin: 0 auto 30px auto;
+            font-size: 1.1rem;
+        }
+        .crypto-address {
+            background: rgba(0,0,0,0.5); border: 2px dashed #f7931a;
+            padding: 20px; border-radius: 12px; display: inline-block;
+            font-family: var(--font-mono); font-size: 0.85rem; color: #fbbf24;
+            cursor: pointer; transition: 0.3s; word-break: break-all;
+        }
+        .crypto-address:hover {
+            border-color: #ffb74d; background: rgba(247, 147, 26, 0.1);
+            transform: scale(1.02);
+        }
+        .crypto-address i { margin-right: 8px; }
+        .crypto-label {
+            display: block; font-size: 0.75rem; color: var(--text-muted);
+            margin-top: 8px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .copy-hint {
+            font-size: 0.75rem; color: var(--success); margin-top: 10px;
+            opacity: 0; transition: 0.3s;
+        }
+        .crypto-address.copied + .copy-hint { opacity: 1; }
+
+        /* =========================================
+           8. FOOTER
+           ========================================= */
+        footer { background: #000; padding: 80px 20px 40px 20px; border-top: 1px solid #222; }
+        .footer-grid { max-width: var(--container); margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
+        
+        .footer-brand h4 { font-family: var(--font-mono); font-size: 1.5rem; color: white; margin-bottom: 20px; }
+        .footer-brand p { color: var(--text-muted); max-width: 300px; font-size: 0.9rem; margin-bottom: 20px; }
+        .socials a { color: var(--text-muted); margin-right: 15px; font-size: 1.2rem; transition: 0.3s; }
+        .socials a:hover { color: var(--primary); transform: translateY(-3px); }
+
+        .footer-col h5 { color: white; margin-bottom: 20px; font-size: 1rem; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { color: var(--text-muted); font-size: 0.9rem; }
+        .footer-col ul li a:hover { color: var(--primary); }
+
+        .copyright { text-align: center; color: #475569; font-size: 0.85rem; pt: 40px; border-top: 1px solid #111; padding-top: 30px; }
+
+        /* ANIMATIONS */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        @media(max-width: 900px) {
+            .hero { grid-template-columns: 1fr; text-align: center; padding-top: 120px; }
+            .hero p { margin: 0 auto 40px auto; }
+            .cta-group { justify-content: center; }
+            .feature-grid, .comp-grid, .stats, .footer-grid { grid-template-columns: 1fr; }
+            .hero-visual { display: none; } 
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                DARE
+            </a>
+            <div class="nav-links desktop-only">
+                <a href="#features">Features</a>
+                <a href="#benchmark">Benchmarks</a>
+                <a href="docs.html">Documentation</a>
+                <a href="comp.html" class="btn-nav">Launch Compiler</a>
+                <a href="#donate" class="btn-donate">
+                    <i class="fa-solid fa-mug-hot"></i> Donate
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-content reveal active">
+<div class="hero-badge">
+                <i class="fa-solid fa-bolt"></i> V1.0 FIRST RELEASE
+            </div>
+            <h1>The Operating System for <span class="highlight">AI Documents</span></h1>
+            <p>Don't force LLMs to write HTML. DARE is a deterministic, token-efficient language designed to generate pixel-perfect PDFs from simple prompts.</p>
+            <div class="cta-group">
+                <a href="comp.html" class="btn-primary">Start Building</a>
+                <a href="docs.html" class="btn-outline">Read Docs</a>
+            </div>
+        </div>
+        
+        <div class="hero-visual reveal active">
+            <div class="code-window">
+                <div class="win-header">
+                    <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                </div>
+                <div class="win-body">
+                    <span style="color:#c678dd">@doc</span> {<br>
+                    &nbsp;&nbsp;<span style="color:#61afef">page</span> {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#e06c75">box</span>(p=20mm) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#e06c75">txt</span>(size=24, bold) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HELLO WORLD<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#e06c75">qr</span>(data=<span style="color:#98c379">"dare.ai"</span>) {}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- STATS -->
+    <section class="stats reveal">
+        <div class="stat-item">
+            <span class="stat-num" style="color:var(--primary)">70%</span>
+            <span class="stat-desc">Less Token Usage</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" style="color:var(--success)">100%</span>
+            <span class="stat-desc">Deterministic Layout</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" style="color:#f472b6"><50ms</span>
+            <span class="stat-desc">Render Time</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num" style="color:#eab308">0</span>
+            <span class="stat-desc">Dependencies</span>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="features">
+        <div class="section-header reveal">
+            <h2>Why not HTML?</h2>
+            <p>HTML was built for fluid screens. DARE is built for fixed paper. It eliminates the chaos of CSS when generating PDFs via AI.</p>
+        </div>
+
+        <div class="feature-grid">
+            <!-- Feature 1 -->
+            <div class="feature-card reveal">
+                <div class="icon-box"><i class="fa-solid fa-microchip"></i></div>
+                <h3>Token Efficient</h3>
+                <p>DARE uses a compressed syntax (`box`, `txt`) that consumes 70% fewer tokens than standard HTML5 boilerplate. Save money on every API call.</p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="feature-card reveal">
+                <div class="icon-box"><i class="fa-solid fa-ruler-combined"></i></div>
+                <h3>Physical Units</h3>
+                <p>No more "pixels". DARE layout logic is based on Millimeters (`mm`). If code says 50mm, it prints at exactly 50mm.</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="feature-card reveal">
+                <div class="icon-box"><i class="fa-solid fa-chart-pie"></i></div>
+                <h3>Smart Assets</h3>
+                <p>Stop asking AI to draw SVG charts. DARE has native tags for `qr`, `bar`, and `tbl` that render vector-perfect assets instantly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- COMPARISON -->
+    <section id="benchmark" class="comparison">
+        <div class="comp-container">
+            <div class="section-header reveal">
+                <h2>The Code Wars</h2>
+                <p>Visualizing the token difference for a simple Invoice Header.</p>
+            </div>
+
+            <div class="comp-grid reveal">
+                <!-- HTML -->
+                <div class="comp-box" style="border-color: rgba(239, 68, 68, 0.3);">
+                    <div class="comp-head">
+                        <span style="color:#ef4444; font-weight:bold;">Standard HTML/CSS</span>
+                        <span class="badge bad">TOKENS: <span id="html-tokens">0</span></span>
+                    </div>
+                    <div class="comp-body" id="html-code"></div>
+                </div>
+
+                <!-- DARE -->
+                <div class="comp-box" style="border-color: rgba(34, 197, 94, 0.3);">
+                    <div class="comp-head">
+                        <span style="color:#22c55e; font-weight:bold;">DARE Engine</span>
+                        <span class="badge good">TOKENS: <span id="dare-tokens">0</span></span>
+                    </div>
+                    <div class="comp-body" id="dare-code"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DONATION SECTION -->
+    <section id="donate" class="donation-section reveal">
+        <div class="donation-card">
+            <div class="donation-icon">☕</div>
+            <h3>Enjoying DARE Engine?</h3>
+            <p>If DARE helps your workflow or saves you time, consider supporting its development with a coffee! Your support keeps this project alive and helps me continue improving it. Every contribution matters! 🙏</p>
+            <div class="crypto-address" onclick="copyAddress(this)" title="Click to copy">
+                <i class="fa-solid fa-copy"></i>
+                <span class="crypto-label">USDT (TON Network)</span>
+                UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-
+            </div>
+            <div class="copy-hint">✓ Copied to clipboard!</div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h4>DARE ENGINE</h4>
+                <p>The open-source standard for AI document generation. Built for the next generation of Agents.</p>
+                <div class="socials">
+                    <a href="https://github.com/local-over" target="_blank" title="GitHub"><i class="fa-brands fa-github"></i></a>
+                    <a href="https://x.com" target="_blank" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="https://discord.com" target="_blank" title="Discord"><i class="fa-brands fa-discord"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h5>PRODUCT</h5>
+                <ul>
+                    <li><a href="comp.html">Web Compiler</a></li>
+                    <li><a href="docs.html#quickstart">Quick Start</a></li>
+                    <li><a href="docs.html#features">Features</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h5>RESOURCES</h5>
+                <ul>
+                    <li><a href="docs.html">Documentation</a></li>
+                    <li><a href="docs.html#ai-prompt">System Prompts</a></li>
+                    <li><a href="#donate">Donate</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h5>LEGAL</h5>
+                <ul>
+                    <li><a href="https://github.com/local-over/dare-engine/blob/main/LICENSE" target="_blank">MIT License</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2024 DARE Project. Created by Hassan Elkady.
+        </div>
+    </footer>
+
+    <!-- INTERACTIVITY SCRIPT -->
+    <script>
+        // --- 1. COPY ADDRESS ---
+        function copyAddress(el) {
+            const address = 'UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-';
+            navigator.clipboard.writeText(address).then(() => {
+                el.classList.add('copied');
+                setTimeout(() => el.classList.remove('copied'), 2000);
+            });
+        }
+
+        // --- 2. SCROLL REVEAL ---
+        window.addEventListener('scroll', reveal);
+        function reveal() {
+            var reveals = document.querySelectorAll('.reveal');
+            for(var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if(elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+        reveal(); // Trigger once on load
+
+        // --- 3. CODE WARS SIMULATION ---
+        const htmlText = `<div style="display: flex; justify-content: space-between; padding: 20px; background-color: #f0f0f0;">
+  <div>
+    <h1 style="font-size: 24px;">INVOICE</h1>
+    <p>#INV-001</p>
+  </div>
+  <img src="qr.png" style="width: 50px;" />
+</div>`;
+
+        const dareText = `box(bg=#f0f0f0, p=20mm, display=flex, justify=space-between) {
+  box { 
+    txt(size=24, bold) { INVOICE }
+    txt { #INV-001 }
+  }
+  qr(data="x", w=50mm) {}
+}`;
+
+        function typeWriter(id, text, speed, countId, ratio) {
+            let i = 0;
+            const el = document.getElementById(id);
+            const count = document.getElementById(countId);
+            function type() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    count.innerText = Math.ceil(i/ratio);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    setTimeout(() => {
+                        el.innerHTML = "";
+                        i = 0;
+                        type();
+                    }, 4000);
+                }
+            }
+            type();
+        }
+
+        // Start Code Wars
+        typeWriter("html-code", htmlText, 15, "html-tokens", 3);
+        typeWriter("dare-code", dareText, 30, "dare-tokens", 3.5);
+
+    </script>
+</body>
+</html>
+

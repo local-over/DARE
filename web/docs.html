@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARE ENGINE | The AI-Native PDF Language</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- 1. DESIGN TOKENS (Theme) --- */
+        :root {
+            --bg-body: #020617;
+            --bg-sidebar: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #01040e;
+            
+            --accent: #38bdf8;
+            --accent-dim: rgba(56, 189, 248, 0.1);
+            --accent-orange: #f7931a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+            
+            --sidebar-width: 280px;
+        }
+
+        /* --- 2. GLOBAL RESET & STYLING --- */
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { 
+            margin: 0; background: var(--bg-body); color: var(--text-main); 
+            font-family: var(--font-sans); line-height: 1.6; display: flex; 
+        }
+        
+        a { text-decoration: none; color: var(--accent); transition: 0.2s; }
+        a:hover { filter: brightness(1.2); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        /* --- 3. SIDEBAR NAVIGATION --- */
+        aside {
+            width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0;
+            background: var(--bg-sidebar); border-right: 1px solid var(--border);
+            overflow-y: auto; padding: 30px 20px; z-index: 100;
+        }
+        
+        .brand { 
+            display: flex; align-items: center; gap: 15px;
+            margin-bottom: 40px; text-decoration: none;
+        }
+        .brand-text { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        .brand i { color: var(--accent); font-size: 1.8rem; }
+
+        .nav-group { margin-bottom: 30px; }
+        .nav-label { 
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; 
+            color: var(--text-muted); font-weight: bold; margin: 25px 0 15px 12px; display: block;
+        }
+        .nav-link {
+            display: block; color: var(--text-muted); padding: 8px 12px; 
+            border-radius: 6px; font-size: 0.9rem; margin-bottom: 4px; text-decoration: none;
+        }
+        .nav-link:hover { background: var(--accent-dim); color: var(--accent); }
+        .nav-link.active { background: var(--accent); color: #000; font-weight: bold; }
+        
+        .cta-btn {
+            display: block; text-align: center; background: var(--accent); color: black;
+            font-weight: bold; padding: 12px; border-radius: 6px; margin-bottom: 10px;
+            text-decoration: none; transition: transform 0.2s;
+        }
+        .cta-btn:hover { transform: translateY(-2px); background: white; }
+
+        .donate-btn {
+            display: block; text-align: center; background: linear-gradient(135deg, #f7931a 0%, #ffb74d 100%);
+            color: white; font-weight: bold; padding: 12px; border-radius: 6px; margin-bottom: 30px;
+            text-decoration: none; transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
+        }
+        .donate-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(247, 147, 26, 0.5); }
+
+        /* --- 4. MAIN CONTENT --- */
+        main {
+            margin-left: var(--sidebar-width); flex: 1; padding: 0 80px; max-width: 1200px;
+        }
+        main section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+        main section:last-child { border-bottom: none; }
+
+        h1 { font-size: 3.5rem; font-weight: 900; margin: 0 0 20px 0; letter-spacing: -1.5px; color:white; line-height: 1.1; }
+        h2 { font-size: 2.2rem; margin: 20px 0 30px 0; color: white; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        h3 { font-size: 1.5rem; margin: 40px 0 15px 0; color: var(--accent); }
+        p { color: var(--text-muted); margin-bottom: 20px; font-size: 1.05rem; max-width: 80ch; }
+
+        /* --- 5. CODE BLOCKS --- */
+        .code-wrapper { position: relative; margin: 25px 0; }
+        pre {
+            background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px;
+            padding: 25px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.9rem;
+            color: #e2e8f0; line-height: 1.7;
+        }
+        .copy-btn {
+            position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.1);
+            border: none; color: var(--text-muted); padding: 5px 10px; border-radius: 4px;
+            font-size: 0.75rem; cursor: pointer; transition: 0.2s;
+        }
+        .copy-btn:hover { background: var(--accent); color: black; }
+
+        /* Syntax Highlighting Tokens */
+        .tk-kw { color: #f472b6; font-weight: bold; }
+        .tk-tag { color: #38bdf8; font-weight: bold; }
+        .tk-attr { color: #a5b4fc; }
+        .tk-str { color: #a3e635; }
+        .tk-var { color: #fbbf24; }
+        .tk-cm { color: #64748b; font-style: italic; }
+
+        /* --- 6. MISC & CARDS --- */
+        table { width: 100%; border-collapse: collapse; margin: 30px 0; font-size: 0.95rem; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: white; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+        code.inline { 
+            background: var(--bg-card); padding: 3px 7px; border-radius: 4px; 
+            font-family: var(--font-mono); color: var(--accent); font-size: 0.9rem;
+        }
+
+        /* --- 7. DONATE CARD STYLES --- */
+        .donate-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid rgba(247, 147, 26, 0.4); padding: 40px;
+            border-radius: 16px; margin-top: 50px; text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .donate-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 4px; background: linear-gradient(90deg, #f7931a, #ffb74d);
+        }
+        .donate-icon { font-size: 3rem; margin-bottom: 15px; }
+        .donate-card h3 { color: white; border: none; margin: 0 0 10px 0; padding: 0; }
+        .donate-card p { margin-bottom: 25px; }
+        .wallet-address {
+            background: rgba(0,0,0,0.6); padding: 20px; margin: 15px 0; border-radius: 8px;
+            font-family: var(--font-mono); font-size: 0.85rem; word-break: break-all;
+            cursor: pointer; border: 2px dashed var(--accent-orange); color: #fbbf24;
+            transition: 0.3s;
+        }
+        .wallet-address:hover {
+            border-color: #ffb74d; background: rgba(247, 147, 26, 0.15);
+            transform: scale(1.02);
+        }
+        .wallet-label {
+            display: block; font-size: 0.75rem; color: var(--text-muted);
+            margin-top: 8px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .copy-success {
+            display: none; color: #22c55e; font-size: 0.85rem; margin-top: 10px;
+        }
+        .wallet-address.copied { border-color: #22c55e; color: #22c55e; }
+        .wallet-address.copied + .copy-success { display: block; }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <a href="index.html" class="brand">
+            <i class="fa-solid fa-cube"></i>
+            <span class="brand-text">DARE</span>
+        </a>
+        <a href="comp.html" class="cta-btn" target="_blank">🚀 LIVE SIMULATOR</a>
+        <a href="#donate" class="donate-btn">
+            <i class="fa-solid fa-mug-hot"></i> Donate ☕
+        </a>
+
+        <div class="nav-group">
+            <span class="nav-label">Introduction</span>
+            <a href="#welcome" class="nav-link active">What is DARE?</a>
+            <a href="#quickstart" class="nav-link">Quick Start</a>
+        </div>
+
+        <div class="nav-group">
+            <span class="nav-label">Core Concepts</span>
+            <a href="#structure" class="nav-link">File Structure</a>
+            <a href="#variables" class="nav-link">Variables ($)</a>
+            <a href="#layout" class="nav-link">Layout System</a>
+        </div>
+
+        <div class="nav-group">
+            <span class="nav-label">Component API</span>
+            <a href="#primitives" class="nav-link">Primitives</a>
+            <a href="#components" class="nav-link">Components</a>
+        </div>
+
+        <div class="nav-group">
+            <span class="nav-label">Tooling</span>
+            <a href="#cli" class="nav-link">CLI</a>
+            <a href="#api" class="nav-link">REST API</a>
+            <a href="#library" class="nav-link">Node.js Library</a>
+        </div>
+        
+        <div class="nav-group">
+            <span class="nav-label">For AI Agents</span>
+            <a href="#ai-prompt" class="nav-link" style="color:var(--accent)">System Prompt</a>
+        </div>
+        
+        <div class="nav-group">
+            <span class="nav-label">Support</span>
+            <a href="#author" class="nav-link">Author</a>
+            <a href="#donate" class="nav-link">Donate</a>
+        </div>
+    </aside>
+
+    <main>
+        <section id="welcome">
+            <span style="color:var(--accent); font-family:var(--font-mono); font-size:0.9rem;">VERSION 1.0</span>
+            <h1>The AI-Native PDF Language.</h1>
+            <p>DARE is a high-fidelity, token-efficient markup language designed specifically for AI Agents to generate perfect PDF documents. It replaces the verbosity and unpredictability of HTML/CSS with a strict, minimalist, and deterministic system.</p>
+        </section>
+
+        <section id="quickstart">
+            <h2>Quick Start</h2>
+            <p>The entire DARE Engine is a self-contained Node.js project. Get it running in under a minute.</p>
+            <h3>1. Setup</h3>
+            <div class="code-wrapper"><pre>
+<span class="tk-cm"># Clone the project repository</span>
+git clone https://github.com/local-over/dare-engine.git dare-engine
+cd dare-engine
+
+<span class="tk-cm"># Install dependencies (will download a headless Chrome instance)</span>
+npm install
+</pre></div>
+            
+            <h3>2. Run Your First Compilation</h3>
+            <p>Use the command-line tool to compile the example file.</p>
+            <div class="code-wrapper"><pre>
+node cli.js examples/ultimate.dare report.pdf
+</pre></div>
+        </section>
+
+        <section id="structure">
+            <h2>File Structure</h2>
+            <p>A DARE file has two main blocks: <code class="inline">@setup</code> and <code class="inline">@doc</code>.</p>
+            <div class="code-wrapper"><pre>
+<span class="tk-kw">@setup</span> {
+  <span class="tk-cm">// Global settings like paper size & variables</span>
+  <span class="tk-attr">format</span>: A4;
+  <span class="tk-var">$brand</span>: <span class="tk-attr">color</span>=<span class="tk-str">#0ea5e9</span>;
+}
+
+<span class="tk-kw">@doc</span> {
+  <span class="tk-cm">// Visual content, structured into pages</span>
+  <span class="tk-tag">page</span> {
+    <span class="tk-tag">txt</span>(<span class="tk-var">$brand</span>) { Hello World }
+  }
+}
+</pre></div>
+        </section>
+
+        <section id="variables">
+            <h2>Variables ($)</h2>
+            <p>Variables are the key to DARE's efficiency. Define complex styles once in <code class="inline">@setup</code> and reuse them with a single token.</p>
+            <div class="code-wrapper"><pre>
+<span class="tk-kw">@setup</span> {
+  <span class="tk-var">$card</span>: <span class="tk-attr">bg</span>=<span class="tk-str">#1e293b</span> <span class="tk-attr">border</span>=1 <span class="tk-attr">rounded</span>=5mm <span class="tk-attr">p</span>=10mm;
+}
+
+<span class="tk-kw">@doc</span> {
+  <span class="tk-tag">page</span> {
+    <span class="tk-tag">box</span>(<span class="tk-var">$card</span>) { ... }
+  }
+}
+</pre></div>
+        </section>
+        
+        <section id="layout">
+            <h2>Layout System</h2>
+            <p>DARE's layout is powered by a simplified Flexbox and a physical unit system. This combination ensures layouts are both powerful and predictable.</p>
+            
+            <h3>Flexbox</h3>
+            <p>Use <code class="inline">display=flex</code> on a <code class="inline">box</code> to arrange its children. Combine with <code class="inline">justify</code> and <code class="inline">align</code> for precise control.</p>
+            <div class="code-wrapper"><pre>
+<span class="tk-tag">box</span>(<span class="tk-attr">display</span>=flex, <span class="tk-attr">justify</span>=space-between) {
+  <span class="tk-tag">txt</span>{Left}
+  <span class="tk-tag">txt</span>{Right}
+}
+</pre></div>
+
+            <h3>The Fill Command</h3>
+            <p>For perfect header/footer layouts, set one box to <code class="inline">h=fill</code>. The engine will automatically calculate and stretch this box to fill all remaining vertical space on the page.</p>
+            <div class="code-wrapper"><pre>
+<span class="tk-tag">page</span> {
+  <span class="tk-tag">box</span>(<span class="tk-attr">h</span>=25mm) { <span class="tk-cm">/* Header */</span> }
+  <span class="tk-tag">box</span>(<span class="tk-attr">h</span>=fill) { <span class="tk-cm">/* Body */</span> }
+  <span class="tk-tag">box</span>(<span class="tk-attr">h</span>=20mm) { <span class="tk-cm">/* Footer */</span> }
+}
+</pre></div>
+        </section>
+
+        <section id="primitives">
+            <h2>Primitives</h2>
+            <p>The basic building blocks of any DARE document.</p>
+            <table>
+                <thead><tr><th>Primitive</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="inline">page</code></td><td>The root container for each page. Creates a hard boundary for content.</td></tr>
+                    <tr><td><code class="inline">box</code></td><td>The fundamental container for layout and styling (like a `div`).</td></tr>
+                    <tr><td><code class="inline">txt</code></td><td>The container for all text content.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="components">
+            <h2>Components</h2>
+            <p>DARE provides built-in "smart" components for common document needs.</p>
+            <table>
+                <thead><tr><th>Component</th><th>Description</th><th>Example</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="inline">img</code></td><td>Embeds an image. Supports local and remote URLs.</td><td><code class="inline">img(src="logo.png") {}</code></td></tr>
+                    <tr><td><code class="inline">qr</code></td><td>Generates a vector QR code from a data string.</td><td><code class="inline">qr(data="url") {}</code></td></tr>
+                    <tr><td><code class="inline">bar</code></td><td>Renders a high-fidelity SVG bar chart.</td><td><code class="inline">bar(data="A:10;B:20") {}</code></td></tr>
+                    <tr><td><code class="inline">tbl</code></td><td>Creates a grid-based table from a CSV-like string.</td><td><code class="inline">tbl{H1,H2; R1,R2}</code></td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="cli">
+            <h2>Tooling: CLI</h2>
+            <p>Use the command line for local development and automated scripting. The tool is globally available in the project via `node cli.js`.</p>
+            <div class="code-wrapper"><pre>
+<span class="tk-cm"># Usage</span>
+node cli.js <input.dare> <output.pdf>
+
+<span class="tk-cm"># Example</span>
+node cli.js examples/ultimate.dare report.pdf
+</pre></div>
+        </section>
+        
+        <section id="api">
+            <h2>Tooling: REST API</h2>
+            <p>Start a production-ready API server for on-demand PDF generation from any application.</p>
+            <h3>1. Start the Server</h3>
+            <div class="code-wrapper"><pre>node server.js</pre></div>
+            <h3>2. Send a POST Request</h3>
+            <p>Send your raw DARE code in the body of a POST request to <code class="inline">/api/render</code>.</p>
+            <div class="code-wrapper"><pre>
+curl -X POST http://localhost:3000/api/render \
+     -H "Content-Type: text/plain" \
+     --data-binary "@examples/ultimate.dare" \
+     --output api_result.pdf
+</pre></div>
+        </section>
+
+        <section id="library">
+            <h2>Tooling: Node.js Library</h2>
+            <p>Integrate the DARE engine directly into your Node.js backend for maximum control.</p>
+            <div class="code-wrapper"><pre>
+<span class="tk-kw">const</span> dare = <span class="tk-kw">require</span>(<span class="tk-str">'./index.js'</span>);
+<span class="tk-kw">const</span> fs = <span class="tk-kw">require</span>(<span class="tk-str">'fs'</span>);
+
+<span class="tk-kw">async function</span> generate() {
+  <span class="tk-kw">const</span> dareCode = <span class="tk-str">'@doc{ page{ txt{Hello} } }'</span>;
+
+  <span class="tk-cm">// convertString returns a PDF buffer</span>
+  <span class="tk-kw">const</span> pdfBuffer = <span class="tk-kw">await</span> dare.convertString(dareCode);
+  fs.writeFileSync(<span class="tk-str">'from_lib.pdf'</span>, pdfBuffer);
+}
+</pre></div>
+        </section>
+
+        <section id="ai-prompt">
+            <h2>🤖 For AI Agents: System Prompt</h2>
+            <p>This is the master prompt to teach any LLM how to write perfect DARE code. Use it as the system prompt or at the beginning of your conversation.</p>
+            
+            <div class="code-wrapper" style="border: 2px solid var(--accent);">
+                <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+<pre style="white-space: pre-wrap;">YOU ARE A DARE ENGINE EXPERT. You will generate PDF layout code using DARE syntax ONLY.
+
+RULES:
+1.  **STRUCTURE**: Always start with `@setup {...}` then `@doc { page {...} }`.
+2.  **SYNTAX**: Use braces `{}`. Attributes are in `()`. NO closing tags.
+3.  **UNITS**: Use `mm` for all physical dimensions (`h=50mm`, `p=10mm`). Use `pt` for font sizes (`size=12`).
+4.  **LAYOUT**: Use `display=flex` for rows/columns. Use `h=fill` on one child per page for dynamic height.
+5.  **VARIABLES**: Define reusable styles in `@setup` with `$`. Example: `$card: bg=#eee p=10mm;`.
+
+COMPONENTS:
+-   `box(w=, h=, bg=, p=, display=flex)`: Main container.
+-   `txt(size=, bold, color=)`: For all text.
+-   `img(src="url_or_path")`: Embeds an image.
+-   `qr(data="string", w=30mm)`: Generates a QR code.
+-   `bar(data="Label:10;Label:20", h=40mm, color=blue)`: SVG bar chart.
+-   `tbl(cols="1fr 2fr")`: Table. Rows separated by `;`, columns by `,`.
+</pre>
+            </div>
+        </section>
+
+        <section id="author">
+            <h2>Author</h2>
+            <p>DARE was designed and architected by <a href="https://github.com/local-over" target="_blank">Hassan Elkady</a> as a robust, efficient solution for AI-driven document generation.</p>
+        </section>
+
+        <section id="donate">
+            <h2>Support the Project</h2>
+            <p>If DARE helps your workflow or saves you time, consider supporting its development with a coffee! Your support keeps this project alive and helps me continue improving it. Every contribution matters! 🙏</p>
+            <div class="donate-card">
+                <div class="donate-icon">☕</div>
+                <h3>Enjoying DARE Engine?</h3>
+                <p>Buy me a coffee to keep the development going!</p>
+                <div class="wallet-address" onclick="copyUSDT(this)">
+                    <i class="fa-solid fa-copy"></i>
+                    UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-
+                    <span class="wallet-label">USDT (TON Network)</span>
+                </div>
+                <div class="copy-success">✓ Copied to clipboard!</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- PAGE INTERACTIVITY ---
+        function copyCode(btn) {
+            const pre = btn.parentElement.querySelector('pre');
+            navigator.clipboard.writeText(pre.innerText);
+            const original = btn.innerText;
+            btn.innerText = "Copied!";
+            setTimeout(() => btn.innerText = original, 2000);
+        }
+
+        function copyUSDT(el) {
+            const address = 'UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-';
+            navigator.clipboard.writeText(address).then(() => {
+                el.classList.add('copied');
+                setTimeout(() => el.classList.remove('copied'), 2000);
+            });
+        }
+
+        // Active Nav Link on Scroll
+        window.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('main section');
+            const navLinks = document.querySelectorAll('aside .nav-link');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+</html>
+
