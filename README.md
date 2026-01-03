@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/logo.png" alt="DARE Engine Logo" width="400">
+  <img src="./src/logo.png" alt="DARE Engine Logo" width="400">
 </p>
 
 <p align="center">
