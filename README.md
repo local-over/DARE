@@ -1,12 +1,11 @@
-
 <p align="center">
-<img src="/src/logo.png" alt="DARE Engine Logo" width="400">
+  <img src="./docs/logo.png" alt="DARE Engine Logo" width="400">
 </p>
 
 <p align="center">
-<img src="[https://img.shields.io/badge/version-1.0.0-blue.svg](https://img.shields.io/badge/version-1.0.0-blue.svg)" alt="Version">
-<img src="[https://img.shields.io/badge/license-MIT-green.svg](https://img.shields.io/badge/license-MIT-green.svg)" alt="License">
-<img src="[https://img.shields.io/badge/built%20with-Node.js-brightgreen.svg](https://img.shields.io/badge/built%20with-Node.js-brightgreen.svg)" alt="Node.js">
+  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
+  <img src="https://img.shields.io/badge/built%20with-Node.js-brightgreen.svg" alt="Node.js">
 </p>
 
 > **DARE** is an AI-native, token-efficient markup language designed for generating pixel-perfect PDF documents.
