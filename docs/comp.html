@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DARE WORKBENCH | Compiler</title>
+    <title>DARE v2 | Live Compiler</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -19,116 +20,394 @@
             --font-mono: 'JetBrains Mono', 'Consolas', monospace;
         }
 
-        * { box-sizing: border-box; }
-        body { margin: 0; background: var(--bg-dark); color: var(--text-main); font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
         /* --- HEADER --- */
         header {
-            height: 60px; background: #0f172a; border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 10;
+            height: 60px;
+            background: #0f172a;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
         }
-        .brand { 
-            font-family: var(--font-mono); font-weight: bold; color: var(--text-main); 
-            text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1.2rem;
+
+        .brand {
+            font-family: var(--font-mono);
+            font-weight: bold;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
         }
-        .brand img { height: 32px; width: auto; }
-        .brand span { color: var(--accent); }
-        
-        .toolbar { display: flex; gap: 15px; align-items: center; }
+
+        .brand img {
+            height: 32px;
+            width: auto;
+        }
+
+        .brand span {
+            color: var(--accent);
+        }
+
+        .nav-links-header {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .nav-links-header a {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+        }
+
+        .nav-links-header a:hover {
+            color: var(--accent);
+        }
+
+        .examples-dropdown {
+            position: relative;
+        }
+
+        .examples-btn {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .examples-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #1e293b;
+            border: 1px solid #334;
+            border-radius: 8px;
+            min-width: 180px;
+            z-index: 100;
+            margin-top: 6px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .examples-menu.show {
+            display: block;
+        }
+
+        .examples-menu button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            color: #e2e8f0;
+            padding: 10px 16px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            font-family: var(--font-mono);
+        }
+
+        .examples-menu button:hover {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
         button {
-            background: transparent; border: 1px solid var(--border); color: white;
-            padding: 8px 16px; cursor: pointer; font-family: var(--font-mono); font-size: 0.8rem;
-            transition: 0.2s; border-radius: 4px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            transition: 0.2s;
+            border-radius: 4px;
         }
-        button:hover { border-color: var(--accent); color: var(--accent); }
+
+        button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         .btn-donate {
             background: linear-gradient(135deg, #f7931a 0%, #ffb74d 100%);
-            color: white; border: none; font-weight: bold;
-            display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
+            color: white;
+            border: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
         }
-        .btn-donate:hover { transform: translateY(-2px); color: white; border: none; }
+
+        .btn-donate:hover {
+            transform: translateY(-2px);
+            color: white;
+            border: none;
+        }
 
         /* --- WORKSPACE --- */
-        .workspace { flex: 1; display: flex; overflow: hidden; }
+        .workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
 
         /* EDITOR */
-        .editor-container { width: 45%; display: flex; border-right: 1px solid var(--border); background: var(--bg-panel); }
-        .line-numbers {
-            width: 45px; background: var(--bg-panel); border-right: 1px solid #222;
-            color: var(--text-muted); text-align: right; padding: 20px 8px;
-            font-family: var(--font-mono); font-size: 13px; line-height: 1.5; user-select: none;
+        .editor-container {
+            width: 45%;
+            display: flex;
+            border-right: 1px solid var(--border);
+            background: var(--bg-panel);
         }
+
+        .line-numbers {
+            width: 45px;
+            background: var(--bg-panel);
+            border-right: 1px solid #222;
+            color: var(--text-muted);
+            text-align: right;
+            padding: 20px 8px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.5;
+            user-select: none;
+        }
+
         textarea {
-            flex: 1; background: transparent; border: none; color: #e2e8f0; resize: none; outline: none;
-            padding: 20px; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; white-space: pre;
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e2e8f0;
+            resize: none;
+            outline: none;
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre;
         }
 
         /* --- PREVIEW AREA (The "Desk") --- */
-        .preview-container { 
-            width: 55%; 
-            background: #525659; /* Acrobat Gray */
-            overflow: auto; 
-            padding: 40px; 
+        .preview-container {
+            width: 55%;
+            background: #525659;
+            /* Acrobat Gray */
+            overflow: auto;
+            padding: 40px;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center pages */
+            align-items: center;
+            /* Center pages */
         }
 
         /* This is the transparent wrapper for all pages */
         #doc-root {
             display: flex;
             flex-direction: column;
-            gap: 30px; /* SPACE BETWEEN PAGES */
+            gap: 30px;
+            /* SPACE BETWEEN PAGES */
             padding-bottom: 50px;
         }
 
         /* --- THE PHYSICAL PAGE (The "Paper") --- */
         .dare-page {
-            width: 210mm; 
-            height: 297mm; 
-            background: white; 
-            color: black; 
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            color: black;
             position: relative;
             overflow: hidden;
-            display: flex; 
+            display: flex;
             flex-direction: column;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Drop Shadow */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            /* Drop Shadow */
             flex-shrink: 0;
         }
 
-        /* DARE UTILS */
-        .dare-box { display: block; position: relative; box-sizing: border-box; }
-        .dare-txt { white-space: pre-wrap; position: relative; box-sizing: border-box; }
-        .flex-fill { flex: 1; }
-        .dare-tbl { display: grid; width: 100%; border-top: 1px solid #ccc; border-left: 1px solid #ccc; }
-        .cell { padding: 4px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; font-size: 10pt; }
-        .dare-chart-wrap { page-break-inside: avoid; }
+
+        /* --- DAREE V2 UTILS INJECTED --- */
+        .dare-box {
+            display: block;
+            position: relative;
+        }
+
+        .dare-txt {
+            white-space: pre-wrap;
+            position: relative;
+        }
+
+        .flex-fill {
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .dare-tbl {
+            display: grid;
+            width: 100%;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            font-size: 9.5pt;
+        }
+
+        .tc {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+
+        .th {
+            font-weight: 700;
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background: #1e293b;
+            color: white;
+            border-bottom: none;
+            padding: 8px 10px;
+        }
+
+        .ts {
+            background: #f8fafc;
+        }
+
+        .dare-chart-wrap {
+            page-break-inside: avoid;
+            overflow: hidden;
+        }
+
+        .dare-list {
+            font-size: 10pt;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .dare-hdr,
+        .dare-ftr {
+            page-break-inside: avoid;
+        }
 
         /* --- PRINT OVERRIDES --- */
         @media print {
-            body * { visibility: hidden; }
-            #doc-root, #doc-root * { visibility: visible; }
-            #doc-root { position: absolute; left: 0; top: 0; gap: 0; }
-            .dare-page { 
-                box-shadow: none; 
-                margin: 0; 
-                page-break-after: always; 
+            body * {
+                visibility: hidden;
+            }
+
+            #doc-root,
+            #doc-root * {
+                visibility: visible;
+            }
+
+            #doc-root {
+                position: absolute;
+                left: 0;
+                top: 0;
+                gap: 0;
+            }
+
+            .dare-page {
+                box-shadow: none;
+                margin: 0;
+                page-break-after: always;
                 break-after: page;
             }
+
             /* Hide scrollbars and UI */
-            ::-webkit-scrollbar { display: none; }
+            ::-webkit-scrollbar {
+                display: none;
+            }
         }
 
         /* MODAL (Same as before) */
-        .modal-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-overlay.show { display: flex; }
-        .modal-content { background: #1e293b; border: 2px solid #f7931a; border-radius: 16px; padding: 40px; text-align: center; max-width: 400px; color:white;}
-        .modal-close { position:absolute; top:10px; right:15px; border:none; background:none; color:#aaa; font-size:1.5rem; cursor:pointer;}
-        .modal-wallet { background:#000; padding:10px; margin-top:10px; font-family:monospace; border:1px dashed #555; word-break:break-all; cursor:pointer;}
-        .modal-copied { color:#4ade80; display:none; margin-top:5px;}
-        .modal-wallet.copied ~ .modal-copied { display:block;}
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 2px solid #f7931a;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            color: white;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            border: none;
+            background: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-wallet {
+            background: #000;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            border: 1px dashed #555;
+            word-break: break-all;
+            cursor: pointer;
+        }
+
+        .modal-copied {
+            color: #4ade80;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .modal-wallet.copied~.modal-copied {
+            display: block;
+        }
     </style>
+    <script src="dare.js"></script>
 </head>
+
 <body>
 
     <!-- DONATE MODAL -->
@@ -146,12 +425,26 @@
     </div>
 
     <header>
-        <a href="docs.html" class="brand">
-             
-             DARE<span>COMPILER</span>
+        <a href="index.html" class="brand">
+            DARE<span>COMPILER</span>
+            <span
+                style="font-size:0.6rem; background:var(--accent); color:#000; padding:2px 6px; border-radius:3px; font-weight:700;">v2</span>
         </a>
         <div class="toolbar">
+            <div class="nav-links-header">
+                <a href="index.html">Home</a>
+                <a href="docs.html">Docs</a>
+            </div>
             <span id="status" style="color:var(--text-muted); font-size:0.8rem;">READY</span>
+            <div class="examples-dropdown">
+                <button class="examples-btn" onclick="toggleExamples()"><i class="fa-solid fa-code"></i>
+                    Examples</button>
+                <div class="examples-menu" id="examplesMenu">
+                    <button onclick="loadDemo()">📄 Dashboard Report</button>
+                    <button onclick="loadInvoice()">🧾 Invoice</button>
+                    <button onclick="loadResume()">🎓 Resume</button>
+                </div>
+            </div>
             <button onclick="loadDemo()">RESET</button>
             <button class="btn-donate" onclick="showDonateModal()">
                 <i class="fa-solid fa-heart"></i> Donate
@@ -175,160 +468,27 @@
         function closeDonateModal() { document.getElementById('donateModal').classList.remove('show'); }
         function copyDonateAddress(el) {
             navigator.clipboard.writeText('UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-');
-            el.classList.add('copied'); setTimeout(()=>el.classList.remove('copied'),2000);
+            el.classList.add('copied'); setTimeout(() => el.classList.remove('copied'), 2000);
         }
-        document.getElementById('donateModal').onclick = (e) => { if(e.target === document.getElementById('donateModal')) closeDonateModal() };
+        document.getElementById('donateModal').onclick = (e) => { if (e.target === document.getElementById('donateModal')) closeDonateModal() };
 
-        // --- COMPILER LOGIC (Client-Side) ---
-        const CSS_MAP = {
-            w: 'width', h: 'height', bg: 'background-color', p: 'padding',
-            m: 'margin', mb: 'margin-bottom', mt: 'margin-top',
-            rounded: 'border-radius', cols: 'grid-template-columns',
-            align: 'align-items', justify: 'justify-content',
-            flex: 'flex', display: 'display', border: 'border', border_color: 'border-color',
-            gap: 'gap', z: 'z-index', opacity: 'opacity'
-        };
 
-        let styleMap = {};
-
-        function resolveAttributes(attrStr) {
-            let combined = {};
-            if (!attrStr) return combined;
-            const parts = attrStr.match(/(?:[^\s,"]+|"[^"]*")+/g) || [];
-            parts.forEach(p => {
-                p = p.replace(/,/g, '');
-                if (p.startsWith('$')) {
-                    const resolved = resolveAttributes(styleMap[p] || "");
-                    Object.assign(combined, resolved);
-                } else if (p.includes('=')) {
-                    let [k, v] = p.split('=');
-                    v = v.replace(/"/g, '');
-                    combined[k] = v;
-                } else {
-                    combined[p] = true; 
-                }
-            });
-            return combined;
-        }
-
-        function generateCSS(props) {
-            let css = "";
-            Object.keys(props).forEach(k => {
-                let v = props[k];
-                if (v === true) {
-                    if (k === 'bold') css += "font-weight:bold;";
-                    if (k === 'italic') css += "font-style:italic;";
-                    return;
-                }
-                if (['data', 'cols', 'format', 'src', 'color'].includes(k)) return;
-                const isNum = /^\d+(\.\d+)?$/.test(v);
-                const noUnit = ['flex', 'line', 'opacity', 'z-index'].includes(k);
-                const val = (isNum && !noUnit) ? v + 'mm' : v;
-
-                if (CSS_MAP[k]) css += `${CSS_MAP[k]}:${val};`;
-                else if (k === 'size') css += `font-size:${v}pt;`;
-                else if (k === 'font') css += `font-family:${v}, sans-serif;`;
-                else if (k === 'shadow') css += `box-shadow:${v};`;
-                else css += `${k}:${v};`;
-            });
-            if (props.color) css += `color:${props.color};`;
-            return css;
-        }
-
-        function parseBlock(str) {
-            let output = '';
-            let i = 0;
-            while (i < str.length) {
-                const tail = str.substring(i);
-                const match = tail.match(/^([a-z0-9]+)\s*(?:\(([\s\S]*?)\))?\s*\{/);
-
-                if (match) {
-                    const tag = match[1];
-                    const attrStr = match[2] || "";
-                    const openBraceIndex = i + match[0].length - 1;
-                    let bal = 1, j = openBraceIndex + 1;
-                    while (j < str.length && bal > 0) {
-                        if (str[j] === '{') bal++;
-                        if (str[j] === '}') bal--;
-                        j++;
-                    }
-
-                    const innerContent = str.substring(openBraceIndex + 1, j - 1);
-                    const props = resolveAttributes(attrStr);
-                    const css = generateCSS(props);
-
-                    if (tag === 'page') output += `<div class="dare-page" style="${css}">${parseBlock(innerContent)}</div>`;
-                    else if (tag === 'txt') output += `<div class="dare-txt" style="${css}">${innerContent.trim()}</div>`;
-                    else if (tag === 'img') output += `<img src="${props.src || ''}" style="display:block; ${css}" />`;
-                    else if (tag === 'qr') {
-                        const uid = 'qr-' + Math.random().toString(36).substr(2,9);
-                        const size = props.w || props.h || '30mm';
-                        setTimeout(() => {
-                            const el = document.getElementById(uid);
-                            if(el) { el.innerHTML = ''; new QRCode(el, { text: props.data||"DARE", width:128, height:128 }); }
-                        }, 50);
-                        output += `<div id="${uid}" style="width:${size}; height:${size}; ${css} display:flex; justify-content:center; align-items:center;"></div>`;
-                    }
-                    else if (tag === 'bar') {
-                        const barColor = props.color || props.bg || '#38bdf8'; 
-                        let items = props.data ? props.data.split(';').map(x => x.split(':')) : [];
-                        let max = Math.max(1, ...items.map(x => parseFloat(x[1])));
-                        let svg = `<svg width="100%" height="100%" preserveAspectRatio="none" style="overflow:visible;">`;
-                        let barW = items.length > 0 ? 100 / items.length : 0;
-                        items.forEach(([l, v], idx) => {
-                            let h = (parseFloat(v)/max) * 100;
-                            let x = (idx * barW);
-                            let finalW = barW * 0.8;
-                            svg += `<rect x="${x}%" y="${100-h}%" width="${finalW}%" height="${h}%" fill="${barColor}" rx="2" ry="2" />`;
-                            let valY = h > 15 ? (100-h+8) : (100-h-2);
-                            let valColor = h > 15 ? 'white' : barColor;
-                            svg += `<text x="${x + finalW/2}%" y="${valY}%" fill="${valColor}" font-size="12" font-family="Arial" font-weight="bold" text-anchor="middle">${v}</text>`;
-                        });
-                        svg += `</svg>`;
-                        let labels = items.map(([l]) => `<div style="flex:1;text-align:center;font-size:9pt;margin-top:5px;">${l}</div>`).join('');
-                        output += `<div class="dare-chart-wrap" style="${css} display:flex; flex-direction:column;"><div style="flex:1;">${svg}</div><div style="display:flex;width:100%;height:20px;">${labels}</div></div>`;
-                    }
-                    else if (tag === 'tbl') {
-                        let rows = innerContent.split(';').map(r => r.trim() ? r.split(',').map(c => `<div class="cell">${c.trim()}</div>`).join('') : '').join('');
-                        let cols = props.cols ? `grid-template-columns:${props.cols};` : '';
-                        output += `<div class="dare-tbl" style="${css}${cols}">${rows}</div>`;
-                    }
-                    else { // Box
-                        let classes = "dare-box";
-                        if (props.h === 'fill') classes += " flex-fill";
-                        output += `<div class="${classes}" style="${css}">${parseBlock(innerContent)}</div>`;
-                    }
-                    i = j;
-                } else { i++; }
-            }
-            return output;
-        }
-
-        function compile() {
+        async function compile() {
             const raw = document.getElementById('code').value;
             const status = document.getElementById('status');
-            
-            try {
-                styleMap = {};
-                const cleanCode = raw.replace(/\/\/.*$/gm, '');
-                const setupMatch = cleanCode.match(/@setup\s*\{([\s\S]*?)\}(?=\s*@doc)/);
-                if (setupMatch) {
-                    setupMatch[1].split(';').forEach(line => {
-                        let [k, v] = line.split(':');
-                        if (k && v) styleMap[k.trim()] = v.trim();
-                    });
-                }
+            const root = document.getElementById('doc-root');
 
-                const docMatch = cleanCode.match(/@doc\s*\{([\s\S]*)\}/);
-                const root = document.getElementById('doc-root');
-                
-                if (docMatch) {
-                    root.innerHTML = parseBlock(docMatch[1].trim());
+            try {
+                const result = await window.DareEngine.compile(raw);
+                const html = result.html;
+                if (html && html.trim()) {
+                    root.innerHTML = html;
                     status.innerText = "COMPILED"; status.style.color = "#4ade80";
                 } else {
                     root.innerHTML = '<div style="padding:20mm; color:#ccc; text-align:center;">Waiting for @doc block...</div>';
+                    status.innerText = "READY"; status.style.color = "#94a3b8";
                 }
-            } catch(e) {
+            } catch (e) {
                 status.innerText = "ERROR"; status.style.color = "#f87171";
                 console.error(e);
             }
@@ -336,7 +496,7 @@
 
         function handleInput() {
             const lines = document.getElementById('code').value.split('\n').length;
-            document.getElementById('line-numbers').innerHTML = Array(lines).fill(0).map((_,i)=>i+1).join('<br>');
+            document.getElementById('line-numbers').innerHTML = Array(lines).fill(0).map((_, i) => i + 1).join('<br>');
             compile();
         }
 
@@ -344,39 +504,401 @@
             if (e.key == 'Tab') { e.preventDefault(); document.execCommand('insertText', false, '  '); }
         }
 
+        function toggleExamples() {
+            document.getElementById('examplesMenu').classList.toggle('show');
+        }
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.examples-dropdown')) document.getElementById('examplesMenu').classList.remove('show');
+        });
+
         function loadDemo() {
+            document.getElementById('examplesMenu').classList.remove('show');
             const demo = `@setup {
   format: A4;
-  $brand: color=#2563eb;      
-  $header: h=25mm bg=#1e293b display=flex align=center justify=space-between p=10mm;
+  $brand: color=#7c3aed;
+  $card: bg=white border=1 rounded=3 p=8mm shadow="0 2px 8px rgba(0,0,0,0.06)";
+  $hdr: h=22mm bg=#7c3aed row between align=center px=12mm;
+  $ftr: h=10mm bg=#f1f5f9 row between align=center px=12mm;
+  $h1: size=22 bold color=#0f172a;
+  $h2: size=13 bold color=#334155 mb=4mm;
+  $p: size=10 color=#475569 lh=1.5;
+  $sm: size=8 color=#94a3b8;
+  $ok: color=#16a34a;
+  $warn: color=#f59e0b;
+  $bad: color=#dc2626;
 }
 
 @doc {
+
+  // PAGE 1: Dashboard Overview
   page {
-    // PAGE 1 HEADER
-    box($header) {
-       txt(size=14, bold, color=white) { REPORT P1 }
-       qr(data="Page 1", w=15mm, bg=white, p=1mm) {}
+    box($hdr) {
+      txt(bold, color=white, size=14) { QUARTERLY REPORT }
+      txt(color=white, size=10) { Q4 2025 }
     }
-    
-    box(h=fill, p=20mm) {
-       txt(size=24, bold, $brand) { Page One Content }
-       txt { This page is separated from the next one. }
-       box(h=50mm, border=1, mt=10mm) {
-          bar(data="A:10;B:20", $brand) {}
-       }
+
+    box(h=fill, p=12mm) {
+      txt($h1) { Revenue Dashboard }
+      sp(h=6) {}
+
+      // KPI Cards — 4 columns
+      cols(n=4, gap=5mm) {
+        box($card, col, align=center) {
+          txt($sm) { REVENUE }
+          sp(h=2) {}
+          txt(size=24, bold, $brand) { $2.4M }
+          sp(h=1) {}
+          txt(size=9, $ok) { +18% }
+        }
+        box($card, col, align=center) {
+          txt($sm) { CUSTOMERS }
+          sp(h=2) {}
+          txt(size=24, bold) { 12,847 }
+          sp(h=1) {}
+          txt(size=9, $ok) { +24% }
+        }
+        box($card, col, align=center) {
+          txt($sm) { CHURN }
+          sp(h=2) {}
+          txt(size=24, bold) { 3.2% }
+          sp(h=1) {}
+          txt(size=9, $bad) { +0.5% }
+        }
+        box($card, col, align=center) {
+          txt($sm) { NPS SCORE }
+          sp(h=2) {}
+          txt(size=24, bold) { 72 }
+          sp(h=1) {}
+          txt(size=9, $warn) { -2pts }
+        }
+      }
+
+      sp(h=8) {}
+
+      // Charts Row
+      cols(n=2, gap=8mm) {
+        box($card) {
+          txt($h2) { Revenue by Quarter }
+          bar(data="Q1:1.2;Q2:1.5;Q3:1.9;Q4:2.4", h=50mm, color=#7c3aed) {}
+        }
+        box($card) {
+          txt($h2) { Revenue by Product }
+          pie(data="SaaS:55;Services:25;Licensing:20", h=50mm) {}
+        }
+      }
+
+      sp(h=8) {}
+
+      // Data Table
+      box($card) {
+        txt($h2) { Top Accounts }
+        tbl(cols="2fr 1fr 1fr 1fr") {
+          Account, Revenue, Growth, Status;
+          Acme Corp, $340K, +22%, Active;
+          TechStart Inc, $280K, +15%, Active;
+          Global Systems, $195K, -3%, At Risk;
+          DataFlow Ltd, $165K, +45%, Active;
+          CloudNet, $120K, +8%, Active
+        }
+      }
     }
+
+    box($ftr) { txt($sm) { CONFIDENTIAL } txt($sm) { Page 1 of 2 } }
   }
 
+  // PAGE 2: Detailed Analysis
   page {
-    // PAGE 2 HEADER
-    box($header) {
-       txt(size=14, bold, color=white) { REPORT P2 }
+    box($hdr) {
+      txt(bold, color=white, size=14) { DETAILED ANALYSIS }
+      txt(color=white, size=10) { Q4 2025 }
     }
-    
-    box(h=fill, p=20mm) {
-       txt(size=24, bold, color=red) { Page Two Content }
-       txt { Scroll down to see the separation! }
+
+    box(h=fill, p=12mm) {
+
+      txt($h1) { Channel Performance }
+      sp(h=6) {}
+
+      cols(n=2, gap=8mm) {
+        box($card) {
+          txt($h2) { Acquisition Channels }
+          bar(data="Organic:450;Paid:320;Referral:180;Social:95;Email:210", h=50mm, color=#0ea5e9) {}
+        }
+        box($card) {
+          txt($h2) { Customer Segments }
+          pie(data="Enterprise:40;Mid-Market:35;SMB:25", type=donut, h=50mm) {}
+        }
+      }
+
+      sp(h=8) {}
+
+      txt($h2) { Key Insights }
+      list {
+        Organic search drove 42% of new signups, up 15% from Q3;
+        Enterprise segment grew 28% with larger average deal size;
+        Paid acquisition CPA decreased by 12% through channel optimization;
+        Referral program launched in October contributing 180 new customers;
+        Email campaigns achieved 4.2% conversion rate
+      }
+
+      sp(h=8) {}
+
+      txt($h2) { Recommendations }
+      cols(n=3, gap=5mm) {
+        box($card) {
+          txt(bold, size=10, $ok) { Double Down }
+          sp(h=2) {}
+          txt($p) { Increase organic content budget by 30%. Highest ROI channel. }
+        }
+        box($card) {
+          txt(bold, size=10, $warn) { Optimize }
+          sp(h=2) {}
+          txt($p) { Refine paid targeting. Good volume but CPA still above target. }
+        }
+        box($card) {
+          txt(bold, size=10, $bad) { Address }
+          sp(h=2) {}
+          txt($p) { Investigate churn increase. Schedule customer interviews. }
+        }
+      }
+    }
+
+    box($ftr) { txt($sm) { CONFIDENTIAL } txt($sm) { Page 2 of 2 } }
+  }
+}`;
+            document.getElementById('code').value = demo;
+            handleInput();
+        }
+
+        function loadInvoice() {
+            document.getElementById('examplesMenu').classList.remove('show');
+            const demo = `@setup {
+  format: A4;
+  $brand: color=#1e40af;
+  $dark: bg=#0f172a color=white;
+  $gray: color=#64748b;
+  $card: bg=white border=1 rounded=2 p=8mm;
+  $h1: size=28 bold;
+  $h2: size=14 bold color=#334155 mb=4mm;
+  $label: size=9 color=#94a3b8 uppercase;
+  $val: size=11 color=#1e293b;
+}
+
+@doc {
+
+  page {
+    // Header — row with between puts INVOICE left, date right
+    box(h=35mm, $dark, row, between, align=center, px=15mm) {
+      box {
+        txt(size=24, bold, color=white) { INVOICE }
+        txt(size=9, color=#64748b, mt=1mm) { #INV-2025-0042 }
+      }
+      box(ta=right) {
+        txt(size=9, color=#94a3b8) { Issue Date }
+        txt(size=13, bold, color=white) { February 22, 2025 }
+      }
+    }
+
+    // Body
+    box(h=fill, p=15mm) {
+
+      // From / To
+      cols(n=2, gap=20mm) {
+        box {
+          txt($label) { FROM }
+          sp(h=2) {}
+          txt($val, bold) { Hassan Elkady }
+          txt($val) { Software Engineer }
+          txt($gray, size=9) { Cairo, Egypt }
+        }
+        box {
+          txt($label) { BILL TO }
+          sp(h=2) {}
+          txt($val, bold) { Acme Corporation }
+          txt($val) { 123 Business Ave }
+          txt($gray, size=9) { New York, NY 10001 }
+        }
+      }
+
+      sp(h=12) {}
+
+      // Line Items Table
+      txt($h2) { Services }
+      tbl(cols="3fr 1fr 1fr 1fr") {
+        Description, Qty, Rate, Amount;
+        Website Redesign — Full responsive UI, 1, $2500, $2500;
+        Backend API Development, 40hrs, $75/hr, $3000;
+        Database Architecture, 20hrs, $85/hr, $1700;
+        SEO Optimization, 1, $500, $500
+      }
+
+      sp(h=10) {}
+
+      // Totals — right-aligned
+      box(row, justify=flex-end) {
+        box(w=70mm) {
+          box(row, between, mb=3mm) {
+            txt($gray, size=10) { Subtotal }
+            txt($val) { $7,700 }
+          }
+          box(row, between, mb=3mm) {
+            txt($gray, size=10) { Tax (10%) }
+            txt($val) { $770 }
+          }
+          hr {}
+          sp(h=4) {}
+          box(row, between) {
+            txt(size=15, bold) { Total }
+            txt(size=15, bold, $brand) { $8,470 }
+          }
+        }
+      }
+
+      sp(h=15) {}
+
+      // Payment Info
+      box($card) {
+        txt($h2) { Payment Details }
+        sp(h=3) {}
+        cols(n=2, gap=15mm) {
+          box {
+            txt($label) { Bank }
+            sp(h=1) {}
+            txt($val) { National Bank of Egypt }
+          }
+          box {
+            txt($label) { Account }
+            sp(h=1) {}
+            txt($val) { 1234-5678-9012 }
+          }
+        }
+      }
+    }
+
+    // Footer
+    box(h=12mm, bg=#f8fafc, row, between, align=center, px=15mm) {
+      txt(size=8, $gray) { Thank you for your business! }
+      txt(size=8, $gray) { Page 1 of 1 }
+    }
+  }
+}`;
+            document.getElementById('code').value = demo;
+            handleInput();
+        }
+
+        function loadResume() {
+            document.getElementById('examplesMenu').classList.remove('show');
+            const demo = `@setup {
+  format: A4;
+  $accent: color=#0ea5e9;
+  $gray: color=#64748b;
+  $section: size=13 bold color=#0f172a uppercase ls=1 mb=3mm mt=8mm;
+  $body: size=10 color=#334155 lh=1.5;
+  $label: size=9 bold color=#0f172a;
+  $sm: size=8 color=#94a3b8;
+}
+
+@doc {
+
+  page {
+    box(row) {
+      // Left sidebar — fixed 65mm wide
+      box(w=65mm, bg=#0f172a, p=10mm, col) {
+        sp(h=5) {}
+        txt(size=26, bold, color=white) { HASSAN }
+        txt(size=26, bold, $accent) { ELKADY }
+        sp(h=3) {}
+        txt(size=10, color=#94a3b8) { Software Engineer }
+
+        sp(h=15) {}
+
+        txt(size=9, bold, color=white, uppercase, ls=1) { CONTACT }
+        sp(h=4) {}
+        txt(size=8, color=#cbd5e1) { hassan@example.com }
+        sp(h=1) {}
+        txt(size=8, color=#cbd5e1) { +20 123 456 7890 }
+        sp(h=1) {}
+        txt(size=8, color=#cbd5e1) { github.com/local-over }
+
+        sp(h=12) {}
+
+        txt(size=9, bold, color=white, uppercase, ls=1) { SKILLS }
+        sp(h=4) {}
+        list(color=#cbd5e1, size=8) {
+          JavaScript / TypeScript;
+          Node.js / Express;
+          React / Next.js;
+          Python / FastAPI;
+          PostgreSQL / Redis;
+          Docker / CI-CD;
+          System Architecture
+        }
+
+        sp(h=12) {}
+
+        txt(size=9, bold, color=white, uppercase, ls=1) { LANGUAGES }
+        sp(h=4) {}
+        txt(size=8, color=#cbd5e1) { Arabic — Native }
+        sp(h=1) {}
+        txt(size=8, color=#cbd5e1) { English — Fluent }
+      }
+
+      // Main content — fills remaining width
+      box(h=fill, p=12mm, flex=1) {
+
+        txt($section) { Profile }
+        hr {}
+        sp(h=3) {}
+        txt($body) {
+          Senior software engineer with 5+ years building scalable web applications and AI-powered tools. Creator of DARE Engine — an AI-native PDF generation system. Passionate about developer tooling and open source.
+        }
+
+        txt($section) { Experience }
+        hr {}
+        sp(h=4) {}
+
+        box(mb=8mm) {
+          box(row, between, align=center) {
+            txt($label) { Senior Software Engineer }
+            txt($sm) { 2023 — Present }
+          }
+          sp(h=1) {}
+          txt($accent, size=9) { TechCorp Inc. }
+          sp(h=1) {}
+          txt($body) { Led development of microservices platform serving 2M+ users. Designed event-driven architecture reducing latency by 40%. }
+        }
+
+        box(mb=8mm) {
+          box(row, between, align=center) {
+            txt($label) { Full Stack Developer }
+            txt($sm) { 2021 — 2023 }
+          }
+          sp(h=1) {}
+          txt($accent, size=9) { StartupXYZ }
+          sp(h=1) {}
+          txt($body) { Built real-time collaboration platform from scratch. Implemented WebSocket infrastructure and React frontend. }
+        }
+
+        box(mb=8mm) {
+          box(row, between, align=center) {
+            txt($label) { Junior Developer }
+            txt($sm) { 2020 — 2021 }
+          }
+          sp(h=1) {}
+          txt($accent, size=9) { Agency Co. }
+          sp(h=1) {}
+          txt($body) { Developed client websites and e-commerce solutions using modern JavaScript stack. }
+        }
+
+        txt($section) { Education }
+        hr {}
+        sp(h=4) {}
+        box(row, between, align=center) {
+          txt($label) { B.Sc. Computer Science }
+          txt($sm) { 2016 — 2020 }
+        }
+        sp(h=1) {}
+        txt($accent, size=9) { Cairo University }
+      }
     }
   }
 }`;
@@ -387,4 +909,5 @@
         window.onload = loadDemo;
     </script>
 </body>
+
 </html>

@@ -1,0 +1,152 @@
+@setup {
+  format: A4;
+  $brand: color=#7c3aed;
+  $card: bg=white border=1 rounded=3 p=8mm shadow="0 2px 8px rgba(0,0,0,0.06)";
+  $hdr: h=22mm bg=#7c3aed row between align=center px=12mm;
+  $ftr: h=10mm bg=#f1f5f9 row between align=center px=12mm;
+  $h1: size=22 bold color=#0f172a;
+  $h2: size=13 bold color=#334155 mb=4mm;
+  $p: size=10 color=#475569 lh=1.5;
+  $sm: size=8 color=#94a3b8;
+  $ok: color=#16a34a;
+  $warn: color=#f59e0b;
+  $bad: color=#dc2626;
+}
+
+@doc {
+
+  // PAGE 1: Dashboard Overview
+  page {
+    box($hdr) {
+      txt(bold, color=white, size=14) { QUARTERLY REPORT }
+      txt(color=white, size=10) { Q4 2025 }
+    }
+
+    box(h=fill, p=12mm) {
+      txt($h1) { Revenue Dashboard }
+      sp(h=6) {}
+
+      // KPI Cards — 4 columns
+      cols(n=4, gap=5mm) {
+        box($card, col, align=center) {
+          txt($sm) { REVENUE }
+          sp(h=2) {}
+          txt(size=24, bold, $brand) { $2.4M }
+          sp(h=1) {}
+          txt(size=9, $ok) { +18% }
+        }
+        box($card, col, align=center) {
+          txt($sm) { CUSTOMERS }
+          sp(h=2) {}
+          txt(size=24, bold) { 12,847 }
+          sp(h=1) {}
+          txt(size=9, $ok) { +24% }
+        }
+        box($card, col, align=center) {
+          txt($sm) { CHURN }
+          sp(h=2) {}
+          txt(size=24, bold) { 3.2% }
+          sp(h=1) {}
+          txt(size=9, $bad) { +0.5% }
+        }
+        box($card, col, align=center) {
+          txt($sm) { NPS SCORE }
+          sp(h=2) {}
+          txt(size=24, bold) { 72 }
+          sp(h=1) {}
+          txt(size=9, $warn) { -2pts }
+        }
+      }
+
+      sp(h=8) {}
+
+      // Charts Row
+      cols(n=2, gap=8mm) {
+        box($card) {
+          txt($h2) { Revenue by Quarter }
+          bar(data="Q1:1.2;Q2:1.5;Q3:1.9;Q4:2.4", h=50mm, color=#7c3aed) {}
+        }
+        box($card) {
+          txt($h2) { Revenue by Product }
+          pie(data="SaaS:55;Services:25;Licensing:20", h=50mm) {}
+        }
+      }
+
+      sp(h=8) {}
+
+      // Data Table
+      box($card) {
+        txt($h2) { Top Accounts }
+        tbl(cols="2fr 1fr 1fr 1fr") {
+          Account, Revenue, Growth, Status;
+          Acme Corp, $340K, +22%, Active;
+          TechStart Inc, $280K, +15%, Active;
+          Global Systems, $195K, -3%, At Risk;
+          DataFlow Ltd, $165K, +45%, Active;
+          CloudNet, $120K, +8%, Active
+        }
+      }
+    }
+
+    box($ftr) { txt($sm) { CONFIDENTIAL } txt($sm) { Page 1 of 2 } }
+  }
+
+  // PAGE 2: Detailed Analysis
+  page {
+    box($hdr) {
+      txt(bold, color=white, size=14) { DETAILED ANALYSIS }
+      txt(color=white, size=10) { Q4 2025 }
+    }
+
+    box(h=fill, p=12mm) {
+
+      txt($h1) { Channel Performance }
+      sp(h=6) {}
+
+      cols(n=2, gap=8mm) {
+        box($card) {
+          txt($h2) { Acquisition Channels }
+          bar(data="Organic:450;Paid:320;Referral:180;Social:95;Email:210", h=50mm, color=#0ea5e9) {}
+        }
+        box($card) {
+          txt($h2) { Customer Segments }
+          pie(data="Enterprise:40;Mid-Market:35;SMB:25", type=donut, h=50mm) {}
+        }
+      }
+
+      sp(h=8) {}
+
+      txt($h2) { Key Insights }
+      list {
+        Organic search drove 42% of new signups, up 15% from Q3;
+        Enterprise segment grew 28% with larger average deal size;
+        Paid acquisition CPA decreased by 12% through channel optimization;
+        Referral program launched in October contributing 180 new customers;
+        Email campaigns achieved 4.2% conversion rate
+      }
+
+      sp(h=8) {}
+
+      txt($h2) { Recommendations }
+      cols(n=3, gap=5mm) {
+        box($card) {
+          txt(bold, size=10, $ok) { Double Down }
+          sp(h=2) {}
+          txt($p) { Increase organic content budget by 30%. Highest ROI channel. }
+        }
+        box($card) {
+          txt(bold, size=10, $warn) { Optimize }
+          sp(h=2) {}
+          txt($p) { Refine paid targeting. Good volume but CPA still above target. }
+        }
+        box($card) {
+          txt(bold, size=10, $bad) { Address }
+          sp(h=2) {}
+          txt($p) { Investigate churn increase. Schedule customer interviews. }
+        }
+      }
+    }
+
+    box($ftr) { txt($sm) { CONFIDENTIAL } txt($sm) { Page 2 of 2 } }
+  }
+}

@@ -1,0 +1,115 @@
+@setup {
+  format: A4;
+  $accent: color=#0ea5e9;
+  $gray: color=#64748b;
+  $section: size=13 bold color=#0f172a uppercase ls=1 mb=3mm mt=8mm;
+  $body: size=10 color=#334155 lh=1.5;
+  $label: size=9 bold color=#0f172a;
+  $sm: size=8 color=#94a3b8;
+}
+
+@doc {
+
+  page {
+    box(row) {
+      // Left sidebar — fixed 65mm wide
+      box(w=65mm, bg=#0f172a, p=10mm, col) {
+        sp(h=5) {}
+        txt(size=26, bold, color=white) { HASSAN }
+        txt(size=26, bold, $accent) { ELKADY }
+        sp(h=3) {}
+        txt(size=10, color=#94a3b8) { Software Engineer }
+
+        sp(h=15) {}
+
+        txt(size=9, bold, color=white, uppercase, ls=1) { CONTACT }
+        sp(h=4) {}
+        txt(size=8, color=#cbd5e1) { hassan@example.com }
+        sp(h=1) {}
+        txt(size=8, color=#cbd5e1) { +20 123 456 7890 }
+        sp(h=1) {}
+        txt(size=8, color=#cbd5e1) { github.com/local-over }
+
+        sp(h=12) {}
+
+        txt(size=9, bold, color=white, uppercase, ls=1) { SKILLS }
+        sp(h=4) {}
+        list(color=#cbd5e1, size=8) {
+          JavaScript / TypeScript;
+          Node.js / Express;
+          React / Next.js;
+          Python / FastAPI;
+          PostgreSQL / Redis;
+          Docker / CI-CD;
+          System Architecture
+        }
+
+        sp(h=12) {}
+
+        txt(size=9, bold, color=white, uppercase, ls=1) { LANGUAGES }
+        sp(h=4) {}
+        txt(size=8, color=#cbd5e1) { Arabic — Native }
+        sp(h=1) {}
+        txt(size=8, color=#cbd5e1) { English — Fluent }
+      }
+
+      // Main content — fills remaining width
+      box(h=fill, p=12mm, flex=1) {
+
+        txt($section) { Profile }
+        hr {}
+        sp(h=3) {}
+        txt($body) {
+          Senior software engineer with 5+ years building scalable web applications and AI-powered tools. Creator of DARE Engine — an AI-native PDF generation system. Passionate about developer tooling and open source.
+        }
+
+        txt($section) { Experience }
+        hr {}
+        sp(h=4) {}
+
+        box(mb=8mm) {
+          box(row, between, align=center) {
+            txt($label) { Senior Software Engineer }
+            txt($sm) { 2023 — Present }
+          }
+          sp(h=1) {}
+          txt($accent, size=9) { TechCorp Inc. }
+          sp(h=1) {}
+          txt($body) { Led development of microservices platform serving 2M+ users. Designed event-driven architecture reducing latency by 40%. }
+        }
+
+        box(mb=8mm) {
+          box(row, between, align=center) {
+            txt($label) { Full Stack Developer }
+            txt($sm) { 2021 — 2023 }
+          }
+          sp(h=1) {}
+          txt($accent, size=9) { StartupXYZ }
+          sp(h=1) {}
+          txt($body) { Built real-time collaboration platform from scratch. Implemented WebSocket infrastructure and React frontend. }
+        }
+
+        box(mb=8mm) {
+          box(row, between, align=center) {
+            txt($label) { Junior Developer }
+            txt($sm) { 2020 — 2021 }
+          }
+          sp(h=1) {}
+          txt($accent, size=9) { Agency Co. }
+          sp(h=1) {}
+          txt($body) { Developed client websites and e-commerce solutions using modern JavaScript stack. }
+        }
+
+        txt($section) { Education }
+        hr {}
+        sp(h=4) {}
+        box(row, between, align=center) {
+          txt($label) { B.Sc. Computer Science }
+          txt($sm) { 2016 — 2020 }
+        }
+        sp(h=1) {}
+        txt($accent, size=9) { Cairo University }
+      }
+    }
+  }
+}
