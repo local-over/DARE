@@ -73,7 +73,7 @@ class PDFRenderer {
         this.cursorY = this.currentMargin.top;
     }
 
-    async renderNode(node, context) {
+    async renderNode(node, context, dryRun = false) {
         const { tag, props = {}, children, content, qrData, imgData } = node;
         
         let x = context.x;
@@ -96,25 +96,27 @@ class PDFRenderer {
         width -= (ml + mr);
 
         if (tag === 'page') {
-            if (props._pageIndex > 0 || !this.page) {
-                this.addPage();
-            }
-            if (props.bg) {
-                this.page.drawRectangle({
-                    x: 0,
-                    y: 0,
-                    width: this.pageWidth,
-                    height: this.pageHeight,
-                    color: hexToRgb(parseColor(props.bg)),
-                });
+            if (!dryRun) {
+                if (props._pageIndex > 0 || !this.page) {
+                    this.addPage();
+                }
+                if (props.bg) {
+                    this.page.drawRectangle({
+                        x: 0,
+                        y: 0,
+                        width: this.pageWidth,
+                        height: this.pageHeight,
+                        color: hexToRgb(parseColor(props.bg)),
+                    });
+                }
             }
             const innerContext = { x: this.currentMargin.left, y: this.cursorY, width: this.pageWidth - this.currentMargin.left - this.currentMargin.right, parentBg: props.bg };
             if (children) {
                 for (const child of children) {
-                    const childHeight = await this.renderNode(child, innerContext);
+                    const childHeight = await this.renderNode(child, innerContext, dryRun);
                     innerContext.y += childHeight;
                 }
-                this.cursorY = innerContext.y;
+                if (!dryRun) this.cursorY = innerContext.y;
             }
             return 0;
         }
@@ -125,24 +127,23 @@ class PDFRenderer {
             let totalChildHeight = 0;
             
             if (children) {
+                // Pre-pass for height calculation
                 if (props.row) {
                    const n = props.n || children.length;
                    const gap = parseSize(props.gap) || 0;
                    const colWidth = (innerWidth - gap * (n - 1)) / n;
-                   let currentX = childContext.x;
                    let maxHeight = 0;
                    for (const child of children) {
-                       const cContext = { ...childContext, x: currentX, width: colWidth };
-                       const h = await this.renderNode(child, cContext);
+                       const h = await this.renderNode(child, { ...childContext, width: colWidth }, true);
                        if (h > maxHeight) maxHeight = h;
-                       currentX += colWidth + gap;
                    }
                    totalChildHeight = maxHeight;
                 } else {
                    const gap = parseSize(props.gap) || 0;
+                   let tempY = childContext.y;
                    for (const child of children) {
-                       const h = await this.renderNode(child, childContext);
-                       childContext.y += h + gap;
+                       const h = await this.renderNode(child, { ...childContext, y: tempY }, true);
+                       tempY += h + gap;
                        totalChildHeight += h + gap;
                    }
                    if (children.length > 0) totalChildHeight -= gap;
@@ -151,7 +152,7 @@ class PDFRenderer {
             
             height = totalChildHeight + pt + pb;
             
-            if (props.bg || props.border) {
+            if (!dryRun && (props.bg || props.border)) {
                 const rectArgs = {
                     x: x,
                     y: this.pageHeight - (y + height), // pdf-lib coordinates are from bottom-left
@@ -166,6 +167,26 @@ class PDFRenderer {
                 this.page.drawRectangle(rectArgs);
             }
             
+            if (!dryRun && children) {
+                if (props.row) {
+                   const n = props.n || children.length;
+                   const gap = parseSize(props.gap) || 0;
+                   const colWidth = (innerWidth - gap * (n - 1)) / n;
+                   let currentX = childContext.x;
+                   for (const child of children) {
+                       const cContext = { ...childContext, x: currentX, width: colWidth };
+                       await this.renderNode(child, cContext, false);
+                       currentX += colWidth + gap;
+                   }
+                } else {
+                   const gap = parseSize(props.gap) || 0;
+                   for (const child of children) {
+                       const h = await this.renderNode(child, childContext, false);
+                       childContext.y += h + gap;
+                   }
+                }
+            }
+            
             height += mt + mb;
             return height;
         }
@@ -174,13 +195,20 @@ class PDFRenderer {
              const gap = parseSize(props.gap) || 0;
              const n = props.n || (children ? children.length : 1);
              const colWidth = (width - gap * (n - 1)) / n;
-             let currentX = x;
+             
              let maxHeight = 0;
              if (children) {
                  for (const child of children) {
-                     const cContext = { x: currentX, y: y, width: colWidth, parentBg: context.parentBg };
-                     const h = await this.renderNode(child, cContext);
+                     const h = await this.renderNode(child, { x: 0, y: y, width: colWidth, parentBg: context.parentBg }, true);
                      if (h > maxHeight) maxHeight = h;
+                 }
+             }
+             
+             if (!dryRun && children) {
+                 let currentX = x;
+                 for (const child of children) {
+                     const cContext = { x: currentX, y: y, width: colWidth, parentBg: context.parentBg };
+                     await this.renderNode(child, cContext, false);
                      currentX += colWidth + gap;
                  }
              }
@@ -202,7 +230,6 @@ class PDFRenderer {
             
             const font = props.bold ? this.fontBold : (props.italic ? this.fontItalic : this.fontNormal);
             
-            // Simple text wrapping for pdf-lib (crude approximation)
             const words = text.split(' ');
             let lines = [];
             let currentLine = '';
@@ -221,14 +248,16 @@ class PDFRenderer {
             const lineHeight = fontSize * 1.2;
             const textHeight = lines.length * lineHeight;
             
-            for (let i=0; i<lines.length; i++) {
-                this.page.drawText(lines[i], {
-                    x: x,
-                    y: this.pageHeight - (y + (i+1)*lineHeight), // From bottom
-                    size: fontSize,
-                    font: font,
-                    color: hexToRgb(fontColor)
-                });
+            if (!dryRun) {
+                for (let i=0; i<lines.length; i++) {
+                    this.page.drawText(lines[i], {
+                        x: x,
+                        y: this.pageHeight - (y + (i+1)*lineHeight), 
+                        size: fontSize,
+                        font: font,
+                        color: hexToRgb(fontColor)
+                    });
+                }
             }
             
             height = textHeight + mt + mb;
@@ -240,12 +269,14 @@ class PDFRenderer {
         }
 
         if (tag === 'hr' || tag === 'line') {
-            this.page.drawLine({
-                start: { x: x, y: this.pageHeight - y },
-                end: { x: x + width, y: this.pageHeight - y },
-                thickness: 1,
-                color: hexToRgb(parseColor(props.color) || '#e2e8f0'),
-            });
+            if (!dryRun) {
+                this.page.drawLine({
+                    start: { x: x, y: this.pageHeight - y },
+                    end: { x: x + width, y: this.pageHeight - y },
+                    thickness: 1,
+                    color: hexToRgb(parseColor(props.color) || '#e2e8f0'),
+                });
+            }
             return (parseSize(props.mt) || 5) + (parseSize(props.mb) || 5);
         }
 
@@ -255,30 +286,31 @@ class PDFRenderer {
             let data = imgData || qrData;
             
             if (data) {
-                try {
-                    let image;
-                    if (data.includes('image/png')) {
-                        image = await this.doc.embedPng(data);
-                    } else if (data.includes('image/jpeg')) {
-                        image = await this.doc.embedJpg(data);
-                    } else {
-                        // fallback or skip unsupported
-                        this.page.drawText(`[${tag} unsupported format]`, { x: x, y: this.pageHeight - (y + 10), size: 10 });
-                        return 15 + mt + mb;
+                if (!dryRun) {
+                    try {
+                        let image;
+                        if (data.includes('image/png')) {
+                            image = await this.doc.embedPng(data);
+                        } else if (data.includes('image/jpeg')) {
+                            image = await this.doc.embedJpg(data);
+                        } else {
+                            this.page.drawText(`[${tag} unsupported format]`, { x: x, y: this.pageHeight - (y + 10), size: 10 });
+                            return 15 + mt + mb;
+                        }
+                        this.page.drawImage(image, {
+                            x: x,
+                            y: this.pageHeight - (y + imgHeight),
+                            width: imgWidth,
+                            height: imgHeight,
+                        });
+                    } catch(e) {
+                         console.error(e);
+                         this.page.drawText(`[${tag} error]`, { x: x, y: this.pageHeight - (y + 10), size: 10 });
+                         imgHeight = 15;
                     }
-                    this.page.drawImage(image, {
-                        x: x,
-                        y: this.pageHeight - (y + imgHeight),
-                        width: imgWidth,
-                        height: imgHeight,
-                    });
-                } catch(e) {
-                     console.error(e);
-                     this.page.drawText(`[${tag} error]`, { x: x, y: this.pageHeight - (y + 10), size: 10 });
-                     imgHeight = 15;
                 }
             } else {
-                this.page.drawText(`[${tag} missing]`, { x: x, y: this.pageHeight - (y + 10), size: 10 });
+                if (!dryRun) this.page.drawText(`[${tag} missing]`, { x: x, y: this.pageHeight - (y + 10), size: 10 });
                 imgHeight = 15;
             }
             return imgHeight + mt + mb;
@@ -299,11 +331,11 @@ class PDFRenderer {
                 if (node.tag === 'page') {
                     node.props = node.props || {};
                     node.props._pageIndex = pageIndex;
-                    await this.renderNode(node, { x: 0, y: 0, width: this.pageWidth });
+                    await this.renderNode(node, { x: 0, y: 0, width: this.pageWidth }, false);
                     pageIndex++;
                 } else {
                     if (!this.page) this.addPage();
-                    const h = await this.renderNode(node, { x: this.currentMargin.left, y: this.cursorY, width: this.pageWidth - this.currentMargin.left - this.currentMargin.right });
+                    const h = await this.renderNode(node, { x: this.currentMargin.left, y: this.cursorY, width: this.pageWidth - this.currentMargin.left - this.currentMargin.right }, false);
                     this.cursorY += h;
                 }
             }

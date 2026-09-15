@@ -1,0 +1,13 @@
+{
+  "routes": [
+    {
+      "routePath": "/api/render",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/render.js:onRequestPost"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}
