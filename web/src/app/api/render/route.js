@@ -1,7 +1,8 @@
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
 
-import { compile } from '../../../../../../src/parser.js';
-import { renderPdf } from '../../../../../../src/renderers/pdf.js';
+import { compile } from '../../../../../src/parser.js';
+import { renderPdf } from '../../../../../src/renderers/pdf.js';
 
 export async function POST(request) {
     try {

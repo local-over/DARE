@@ -6,8 +6,8 @@ const QRCode = require('qrcode');
 let fs = null;
 let path = null;
 try {
-    fs = require('fs');
-    path = require('path');
+    fs = eval("require('fs')");
+    path = eval("require('path')");
 } catch (e) {
     // Running in Edge/Browser environment where fs is unavailable
 }

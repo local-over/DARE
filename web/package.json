@@ -10,17 +10,21 @@
   },
   "dependencies": {
     "@cloudflare/next-on-pages": "^1.13.16",
+    "clsx": "^2.1.1",
+    "framer-motion": "^13.3.0",
     "lucide-react": "^1.46.0",
-    "next": "16.3.5",
-    "pdfmake": "^0.3.11",
+    "next": "15.0.0",
+    "pdfmake": "^0.2.18",
     "qrcode": "^1.5.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react": "19.0.0-rc-65a56d0e-20241020",
+    "react-dom": "19.0.0-rc-65a56d0e-20241020",
+    "tailwind-merge": "^3.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@cloudflare/next-on-pages": "^1.13.16",
+    "@tailwindcss/postcss": "^4.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.3.5",
+    "eslint-config-next": "15.0.0",
     "tailwindcss": "^4"
   }
 }

@@ -1,15 +1,19 @@
-const pdfmake = require('pdfmake/build/pdfmake');
-const pdfFonts = require('pdfmake/build/vfs_fonts');
-pdfmake.vfs = pdfFonts.pdfMake.vfs;
-
-pdfmake.setFonts({
-    Roboto: {
-        normal: 'Helvetica',
-        bold: 'Helvetica-Bold',
-        italics: 'Helvetica-Oblique',
-        bolditalics: 'Helvetica-BoldOblique'
+function getPdfMake() {
+    const pdfmake = require('pdfmake/build/pdfmake');
+    const pdfFonts = require('pdfmake/build/vfs_fonts');
+    if (pdfFonts && pdfFonts.pdfMake) {
+        pdfmake.vfs = pdfFonts.pdfMake.vfs;
     }
-});
+    pdfmake.setFonts({
+        Roboto: {
+            normal: 'Helvetica',
+            bold: 'Helvetica-Bold',
+            italics: 'Helvetica-Oblique',
+            bolditalics: 'Helvetica-BoldOblique'
+        }
+    });
+    return pdfmake;
+}
 
 function parseColor(val) {
     if (!val) return undefined;
@@ -641,12 +645,13 @@ async function renderPdf(astData, outputPath) {
         }
     };
 
+    const pdfmake = getPdfMake();
     const pdfDoc = pdfmake.createPdf(docDefinition);
     
     if (outputPath) {
         // If fs is unavailable, this will fail. Should only be used in CLI.
         return new Promise((resolve, reject) => {
-            const fs = require('fs');
+            const fs = eval("require('fs')");
             const stream = fs.createWriteStream(outputPath);
             const pdfStream = pdfDoc.getStream();
             pdfStream.pipe(stream);
