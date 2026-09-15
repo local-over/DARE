@@ -1,14 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #000000;
-  --color-foreground: #ffffff;
-  --color-surface: #0a0a0a;
-  --color-surface-2: #111111;
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-strong: rgba(255, 255, 255, 0.12);
-  --color-muted: #737373;
-  --color-accent: #3b82f6;
+  --color-background: #0F172A;
+  --color-foreground: #F8FAFC;
+  
+  --color-primary: #1E293B;
+  --color-on-primary: #FFFFFF;
+  
+  --color-secondary: #334155;
+  --color-on-secondary: #FFFFFF;
+  
+  --color-accent: #22C55E;
+  --color-on-accent: #0F172A;
+  
+  --color-card: #1B2336;
+  --color-card-foreground: #F8FAFC;
+  
+  --color-muted: #272F42;
+  --color-muted-foreground: #94A3B8;
+  
+  --color-border: #475569;
+  --color-border-strong: #64748B;
+  
+  --color-destructive: #EF4444;
+  --color-ring: #FFFFFF;
 }
 
 @layer base {
@@ -21,36 +36,40 @@
   }
 
   ::selection {
-    background: #fff;
-    color: #000;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  /* Accessibility focus ring */
+  *:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
   }
 }
 
 @layer utilities {
-  /* Glass panel — tighter, less blur than before */
   .glass-panel {
-    background: rgba(10, 10, 10, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(27, 35, 54, 0.7); /* Card with opacity */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--color-border);
   }
 
-  /* Aurora — hero only, subtle */
   .aurora-bg {
     background:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.08), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 0%, rgba(139, 92, 246, 0.06), transparent);
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(34, 197, 94, 0.15), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 0%, rgba(30, 41, 59, 0.4), transparent);
   }
 
-  /* Code blocks */
   .code-block {
-    background: #0a0a0a;
+    background: #0B1121; /* Slightly darker than background for contrast */
     border: 1px solid var(--color-border);
     border-radius: 12px;
     font-family: var(--font-jetbrains-mono), monospace;
     font-size: 13px;
     line-height: 1.7;
     overflow-x: auto;
+    color: #E2E8F0;
   }
 
   .code-block pre {
@@ -58,14 +77,14 @@
     margin: 0;
   }
 
-  /* Syntax colors */
-  .syn-kw { color: #c084fc; }
-  .syn-str { color: #34d399; }
-  .syn-num { color: #f59e0b; }
-  .syn-cm { color: #525252; }
-  .syn-fn { color: #60a5fa; }
-  .syn-prop { color: #f472b6; }
-  .syn-var { color: #fb923c; }
+  /* Pro-Max syntax theme */
+  .syn-kw { color: #818CF8; }
+  .syn-str { color: #34D399; }
+  .syn-num { color: #FBBF24; }
+  .syn-cm { color: #64748B; font-style: italic; }
+  .syn-fn { color: #60A5FA; }
+  .syn-prop { color: #F472B6; }
+  .syn-var { color: #38BDF8; }
 
   /* Page transition wrapper */
   .page-enter {
@@ -75,6 +94,7 @@
   .page-enter-active {
     opacity: 1;
     transform: translateY(0);
+    transition: opacity 300ms ease, transform 300ms ease;
   }
 
   /* Sidebar nav link */
@@ -82,25 +102,28 @@
     display: block;
     padding: 6px 12px;
     font-size: 14px;
-    color: #737373;
+    color: var(--color-muted-foreground);
     border-left: 2px solid transparent;
     transition: all 150ms ease;
   }
 
   .sidebar-link:hover {
-    color: #fff;
+    color: var(--color-foreground);
+    background: var(--color-primary);
+    border-radius: 0 6px 6px 0;
   }
 
   .sidebar-link.active {
-    color: #fff;
-    border-left-color: #fff;
+    color: var(--color-accent);
+    border-left-color: var(--color-accent);
+    background: rgba(34, 197, 94, 0.05);
   }
 
   /* Copy button */
   .copy-btn {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--color-primary);
     border: 1px solid var(--color-border);
-    color: #a3a3a3;
+    color: var(--color-muted-foreground);
     padding: 6px 14px;
     border-radius: 8px;
     font-size: 13px;
@@ -109,19 +132,19 @@
   }
 
   .copy-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: var(--color-secondary);
+    color: var(--color-foreground);
   }
 
   .copy-btn.copied {
     background: rgba(34, 197, 94, 0.15);
     border-color: rgba(34, 197, 94, 0.3);
-    color: #22c55e;
+    color: var(--color-accent);
   }
 
   /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #262626; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #404040; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--color-background); }
+  ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }
 }

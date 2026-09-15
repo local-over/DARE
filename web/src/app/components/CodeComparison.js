@@ -137,16 +137,16 @@ export default function CodeComparison() {
     return (
         <div className="w-full max-w-3xl mx-auto">
             {/* Tab switcher */}
-            <div className="flex items-center gap-1 mb-4 p-1 rounded-xl bg-neutral-900/80 w-fit mx-auto border" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+            <div className="flex items-center gap-1 mb-4 p-1 rounded-xl bg-[#1B2336] w-fit mx-auto border border-[#475569]">
                 <button
                     onClick={() => setActiveTab('html')}
                     className="relative px-5 py-2 text-[13px] font-medium rounded-lg transition-colors"
-                    style={{ color: activeTab === 'html' ? '#fff' : '#737373' }}
+                    style={{ color: activeTab === 'html' ? '#F8FAFC' : '#94A3B8' }}
                 >
                     {activeTab === 'html' && (
                         <motion.div
                             layoutId="comparison-tab"
-                            className="absolute inset-0 bg-neutral-800 rounded-lg"
+                            className="absolute inset-0 bg-[#0F172A] rounded-lg border border-[#475569]"
                             transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                             style={{ zIndex: -1 }}
                         />
@@ -156,12 +156,12 @@ export default function CodeComparison() {
                 <button
                     onClick={() => setActiveTab('dare')}
                     className="relative px-5 py-2 text-[13px] font-medium rounded-lg transition-colors"
-                    style={{ color: activeTab === 'dare' ? '#fff' : '#737373' }}
+                    style={{ color: activeTab === 'dare' ? '#F8FAFC' : '#94A3B8' }}
                 >
                     {activeTab === 'dare' && (
                         <motion.div
                             layoutId="comparison-tab"
-                            className="absolute inset-0 bg-neutral-800 rounded-lg"
+                            className="absolute inset-0 bg-[#0F172A] rounded-lg border border-[#475569]"
                             transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                             style={{ zIndex: -1 }}
                         />

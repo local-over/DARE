@@ -7,7 +7,7 @@ const DARE_EXAMPLE = `@setup {
     format: a4;
     $main: bold size=24 color=#ffffff;
     $subtitle: color=#a1a1aa size=12;
-    $card: bg=#18181b rounded=4 p=15;
+    $card: bg=#1B2336 rounded=4 p=15;
 }
 
 @data {
@@ -16,8 +16,8 @@ const DARE_EXAMPLE = `@setup {
 }
 
 @doc {
-    page(bg=#09090b) {
-        box(p=30 bg=#000000 border=1 borderColor=#27272a rounded=6) {
+    page(bg=#0F172A) {
+        box(p=30 bg=#1B2336 border=1 borderColor=#475569 rounded=6) {
             txt($main) { {{ title }} }
             txt($subtitle mt=5) { Native Edge Rendering for AI Agents }
         }
@@ -27,7 +27,7 @@ const DARE_EXAMPLE = `@setup {
                 txt(bold size=14 color=white) { Hello, {{ user }}! }
                 txt($subtitle mt=5) { This PDF was generated on the Edge. }
                 sp(h=10)
-                badge(bg=#27272a color=white size=10) { 0ms Cold Starts }
+                badge(bg=#475569 color=white size=10) { 0ms Cold Starts }
             }
             box($card center) {
                 qr(data="https://dare.pages.dev" w=80)
@@ -66,13 +66,13 @@ export default function Playground() {
         <div className="flex-1 flex flex-col p-6 max-w-[1400px] w-full mx-auto">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Playground</h1>
-                    <p className="text-[14px] text-neutral-400">Write DARE code on the left, see the compiled PDF on the right.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-[#F8FAFC] mb-1">Playground</h1>
+                    <p className="text-[14px] text-[#94A3B8]">Write DARE code on the left, see the compiled PDF on the right.</p>
                 </div>
                 <button 
                     onClick={handleRun}
                     disabled={loading}
-                    className="bg-white text-black px-6 py-2 rounded-lg text-[14px] font-semibold flex items-center gap-2 hover:bg-neutral-200 transition-colors disabled:opacity-50"
+                    className="bg-[#22C55E] text-[#0F172A] px-6 py-2 rounded-lg text-[14px] font-semibold flex items-center gap-2 hover:bg-[#22C55E]/90 transition-colors disabled:opacity-50"
                 >
                     {loading ? 'Compiling...' : 'Run Compiler'}
                 </button>
@@ -80,26 +80,26 @@ export default function Playground() {
             
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[600px]">
                 {/* Editor */}
-                <div className="flex flex-col bg-[#0a0a0a] border rounded-xl overflow-hidden" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                    <div className="px-4 py-2.5 border-b flex items-center bg-[#111111]" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                        <span className="text-[12px] font-mono text-neutral-400">document.dare</span>
+                <div className="flex flex-col bg-[#0B1121] border border-[#475569] rounded-xl overflow-hidden">
+                    <div className="px-4 py-2.5 border-b border-[#475569] flex items-center bg-[#1B2336]">
+                        <span className="text-[12px] font-mono text-[#94A3B8]">document.dare</span>
                     </div>
                     <div className="flex-1 relative">
                         <textarea
                             value={dareCode}
                             onChange={(e) => setDareCode(e.target.value)}
-                            className="absolute inset-0 w-full h-full bg-transparent p-5 font-mono text-[13px] leading-[1.7] text-neutral-300 outline-none resize-none z-10"
+                            className="absolute inset-0 w-full h-full bg-transparent p-5 font-mono text-[13px] leading-[1.7] text-[#E2E8F0] outline-none resize-none z-10"
                             spellCheck={false}
                         />
                     </div>
                 </div>
 
                 {/* Preview */}
-                <div className="flex flex-col bg-[#0a0a0a] border rounded-xl overflow-hidden relative" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                    <div className="px-4 py-2.5 border-b flex items-center bg-[#111111]" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                        <span className="text-[12px] font-mono text-neutral-400">output.pdf</span>
+                <div className="flex flex-col bg-[#0B1121] border border-[#475569] rounded-xl overflow-hidden relative">
+                    <div className="px-4 py-2.5 border-b border-[#475569] flex items-center bg-[#1B2336]">
+                        <span className="text-[12px] font-mono text-[#94A3B8]">output.pdf</span>
                     </div>
-                    <div className="flex-1 bg-[#171717] relative p-4">
+                    <div className="flex-1 bg-[#1B2336]/50 relative p-4">
                         <AnimatePresence mode="wait">
                             {pdfUrl ? (
                                 <motion.iframe 
@@ -108,17 +108,17 @@ export default function Playground() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0 }}
                                     src={pdfUrl} 
-                                    className="w-full h-full rounded-lg bg-white shadow-2xl" 
+                                    className="w-full h-full rounded-lg bg-[#0F172A] shadow-2xl" 
                                 />
                             ) : (
                                 <motion.div 
                                     key="empty"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    className="absolute inset-0 flex flex-col items-center justify-center text-neutral-500 font-medium text-[14px]"
+                                    className="absolute inset-0 flex flex-col items-center justify-center text-[#64748B] font-medium text-[14px]"
                                 >
-                                    <div className="w-12 h-12 rounded-full border border-neutral-800 flex items-center justify-center mb-3">
-                                        <div className="w-4 h-4 rounded-[3px] border border-neutral-700" />
+                                    <div className="w-12 h-12 rounded-full border border-[#475569] flex items-center justify-center mb-3">
+                                        <div className="w-4 h-4 rounded-[3px] border border-[#64748B]" />
                                     </div>
                                     <p>Click Run to render your Edge PDF</p>
                                 </motion.div>

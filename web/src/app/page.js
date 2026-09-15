@@ -7,8 +7,9 @@ import CodeComparison from './components/CodeComparison';
 
 export default function Home() {
     return (
-        <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-[#020617]">
-            <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.15),rgba(0,0,0,0)_50%)]" />
+        <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-[#0F172A] text-[#F8FAFC]">
+            {/* Subtle Aurora Background matching Pro-Max */}
+            <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(34,197,94,0.1),rgba(15,23,42,0)_50%)]" />
             
             <header className="px-6 flex flex-col items-center text-center relative z-10 w-full max-w-5xl mx-auto pt-32 pb-24">
                 <motion.div
@@ -17,8 +18,8 @@ export default function Home() {
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     className="mb-8"
                 >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium tracking-wide shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-                        <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1B2336] border border-[#475569] text-[#94A3B8] text-xs font-medium tracking-wide shadow-[0_0_15px_rgba(34,197,94,0.05)]">
+                        <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
                         DARE v3.0 IS LIVE
                     </div>
                 </motion.div>
@@ -27,7 +28,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-[56px] md:text-[88px] font-bold tracking-tight leading-[1.05] mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/50"
+                    className="text-[56px] md:text-[88px] font-bold tracking-tight leading-[1.05] mb-6 text-transparent bg-clip-text bg-gradient-to-b from-[#F8FAFC] via-[#F8FAFC]/90 to-[#94A3B8]/60"
                 >
                     Write code.<br />
                     <span>Get pixel-perfect PDFs.</span>
@@ -37,7 +38,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-[20px] md:text-[22px] text-neutral-400 max-w-2xl mx-auto mb-12 font-normal leading-[1.5]"
+                    className="text-[20px] md:text-[22px] text-[#94A3B8] max-w-2xl mx-auto mb-12 font-normal leading-[1.5]"
                 >
                     DARE is a deterministic, token-efficient markup language built for AI. It compiles directly to native PDFs—no HTML or headless browsers required.
                 </motion.p>
@@ -48,13 +49,13 @@ export default function Home() {
                     transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-2xl"
                 >
-                    <Link href="/playground" className="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold text-[16px] hover:bg-blue-500 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+                    <Link href="/playground" className="bg-[#22C55E] text-[#0F172A] px-8 py-4 rounded-xl font-semibold text-[16px] hover:bg-[#22C55E]/90 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
                         <PlayIcon /> Open Playground
                     </Link>
-                    <Link href="/docs" className="bg-white/5 text-white border border-white/10 px-8 py-4 rounded-xl font-semibold text-[16px] hover:bg-white/10 hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                    <Link href="/docs" className="bg-[#1E293B] text-[#F8FAFC] border border-[#475569] px-8 py-4 rounded-xl font-semibold text-[16px] hover:bg-[#334155] hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
                         <DocIcon /> Read the Docs
                     </Link>
-                    <Link href="/skills" className="bg-transparent text-neutral-300 border border-neutral-700 px-8 py-4 rounded-xl font-semibold text-[16px] hover:border-blue-500/50 hover:text-blue-400 hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                    <Link href="/skills" className="bg-transparent text-[#94A3B8] border border-[#475569] px-8 py-4 rounded-xl font-semibold text-[16px] hover:border-[#22C55E]/50 hover:text-[#22C55E] hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
                         <SkillIcon /> Install AI Skill
                     </Link>
                 </motion.div>
@@ -68,18 +69,18 @@ export default function Home() {
                 className="w-full px-6 py-24 relative z-10"
             >
                 <div className="text-center mb-16">
-                    <h2 className="text-[32px] md:text-[48px] font-bold tracking-tight text-white mb-4">Why DARE?</h2>
-                    <p className="text-neutral-400 text-[18px] max-w-2xl mx-auto">HTML is bloated. DARE is laser-focused. See how AI generates documents with 10x fewer tokens.</p>
+                    <h2 className="text-[32px] md:text-[48px] font-bold tracking-tight text-[#F8FAFC] mb-4">Why DARE?</h2>
+                    <p className="text-[#94A3B8] text-[18px] max-w-2xl mx-auto">HTML is bloated. DARE is laser-focused. See how AI generates documents with 10x fewer tokens.</p>
                 </div>
                 
                 <CodeComparison />
             </motion.section>
 
-            <section className="w-full px-6 py-32 relative z-10 border-t border-white/5 bg-[#01030a]">
+            <section className="w-full px-6 py-32 relative z-10 border-t border-[#475569] bg-[#0B1121]">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-20">
-                        <h2 className="text-[40px] font-bold tracking-tight text-white mb-4">What's New in v3</h2>
-                        <p className="text-[18px] text-neutral-400 max-w-2xl mx-auto">The most massive update to the DARE ecosystem yet.</p>
+                        <h2 className="text-[40px] font-bold tracking-tight text-[#F8FAFC] mb-4">What's New in v3</h2>
+                        <p className="text-[18px] text-[#94A3B8] max-w-2xl mx-auto">The most massive update to the DARE ecosystem yet.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -112,13 +113,13 @@ export default function Home() {
 
 function FeatureBlock({ title, desc, icon }) {
     return (
-        <div className="group relative bg-[#0f172a]/50 border border-slate-800 p-8 rounded-3xl hover:bg-slate-800/50 hover:border-slate-700 transition-all overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-700 flex items-center justify-center mb-6 text-blue-400 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+        <div className="group relative bg-[#1B2336] border border-[#475569] p-8 rounded-3xl hover:bg-[#1E293B] hover:border-[#64748B] transition-all overflow-hidden cursor-pointer shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)]">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#22C55E]/[0.05] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="w-14 h-14 rounded-2xl bg-[#0F172A] border border-[#475569] flex items-center justify-center mb-6 text-[#22C55E] group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] transition-all duration-300">
                 {icon}
             </div>
-            <h3 className="text-[22px] font-semibold text-white mb-3 tracking-tight">{title}</h3>
-            <p className="text-[16px] text-slate-400 leading-relaxed font-normal">{desc}</p>
+            <h3 className="text-[22px] font-semibold text-[#F8FAFC] mb-3 tracking-tight">{title}</h3>
+            <p className="text-[16px] text-[#94A3B8] leading-relaxed font-normal">{desc}</p>
         </div>
     );
 }

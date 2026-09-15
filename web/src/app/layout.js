@@ -1,9 +1,10 @@
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "./components/Nav";
 
-const inter = Inter({
-  variable: "--font-inter",
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: "--font-inter", // keeping variable name to avoid refactoring global components
+  weight: ['300', '400', '500', '600', '700'],
   subsets: ["latin"],
 });
 
@@ -21,9 +22,9 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${ibmPlexSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col font-sans">
         <Nav />
         <div className="flex-1 mt-14 flex flex-col">
           {children}

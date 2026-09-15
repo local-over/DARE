@@ -20,8 +20,8 @@ export default function Nav() {
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-            className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-5 bg-black/90 border-b"
-            style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+            className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-5 bg-[#0F172A]/90 border-b backdrop-blur-sm"
+            style={{ borderColor: '#475569' }}
         >
             <Link href="/" className="flex items-center">
                 <Logo size={22} animate={false} />
@@ -35,13 +35,13 @@ export default function Nav() {
                             key={item.href}
                             href={item.href}
                             className="relative px-3.5 py-1.5 text-[13px] font-medium transition-colors"
-                            style={{ color: isActive ? '#fff' : '#737373' }}
+                            style={{ color: isActive ? '#F8FAFC' : '#94A3B8' }}
                         >
                             {item.label}
                             {isActive && (
                                 <motion.div
                                     layoutId="nav-indicator"
-                                    className="absolute bottom-0 left-3.5 right-3.5 h-[1px] bg-white"
+                                    className="absolute bottom-0 left-3.5 right-3.5 h-[2px] bg-[#22C55E]"
                                     transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                                 />
                             )}
@@ -52,7 +52,7 @@ export default function Nav() {
                     href="https://github.com/local-over/DARE"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-3 px-3.5 py-1.5 text-[13px] font-medium text-neutral-500 hover:text-white transition-colors"
+                    className="ml-3 px-3.5 py-1.5 text-[13px] font-medium text-[#64748B] hover:text-[#F8FAFC] transition-colors"
                 >
                     GitHub
                 </a>
