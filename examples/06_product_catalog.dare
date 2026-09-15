@@ -1,0 +1,82 @@
+@setup {
+  format: A4;
+  $h1: size=24 bold color=#2563eb ta=center mb=5mm;
+  $prod: size=12 bold color=#1e293b mt=1mm;
+  $desc: size=9 color=#475569 mb=1mm;
+  $price: size=14 bold color=#16a34a ta=right;
+}
+@doc {
+  page {
+    hdr() { box(p=5mm, bg=#f1f5f9) { txt(bold) { Summer Catalog 2026 } } }
+    box(p=5mm) {
+      txt($h1) { NEW ARRIVALS }
+      cols(n=3, gap=5mm) {
+        box(border=1, p=5mm, bg=#f8fafc) {
+          txt(ta=center, size=14, bold, mb=2mm) { [ AUDIO ] }
+          txt($prod) { Pro Headphones }
+          txt($desc) { Noise-cancelling over-ear headphones featuring an extended 40h battery life and premium build. }
+          sp(h=2mm){}
+          cols(between) {
+            box(w=50%) { badge(bg=#e0e7ff, color=#4338ca) { Audio } }
+            box(w=50%) { txt($price) { $299 } }
+          }
+        }
+        box(border=1, p=5mm, bg=#f8fafc) {
+          txt(ta=center, size=14, bold, mb=2mm) { [ WATCH ] }
+          txt($prod) { Smart Watch V2 }
+          txt($desc) { Advanced fitness tracker equipped with 24/7 heart-rate and comprehensive sleep monitoring. }
+          sp(h=2mm){}
+          cols(between) {
+            box(w=50%) { badge(bg=#dcfce7, color=#15803d) { Wearable } }
+            box(w=50%) { txt($price) { $199 } }
+          }
+        }
+        box(border=1, p=5mm, bg=#f8fafc) {
+          txt(ta=center, size=14, bold, mb=2mm) { [ PHONE ] }
+          txt($prod) { Phone 15 X }
+          txt($desc) { Stunning 6.7 inch OLED display, powered by the A18 chip, featuring a pro-level camera system. }
+          sp(h=2mm){}
+          cols(between) {
+            box(w=50%) { badge(bg=#fce7f3, color=#be185d) { Mobile } }
+            box(w=50%) { txt($price) { $999 } }
+          }
+        }
+      }
+      
+      sp(h=5mm) {}
+      
+      cols(n=3, gap=5mm) {
+        box(border=1, p=5mm, bg=#f8fafc) {
+          txt(ta=center, size=14, bold, mb=2mm) { [ TABLET ] }
+          txt($prod) { Tab Pro 11 }
+          txt($desc) { High-performance tablet featuring a blazing-fast processor, perfect for creative professionals. }
+          sp(h=2mm){}
+          cols(between) {
+            box(w=50%) { badge(bg=#fef3c7, color=#d97706) { Tablet } }
+            box(w=50%) { txt($price) { $799 } }
+          }
+        }
+        box(border=1, p=5mm, bg=#f8fafc) {
+          txt(ta=center, size=14, bold, mb=2mm) { [ LAPTOP ] }
+          txt($prod) { Ultrabook Z }
+          txt($desc) { Ultra-lightweight laptop featuring an all-day battery and a brilliant 4K resolution screen. }
+          sp(h=2mm){}
+          cols(between) {
+            box(w=50%) { badge(bg=#dbeafe, color=#1e3a8a) { Laptop } }
+            box(w=50%) { txt($price) { $1299 } }
+          }
+        }
+        box(border=1, p=5mm, bg=#f8fafc) {
+          txt(ta=center, size=14, bold, mb=2mm) { [ GAMING ] }
+          txt($prod) { Console X }
+          txt($desc) { Next-generation gaming console featuring 8K support, immersive audio, and haptic controllers. }
+          sp(h=2mm){}
+          cols(between) {
+            box(w=50%) { badge(bg=#e5e7eb, color=#374151) { Console } }
+            box(w=50%) { txt($price) { $499 } }
+          }
+        }
+      }
+    }
+  }
+}

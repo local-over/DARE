@@ -1,0 +1,54 @@
+@setup {
+  format: A4;
+  $title: size=32 bold color=#b91c1c ta=center mb=10mm;
+  $catBox: mt=10mm mb=5mm border=1 p=2mm bg=#fef2f2;
+  $cat: size=18 bold color=#7f1d1d ta=center;
+  $item: size=14 bold color=#1c1917;
+  $desc: size=10 italic color=#78716c;
+  $price: size=14 bold color=#b91c1c;
+}
+@doc {
+  page {
+    box(p=15mm) {
+      txt($title) { BISTRO DARE }
+      cols(n=2, gap=15mm) {
+        box() {
+          box($catBox) { txt($cat) { STARTERS } }
+          box(row, between, mt=2mm) {
+            box(w=80%) {
+              txt($item) { Bruschetta }
+              txt($desc) { Grilled bread with garlic, tomatoes, olive oil. }
+            }
+            txt($price) { $8 }
+          }
+          sp(h=5) {}
+          box(row, between) {
+            box(w=80%) {
+              txt($item) { Calamari }
+              txt($desc) { Lightly fried squid with marinara sauce. }
+            }
+            txt($price) { $12 }
+          }
+        }
+        box() {
+          box($catBox) { txt($cat) { MAINS } }
+          box(row, between, mt=2mm) {
+            box(w=80%) {
+              txt($item) { Filet Mignon }
+              txt($desc) { 8oz prime beef with truffle potatoes. }
+            }
+            txt($price) { $35 }
+          }
+          sp(h=5) {}
+          box(row, between) {
+            box(w=80%) {
+              txt($item) { Salmon }
+              txt($desc) { Pan-seared with lemon butter and asparagus. }
+            }
+            txt($price) { $28 }
+          }
+        }
+      }
+    }
+  }
+}

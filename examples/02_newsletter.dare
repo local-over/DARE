@@ -1,0 +1,55 @@
+@setup {
+  format: A4;
+  $h1: size=24 bold color=#0f172a ta=center mb=10mm;
+  $h2: size=16 bold color=#334155 mb=2mm mt=5mm;
+  $h3: size=14 bold color=#334155 mb=2mm mt=5mm;
+  $p: size=11 color=#1e293b;
+}
+@doc {
+  page {
+    hdr() {
+      box(bg=#3b82f6, p=5mm) {
+        cols() {
+          box(w=50%) {
+            txt(bold, color=white) { THE WEEKLY UPDATE }
+          }
+          box(w=50%, ta=right) {
+            txt(color=white) { Issue #42 }
+          }
+        }
+      }
+    }
+    box(p=10mm) {
+      txt($h1) { Welcome to DARE Newsletter! }
+      cols(gap=10mm) {
+        box(w=50%) {
+          txt($h2) { Native PDF Support }
+          txt($p) { We have completely revamped the core engine to support native PDF rendering, removing the unstable PPTX headless browser requirements. }
+          sp(h=5mm) {}
+          txt($p) { This massive change improves rendering speeds tenfold and completely removes dependencies on heavy browsers. }
+          sp(h=5mm) {}
+          link(url="https://dare.engine", color=#3b82f6) { Read More }
+          
+          txt($h2) { Global Expansion }
+          txt($p) { We are incredibly excited to announce our upcoming global tour, starting this summer. }
+          sp(h=5mm) {}
+          txt($p) { Join us in London, Tokyo, and San Francisco to learn more about the future of declarative document rendering. }
+        }
+        box(w=50%) {
+          txt($h2) { QuickChart Integration }
+          txt($p) { Now you can effortlessly generate bar and pie charts right inside your documents. }
+          sp(h=5mm) {}
+          bar(labels="Week 1,Week 2,Week 3", data="15,25,45", title="Growth", label="Growth Trend") {}
+        }
+      }
+      sp(h=10mm) {}
+      txt($h2) { Developer Spotlight: The Future is Bright }
+      txt($p) { Our developer community has been hard at work pushing the boundaries of what is possible. By utilizing new API features and robust design templates, we are seeing unprecedented creativity. Keep sharing your templates on the DARE community hub! }
+    }
+    ftr() {
+      box(p=5mm, bg=#f1f5f9) {
+        txt(ta=center, size=8) { Copyright 2026 - DARE Engine }
+      }
+    }
+  }
+}

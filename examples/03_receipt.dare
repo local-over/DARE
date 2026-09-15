@@ -1,0 +1,40 @@
+@setup {
+  format: 80mm 150mm;
+  $h1: size=14 bold center mb=2mm;
+  $p: size=8 center;
+  $item: size=9;
+}
+@doc {
+  page(bg=#ffffff, p=5mm) {
+    txt($h1) { COFFEE SHOP }
+    txt($p) { 123 Main Street }
+    txt($p, mb=5mm) { Tel: 555-0199 }
+    hr(mb=2mm) {}
+    
+    cols(between, mb=2mm) {
+      box(w=70%) { txt($item, bold) { Item } }
+      box(w=30%) { txt($item, bold, right) { Price } }
+    }
+    cols(between, mb=1mm) {
+      box(w=70%) { txt($item) { 1x Latte } }
+      box(w=30%) { txt($item, right) { $4.50 } }
+    }
+    cols(between, mb=3mm) {
+      box(w=70%) { txt($item) { 2x Croissant } }
+      box(w=30%) { txt($item, right) { $7.00 } }
+    }
+    
+    hr(mb=2mm) {}
+    cols(between, mt=2mm, mb=5mm) {
+      box(w=70%) { txt($item, bold) { TOTAL } }
+      box(w=30%) { txt($item, bold, right) { $11.50 } }
+    }
+    
+    cols(center) {
+      box(w=30mm) {
+        qr(data="receipt_12345", w=30mm) {}
+      }
+    }
+    txt($p, mt=5mm) { Thank you for your visit! }
+  }
+}

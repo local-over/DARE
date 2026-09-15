@@ -1,0 +1,29 @@
+@setup {
+  format: A4;
+  $h1: size=24 bold color=#ff0000;
+  $sub: size=14 italic color=#555555;
+  $body: size=10 color=black;
+}
+
+@doc {
+  page {
+    box(p=10mm) {
+      txt($h1) { Heading 1: The Quick Brown Fox }
+      sp(h=5) {}
+      txt($sub) { This is a sub-heading. It tests italics and color. }
+      sp(h=10) {}
+      txt($body) { This is a standard body text block. It should wrap automatically when it reaches the edge of the bounding box. Let's make it long enough to ensure that text wrapping is working perfectly in both PDF and PPTX renderers. }
+      
+      sp(h=15) {}
+      txt(size=12, bold) { Text Alignments: }
+      sp(h=5) {}
+      box(p=5mm, bg=#eeeeee) {
+        txt(ta=left) { Left aligned text }
+        sp(h=2) {}
+        txt(ta=center) { Center aligned text }
+        sp(h=2) {}
+        txt(ta=right) { Right aligned text }
+      }
+    }
+  }
+}

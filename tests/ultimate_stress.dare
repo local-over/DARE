@@ -1,0 +1,157 @@
+@setup {
+  format: A4;
+  $h1: size=24 bold color=#ff0000 mt=5mb mb=5mm;
+  $h2: size=18 bold color=#0000ff mt=3mm mb=3mm;
+  $h3: size=14 italic color=#00ff00;
+  $p: size=10 color=black;
+  
+  $boxA: bg=#ffebee p=10mm border=1;
+  $boxB: bg=#e8f5e9 p=5mm border=0;
+  $boxC: bg=#e3f2fd p=0mm border=1;
+}
+
+@doc {
+  page {
+    hdr() {
+      box(row, between, p=5mm, bg=#1e293b, color=white) {
+        txt(bold) { DARE v2.0 }
+        txt(italic) { Component Stress Test }
+      }
+    }
+    ftr() {
+      box(row, between, p=5mm, border=1) {
+        txt() { Confidential & Proprietary }
+        txt() { Page 1 of 1 }
+      }
+    }
+    box(p=20mm) {
+      txt($h1, ta=center) { ULTIMATE STRESS TEST }
+      hr {}
+      sp(h=10) {}
+      
+      txt($h2) { 1. Deep Nesting & Layouts }
+      box($boxA) {
+        txt($p) { Level 1 Box }
+        box(row, gap=5mm, mt=5mm) {
+          box($boxB, flex=1) {
+            txt($p) { Level 2 Left (Flex 1) }
+            cols(n=2, gap=2mm) {
+              box($boxC) { txt($p) { Level 3 Col A } }
+              box($boxC) { txt($p) { Level 3 Col B } }
+            }
+          }
+          box($boxB, w=40mm) {
+            txt($p) { Level 2 Right (Fixed 40mm) }
+            box(row, between, mt=2mm, bg=#fff9c4) {
+              txt(size=8, bold) { Left }
+              txt(size=8, italic) { Right }
+            }
+          }
+        }
+      }
+      
+      sp(h=15) {}
+      
+      txt($h2) { 2. Text Alignment & Wrapping }
+      box(p=5mm, border=1) {
+        txt($p, ta=left) { This is a left-aligned text that should wrap if it is long enough. We are testing the wrapping capabilities of pdfmake. }
+        txt($p, ta=center, mt=5mm) { This is a center-aligned text. It should also wrap properly. }
+        txt($p, ta=right, mt=5mm) { This is a right-aligned text. Let's see if it touches the right padding correctly. }
+      }
+      
+      sp(h=15) {}
+      
+      txt($h2) { 3. Tables (Auto and Fractions) }
+      tbl {
+        Header A, Header B, Header C;
+        Data 1, Data 2, Data 3;
+        Long Data 4 that will wrap, Data 5, Data 6
+      }
+      sp(h=5) {}
+      tbl(cols="3fr 1fr 1fr") {
+        Wide Col, Narrow Col, Narrow Col;
+        Item 1, 10, $5.00;
+        Item 2, 2, $15.00
+      }
+      
+      sp(h=15) {}
+      
+      txt($h2) { 4. Media & Separators }
+      box(row, between, p=5mm, bg=#f3e5f5) {
+        box(w=50mm) {
+          txt($p, bold) { QR Code: }
+          qr(data="https://github.com", w=40mm) {}
+        }
+        box(flex=1, ml=5mm) {
+          txt($p) { This column should be next to the QR code. We are testing spacing and gaps between mixed content. }
+          line {}
+          txt($p, mt=2mm) { Under the line. }
+        }
+      }
+      
+      sp(h=15) {}
+      
+      txt($h2) { 5. Extended Components (Phase 2) }
+      box(p=5mm, border=1) {
+        box(row, gap=5mm) {
+          txt($p, bold) { Inline Elements: }
+          badge(bg=#ef4444, color=white) { Error }
+          badge(bg=#10b981, color=white) { Success }
+          link(url="https://dare.engine", color=#3b82f6) { Visit Website }
+        }
+        sp() {}
+        box(row, gap=10mm) {
+          box(w=50%) {
+            txt($p, bold, mb=2mm) { Ordered List }
+            list(type=ol) {
+              First item goes here
+              Second item wraps if long
+              Third item is final
+            }
+          }
+          box(w=50%) {
+            txt($p, bold, mb=2mm) { Unordered List }
+            list(type=ul) {
+              Bullet point 1
+              Bullet point 2
+              Bullet point 3
+            }
+          }
+        }
+      }
+      
+      sp(h=15) {}
+      
+      txt($h2) { 6. QuickChart Integration }
+      box(row, gap=10mm) {
+        box(flex=1) {
+          txt($p, bold, ta=center) { Bar Chart }
+          bar(labels="Jan,Feb,Mar", data="40,60,80", title="Revenue", w=200px) {}
+        }
+        box(flex=1) {
+          txt($p, bold, ta=center) { Pie Chart }
+          pie(labels="Mobile,Desktop,Tablet", data="300,150,50", title="Traffic", w=200px) {}
+        }
+      }
+      
+      sp(h=15) {}
+
+      txt($h2) { 7. Edge Cases & Missing Attributes }
+      box() {
+        txt() { Text with no props }
+        box(row) {
+          box() { txt() { Row box with no widths } }
+          box() { txt() { Row box 2 } }
+        }
+        cols() {
+          box() { txt() { Cols with no N } }
+        }
+        qr() {}
+        tbl() {}
+        hr() {}
+        line() {}
+        sp() {}
+      }
+    }
+  }
+}

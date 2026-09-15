@@ -1,0 +1,54 @@
+@setup {
+  format: A4;
+  $boxA: bg=#ffcccc p=5mm;
+  $boxB: bg=#ccffcc p=5mm;
+  $boxC: bg=#ccccff p=5mm;
+}
+
+@doc {
+  page {
+    box(p=10mm) {
+      txt(size=16, bold) { Testing Box Layouts (Flex / Grid approx) }
+      sp(h=10) {}
+      
+      txt(size=12, bold) { 1. Simple Vertical Stack with Padding }
+      box(bg=#f8fafc, p=10mm, border=1) {
+        box($boxA, mb=5mm) { txt { Block 1 } }
+        box($boxB, mb=5mm) { txt { Block 2 } }
+        box($boxC) { txt { Block 3 } }
+      }
+      
+      sp(h=15) {}
+      
+      txt(size=12, bold) { 2. Row Layout (Justify Between) }
+      box(row, between, bg=#f8fafc, p=5mm) {
+        box($boxA, w=40mm) { txt { Left } }
+        box($boxB, w=40mm) { txt { Right } }
+      }
+
+      sp(h=15) {}
+      
+      txt(size=12, bold) { 3. Cols Layout (Gap) }
+      cols(n=3, gap=10mm, bg=#f8fafc, p=5mm) {
+        box($boxA) { txt { Col 1 } }
+        box($boxB) { txt { Col 2 } }
+        box($boxC) { txt { Col 3 } }
+      }
+      
+      sp(h=15) {}
+      
+      txt(size=12, bold) { 4. Nested Grids }
+      box(row, gap=10mm) {
+        box(w=50mm, $boxA) { txt { Sidebar } }
+        box(flex=1, bg=#f8fafc, p=5mm) {
+          cols(n=2, gap=5mm) {
+             box($boxB) { txt { Content 1 } }
+             box($boxC) { txt { Content 2 } }
+          }
+          sp(h=5) {}
+          box(bg=#eeeeee, p=5mm) { txt { Footer span } }
+        }
+      }
+    }
+  }
+}

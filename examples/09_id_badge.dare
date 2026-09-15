@@ -1,0 +1,26 @@
+@setup {
+  format: 85mm 55mm;
+  $h1: size=12 bold color=white center;
+  $name: size=14 bold color=#1e293b;
+  $role: size=9 color=#64748b;
+}
+@doc {
+  page(bg=#ffffff, p=5mm) {
+    box(bg=#2563eb, p=3mm) {
+      txt($h1) { GLOBAL DYNAMICS }
+    }
+    cols(between) {
+      box(w=30%) {
+        box(bg=#e2e8f0, w=20mm, h=25mm, radius=2mm) {
+          txt(size=8, color=#94a3b8, center, mt=10mm) { PHOTO }
+        }
+      }
+      box(w=65%) {
+        txt($name) { SARAH CONNOR }
+        txt($role) { Head of Security }
+        badge(bg=#fee2e2, color=#991b1b) { CLEARANCE 5 }
+        qr(data="EMP-404-505", w=15mm) {}
+      }
+    }
+  }
+}

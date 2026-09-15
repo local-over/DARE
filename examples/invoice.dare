@@ -3,52 +3,48 @@
   $brand: color=#1e40af;
   $dark: bg=#0f172a color=white;
   $gray: color=#64748b;
-  $card: bg=white border=1 rounded=2 p=8mm;
+  $card: bg=white border=1 rounded=2 p=5mm;
   $h1: size=28 bold;
-  $h2: size=14 bold color=#334155 mb=4mm;
+  $h2: size=14 bold color=#334155 mb=2mm;
   $label: size=9 color=#94a3b8 uppercase;
   $val: size=11 color=#1e293b;
 }
 
 @doc {
-
   page {
-    // Header — row with between puts INVOICE left, date right
-    box(h=35mm, $dark, row, between, align=center, px=15mm) {
-      box {
-        txt(size=24, bold, color=white) { INVOICE }
-        txt(size=9, color=#64748b, mt=1mm) { #INV-2025-0042 }
-      }
-      box(ta=right) {
-        txt(size=9, color=#94a3b8) { Issue Date }
-        txt(size=13, bold, color=white) { February 22, 2025 }
+    box(h=30mm, bg=#0f172a, px=15mm, py=8mm) {
+      cols(between) {
+        box(w=50%) {
+          txt(size=24, bold, color=white) { INVOICE }
+          txt(size=9, color=white, mt=1mm) { #INV-2025-0042 }
+        }
+        box(w=50%, ta=right) {
+          txt(size=9, color=white) { Issue Date }
+          txt(size=13, bold, color=white) { February 22, 2025 }
+        }
       }
     }
 
-    // Body
-    box(h=fill, p=15mm) {
-
-      // From / To
+    box(p=10mm) {
       cols(n=2, gap=20mm) {
-        box {
+        box(w=50%) {
           txt($label) { FROM }
-          sp(h=2) {}
+          sp(h=1mm) {}
           txt($val, bold) { Hassan Elkady }
           txt($val) { Software Engineer }
           txt($gray, size=9) { Cairo, Egypt }
         }
-        box {
+        box(w=50%) {
           txt($label) { BILL TO }
-          sp(h=2) {}
+          sp(h=1mm) {}
           txt($val, bold) { Acme Corporation }
           txt($val) { 123 Business Ave }
           txt($gray, size=9) { New York, NY 10001 }
         }
       }
 
-      sp(h=12) {}
+      sp(h=4mm) {}
 
-      // Line Items Table
       txt($h2) { Services }
       tbl(cols="3fr 1fr 1fr 1fr") {
         Description, Qty, Rate, Amount;
@@ -58,53 +54,54 @@
         SEO Optimization, 1, $500, $500
       }
 
-      sp(h=10) {}
+      sp(h=4mm) {}
 
-      // Totals — right-aligned
-      box(row, justify=flex-end) {
-        box(w=70mm) {
-          box(row, between, mb=3mm) {
-            txt($gray, size=10) { Subtotal }
-            txt($val) { $7,700 }
+      cols(between) {
+        box(w=50%) {}
+        box(w=50%) {
+          cols(between) {
+            box(w=50%) { txt($gray, size=10) { Subtotal } }
+            box(w=50%, ta=right) { txt($val) { $7,700 } }
           }
-          box(row, between, mb=3mm) {
-            txt($gray, size=10) { Tax (10%) }
-            txt($val) { $770 }
+          sp(h=1mm) {}
+          cols(between) {
+            box(w=50%) { txt($gray, size=10) { Tax (10%) } }
+            box(w=50%, ta=right) { txt($val) { $770 } }
           }
           hr {}
-          sp(h=4) {}
-          box(row, between) {
-            txt(size=15, bold) { Total }
-            txt(size=15, bold, $brand) { $8,470 }
+          sp(h=1mm) {}
+          cols(between) {
+            box(w=50%) { txt(size=15, bold) { Total } }
+            box(w=50%, ta=right) { txt(size=15, bold, $brand) { $8,470 } }
           }
         }
       }
 
-      sp(h=15) {}
+      sp(h=4mm) {}
 
-      // Payment Info
       box($card) {
         txt($h2) { Payment Details }
-        sp(h=3) {}
+        sp(h=1mm) {}
         cols(n=2, gap=15mm) {
-          box {
+          box(w=50%) {
             txt($label) { Bank }
-            sp(h=1) {}
+            sp(h=1mm) {}
             txt($val) { National Bank of Egypt }
           }
-          box {
+          box(w=50%) {
             txt($label) { Account }
-            sp(h=1) {}
+            sp(h=1mm) {}
             txt($val) { 1234-5678-9012 }
           }
         }
       }
     }
 
-    // Footer
-    box(h=12mm, bg=#f8fafc, row, between, align=center, px=15mm) {
-      txt(size=8, $gray) { Thank you for your business! }
-      txt(size=8, $gray) { Page 1 of 1 }
+    ftr(h=10mm, bg=#f8fafc, px=15mm, py=2mm) {
+      cols(between) {
+        box(w=50%) { txt(size=8, $gray) { Thank you for your business! } }
+        box(w=50%, ta=right) { txt(size=8, $gray) { Page 1 of 1 } }
+      }
     }
   }
 }

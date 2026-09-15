@@ -1,0 +1,42 @@
+@setup {
+  format: 180mm 80mm;
+  $h1: size=20 bold color=white;
+  $sub: size=12 color=white;
+  $label: size=9 color=#64748b;
+  $val: size=14 bold color=#0f172a;
+}
+@doc {
+  page(bg=#ffffff, p=5mm) {
+    cols(gap=0mm) {
+      box(w=30%, bg=#334155, p=5mm) {
+        txt($h1) { TECH CONF }
+        txt($sub, mb=15mm) { 2026 }
+        qr(data="TKT-998123", w=30mm) {}
+      }
+      box(w=70%, bg=#f8fafc, p=5mm) {
+        txt(size=18, bold, color=#334155, mb=10mm) { GENERAL ADMISSION }
+        cols(between) {
+          box(w=45%) {
+            txt($label) { ATTENDEE }
+            txt($val, mb=5mm) { Jane Smith }
+          }
+          box(w=45%) {
+            txt($label) { DATE }
+            txt($val, mb=5mm) { Oct 15, 2026 }
+          }
+        }
+        sp(h=5mm) {}
+        cols(between) {
+          box(w=45%) {
+            txt($label) { VENUE }
+            txt($val) { Expo Center }
+          }
+          box(w=45%) {
+            txt($label) { SEAT }
+            txt($val) { Section A, Row 4 }
+          }
+        }
+      }
+    }
+  }
+}

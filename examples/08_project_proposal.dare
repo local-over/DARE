@@ -1,0 +1,60 @@
+@setup {
+  format: A4;
+  $h1: size=20 bold color=#0f172a mb=2mm;
+  $h2: size=14 bold color=#334155 mt=2mm mb=1mm;
+  $p: size=10 color=#475569;
+}
+@doc {
+  page {
+    box(p=5mm) {
+      txt($h1) { AI Integration Proposal }
+      txt(size=10, italic, mb=2mm) { Prepared for: Acme Corp | Date: Sep 2026 }
+      
+      txt($h2) { 1. Executive Summary }
+      txt($p) { This proposal outlines the strategy to integrate DARE v2 native AI rendering into Acme Corp's document generation pipeline. The objective is to fully automate reporting systems, eliminate bottlenecks, and significantly reduce human error. }
+      
+      txt($h2) { 2. Implementation Timeline }
+      txt($p) { The project will be divided into four distinct phases. }
+      list(type=ul) {
+        Phase 1: Architecture Review (Weeks 1-2)
+        Phase 2: Core Development (Weeks 3-6)
+        Phase 3: Integration & QA (Weeks 7-9)
+        Phase 4: Final Deployment & Training (Week 10)
+      }
+      
+      txt($h2) { 3. Cost Analysis }
+      tbl(cols="2fr 1fr") {
+        Phase, Cost;
+        Discovery & Design, $15000;
+        Development & Integration, $45000;
+        Testing & Deployment, $10000;
+        Maintenance & Support (1 Year), $5000;
+        Total Estimated Cost, $75000
+      }
+      
+      txt($h2) { 4. Projected ROI }
+      cols(gap=5mm) {
+        box(w=50%) {
+          txt($p) { By automating the reporting, we estimate a massive reduction in manual hours, leading to a 300% ROI in year one. The efficiency gains will allow the team to focus on strategic tasks rather than operational overhead. }
+        }
+        box(w=50%) {
+          bar(labels="Year 1,Year 2,Year 3", data="150000,300000,450000", title="Savings ($)", label="Savings") {}
+        }
+      }
+      
+      txt($h2) { 5. Conclusion & Next Steps }
+      txt($p) { Upon approval of this proposal, we will initiate the project within two weeks. Please sign below to indicate your acceptance of the terms and timeline outlined in this document. }
+      
+      cols(between, mt=5mm) {
+        box(w=40%) {
+          hr() {}
+          txt(size=10, mt=1mm) { Client Signature }
+        }
+        box(w=40%, ta=right) {
+          hr() {}
+          txt(size=10, mt=1mm, ta=right) { Provider Signature }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+name: Deploy DARE v3
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout Code 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Core Dependencies 🔧
+        run: npm ci
+
+      - name: Install Web Dependencies 🔧
+        run: cd web && npm ci --legacy-peer-deps
+
+      - name: Build Next.js Edge App 🏗️
+        run: cd web && npx @cloudflare/next-on-pages
+
+      - name: Deploy to Cloudflare Pages 🚀
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: dare
+          directory: web/.vercel/output/static

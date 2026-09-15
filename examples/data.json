@@ -1,0 +1,16 @@
+{
+    "invoice": {
+        "id": "9945",
+        "date": "Oct 15, 2026",
+        "is_paid": true,
+        "total": 1450.00,
+        "items": [
+            { "desc": "DARE Engine Enterprise License", "qty": 1, "price": 1000.00 },
+            { "desc": "Custom Vector Design Services", "qty": 3, "price": 150.00 }
+        ]
+    },
+    "customer": {
+        "name": "Jane Doe",
+        "email": "jane@example.com"
+    }
+}

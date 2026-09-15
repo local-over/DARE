@@ -1,0 +1,23 @@
+@setup {
+  format: A4;
+}
+
+@doc {
+  page {
+    box(p=10mm) {
+      txt(size=16, bold) { Media & Lines Test }
+      sp(h=10) {}
+      
+      txt(size=12, bold) { 1. QR Code }
+      qr(data="https://github.com/local-over/DARE", w=30mm) {}
+      
+      sp(h=15) {}
+      
+      txt(size=12, bold) { 2. Horizontal Rules }
+      hr {}
+      sp(h=5) {}
+      line {}
+      
+    }
+  }
+}

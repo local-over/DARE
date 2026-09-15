@@ -1,0 +1,56 @@
+@setup {
+    format: a4;
+    $hdr: bold size=20 color=white;
+    $th: bold color=muted size=10;
+}
+
+@data {
+    src: "data.json"
+}
+
+@doc {
+    page(bg=surface) {
+        box(bg=primary, p=20) {
+            cols(between) {
+                txt($hdr) { INVOICE #{{ invoice.id }} }
+                txt(color=white) { {{ invoice.date }} }
+            }
+        }
+        
+        box(p=20) {
+            txt(size=14 bold mb=10) { Bill To: }
+            txt { {{ customer.name }} }
+            txt { {{ customer.email }} }
+        }
+
+        box(p=20) {
+            cols {
+                txt(w=50% $th) { Description }
+                txt(w=20% $th) { Qty }
+                txt(w=30% $th) { Price }
+            }
+            hr {}
+            
+            each(item in invoice.items) {
+                cols(mt=10) {
+                    txt(w=50%) { {{ item.desc }} }
+                    txt(w=20%) { {{ item.qty }} }
+                    txt(w=30%) { ${{ item.price }} }
+                }
+            }
+            
+            hr(mt=15 mb=15) {}
+            
+            cols {
+                txt(w=70% right bold size=14) { TOTAL: }
+                txt(w=30% bold size=14 color=primary) { ${{ invoice.total }} }
+            }
+        }
+        
+        if(invoice.is_paid) {
+            box(bg=success, p=10, mt=20) {
+                txt(center bold color=white) { PAID IN FULL }
+            }
+        }
+    }
+}

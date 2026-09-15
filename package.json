@@ -1,6 +1,6 @@
 {
   "name": "dare-engine",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "AI-native, token-efficient markup language for generating pixel-perfect PDF documents",
   "main": "index.js",
   "bin": {
@@ -27,7 +27,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "mime-types": "^2.1.35",
-    "puppeteer": "^24.34.0",
+    "pdfmake": "^0.3.11",
     "qrcode": "^1.5.3"
   }
 }

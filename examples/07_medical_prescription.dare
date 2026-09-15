@@ -1,0 +1,53 @@
+@setup {
+  format: A5;
+  $clinic: size=12 bold color=#1e3a8a mb=1mm;
+  $label: size=8 color=#6b7280;
+  $val: size=9 bold color=#111827;
+}
+@doc {
+  page {
+    box(p=3mm) {
+      box(ta=center, mb=2mm) {
+        txt($clinic) { HEALTHPLUS CLINIC }
+        txt(size=7) { 789 Care Blvd, Wellness City, NY 10001 }
+      }
+      hr() {}
+      cols(n=2, gap=2mm, mt=2mm) {
+        box(w=50%) {
+          txt($label) { Patient Name }
+          txt($val, mb=2mm) { Michael Scott }
+          txt($label) { Age & Gender }
+          txt($val) { 43 Y / Male }
+        }
+        box(w=50%) {
+          txt($label) { Date }
+          txt($val, mb=2mm) { 09/12/2026 }
+          txt($label) { Weight & Height }
+          txt($val) { 82 kg / 175 cm }
+        }
+      }
+      box(bg=#f3f4f6, p=2mm, border=1, mt=2mm) {
+        txt(size=14, bold, color=#111827) { Rx }
+        list(type=ul) {
+          Amoxicillin 500mg - 1 cap 3x day (7 days)
+          Ibuprofen 400mg - 1 tab as needed
+          Lisinopril 10mg - 1 tab daily (morning)
+          Atorvastatin 20mg - 1 tab daily (night)
+        }
+      }
+      cols(between, mt=2mm) {
+        box(w=50%) {
+          txt(size=8, color=#6b7280) { Doctor's Remarks: }
+          txt(size=9) { Follow-up after 1 week. }
+        }
+        box(w=40%, ta=right) {
+          hr() {}
+          txt(size=9, bold, mt=1mm) { Dr. Gregory House }
+        }
+      }
+      box(ta=center, mt=2mm) {
+        qr(data="https://healthplus.clinic/verify/prescription", w=15mm) {}
+      }
+    }
+  }
+}
