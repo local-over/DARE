@@ -137,16 +137,16 @@ export default function CodeComparison() {
     return (
         <div className="w-full max-w-3xl mx-auto">
             {/* Tab switcher */}
-            <div className="flex items-center gap-1 mb-4 p-1 rounded-xl bg-[#1B2336] w-fit mx-auto border border-[#475569]">
+            <div className="flex items-center gap-1 mb-4 p-1 rounded-xl bg-[#09090B] w-fit mx-auto border border-[#27272A]">
                 <button
                     onClick={() => setActiveTab('html')}
                     className="relative px-5 py-2 text-[13px] font-medium rounded-lg transition-colors"
-                    style={{ color: activeTab === 'html' ? '#F8FAFC' : '#94A3B8' }}
+                    style={{ color: activeTab === 'html' ? '#FAFAFA' : '#A1A1AA' }}
                 >
                     {activeTab === 'html' && (
                         <motion.div
                             layoutId="comparison-tab"
-                            className="absolute inset-0 bg-[#0F172A] rounded-lg border border-[#475569]"
+                            className="absolute inset-0 bg-[#000000] rounded-lg border border-[#27272A]"
                             transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                             style={{ zIndex: -1 }}
                         />
@@ -156,12 +156,12 @@ export default function CodeComparison() {
                 <button
                     onClick={() => setActiveTab('dare')}
                     className="relative px-5 py-2 text-[13px] font-medium rounded-lg transition-colors"
-                    style={{ color: activeTab === 'dare' ? '#F8FAFC' : '#94A3B8' }}
+                    style={{ color: activeTab === 'dare' ? '#FAFAFA' : '#A1A1AA' }}
                 >
                     {activeTab === 'dare' && (
                         <motion.div
                             layoutId="comparison-tab"
-                            className="absolute inset-0 bg-[#0F172A] rounded-lg border border-[#475569]"
+                            className="absolute inset-0 bg-[#000000] rounded-lg border border-[#27272A]"
                             transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                             style={{ zIndex: -1 }}
                         />
@@ -179,14 +179,14 @@ export default function CodeComparison() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: activeTab === 'dare' ? -20 : 20 }}
                         transition={{ duration: 0.25 }}
-                        className="p-5 text-[12.5px] leading-[1.7] text-neutral-300 whitespace-pre overflow-auto h-full"
+                        className="p-5 text-[12.5px] leading-[1.7] text-[#D4D4D8] whitespace-pre overflow-auto h-full"
                     >
                         {currentDisplay.displayed}
                         {!currentDone && (
                             <motion.span
                                 animate={{ opacity: [1, 0] }}
                                 transition={{ repeat: Infinity, duration: 0.6 }}
-                                className="inline-block w-[7px] h-[15px] bg-white/70 ml-[1px] align-middle"
+                                className="inline-block w-[7px] h-[15px] bg-[#FAFAFA] ml-[1px] align-middle"
                             />
                         )}
                     </motion.pre>
@@ -196,13 +196,13 @@ export default function CodeComparison() {
             {/* Token counter */}
             <div className="flex items-center justify-center gap-6 mt-4 text-[13px]">
                 <div className="flex items-center gap-2">
-                    <span className="text-neutral-500">Tokens:</span>
+                    <span className="text-[#A1A1AA]">Tokens:</span>
                     <motion.span
                         key={activeTab + '-tokens'}
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="font-mono font-bold"
-                        style={{ color: activeTab === 'dare' ? '#22c55e' : '#ef4444' }}
+                        style={{ color: activeTab === 'dare' ? '#FAFAFA' : '#D4D4D8' }}
                     >
                         ~{currentTokens}
                     </motion.span>
@@ -211,8 +211,8 @@ export default function CodeComparison() {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-medium"
-                        style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e' }}
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold border border-[#27272A]"
+                        style={{ background: '#09090B', color: '#FAFAFA' }}
                     >
                         {Math.round((1 - dareTokens / htmlTokens) * 100)}% fewer tokens
                     </motion.div>
