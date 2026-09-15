@@ -29,7 +29,7 @@ export default function SkillsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="max-w-3xl w-full mx-auto bg-[#09090B] border border-[#27272A] rounded-2xl overflow-hidden mt-12"
+                className="max-w-3xl w-full mx-auto bg-[#000000] border border-[#27272A] rounded-2xl overflow-hidden mt-12"
             >
                 <div className="p-8 md:p-12">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#000000] border border-[#27272A] text-[#FAFAFA] text-xs font-bold tracking-wide mb-6">
@@ -42,7 +42,7 @@ export default function SkillsPage() {
                         Install the DARE skill into your AI agent's workspace. This teaches any LLM how to write perfectly valid, token-efficient DARE syntax and compile it directly to PDF via our native Edge API.
                     </p>
 
-                    <div className="bg-[#09090B] border border-[#27272A] rounded-xl p-6 mb-10 relative">
+                    <div className="bg-[#000000] border border-[#27272A] rounded-xl p-6 mb-10 relative">
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-sm font-bold text-[#52525B] uppercase tracking-wider">Install Prompt</span>
                             <button 
@@ -50,7 +50,7 @@ export default function SkillsPage() {
                                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                                     copied 
                                     ? "bg-[#FAFAFA] text-[#000000] border border-[#FAFAFA]" 
-                                    : "bg-[#18181B] hover:bg-[#27272A] text-[#FAFAFA] border border-[#27272A]"
+                                    : "bg-[#000000] hover:bg-[#27272A] text-[#FAFAFA] border border-[#27272A]"
                                 }`}
                             >
                                 {copied ? "Copied!" : "Copy Prompt"}

@@ -80,8 +80,8 @@ export default function Playground() {
             
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[600px]">
                 {/* Editor */}
-                <div className="flex flex-col bg-[#09090B] border border-[#27272A] rounded-xl overflow-hidden">
-                    <div className="px-4 py-2.5 border-b border-[#27272A] flex items-center bg-[#09090B]">
+                <div className="flex flex-col bg-[#000000] border border-[#27272A] rounded-xl overflow-hidden">
+                    <div className="px-4 py-2.5 border-b border-[#27272A] flex items-center bg-[#000000]">
                         <span className="text-[12px] font-mono text-[#A1A1AA]">document.dare</span>
                     </div>
                     <div className="flex-1 relative">
@@ -95,11 +95,11 @@ export default function Playground() {
                 </div>
 
                 {/* Preview */}
-                <div className="flex flex-col bg-[#09090B] border border-[#27272A] rounded-xl overflow-hidden relative">
-                    <div className="px-4 py-2.5 border-b border-[#27272A] flex items-center bg-[#09090B]">
+                <div className="flex flex-col bg-[#000000] border border-[#27272A] rounded-xl overflow-hidden relative">
+                    <div className="px-4 py-2.5 border-b border-[#27272A] flex items-center bg-[#000000]">
                         <span className="text-[12px] font-mono text-[#A1A1AA]">output.pdf</span>
                     </div>
-                    <div className="flex-1 bg-[#18181B] relative p-4">
+                    <div className="flex-1 bg-[#000000] relative p-4">
                         <AnimatePresence mode="wait">
                             {pdfUrl ? (
                                 <motion.iframe 

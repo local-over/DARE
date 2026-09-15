@@ -16,7 +16,7 @@ export default function Home() {
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                     className="mb-8"
                 >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#18181B] border border-[#27272A] text-[#A1A1AA] text-xs font-semibold tracking-wide uppercase">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#000000] border border-[#27272A] text-[#A1A1AA] text-xs font-semibold tracking-wide uppercase">
                         <span className="w-1.5 h-1.5 bg-[#FAFAFA]" />
                         DARE v3.0 IS LIVE
                     </div>
@@ -50,7 +50,7 @@ export default function Home() {
                     <Link href="/playground" className="bg-[#FAFAFA] text-[#000000] border border-[#FAFAFA] px-8 py-4 font-semibold text-[16px] hover:bg-[#E4E4E7] transition-all flex items-center justify-center gap-2">
                         <PlayIcon /> Open Playground
                     </Link>
-                    <Link href="/docs" className="bg-[#18181B] text-[#FAFAFA] border border-[#27272A] px-8 py-4 font-semibold text-[16px] hover:bg-[#27272A] transition-all flex items-center justify-center gap-2">
+                    <Link href="/docs" className="bg-[#000000] text-[#FAFAFA] border border-[#27272A] px-8 py-4 font-semibold text-[16px] hover:bg-[#27272A] transition-all flex items-center justify-center gap-2">
                         <DocIcon /> Read the Docs
                     </Link>
                     <Link href="/skills" className="bg-transparent text-[#A1A1AA] border border-[#27272A] px-8 py-4 font-semibold text-[16px] hover:border-[#FAFAFA] hover:text-[#FAFAFA] transition-all flex items-center justify-center gap-2">
@@ -74,7 +74,7 @@ export default function Home() {
                 <CodeComparison />
             </motion.section>
 
-            <section className="w-full px-6 py-32 relative z-10 border-t border-[#27272A] bg-[#09090B]">
+            <section className="w-full px-6 py-32 relative z-10 border-t border-[#27272A] bg-[#000000]">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-20">
                         <h2 className="text-[40px] font-bold tracking-tight text-[#FAFAFA] mb-4">What's New in v3</h2>
@@ -111,7 +111,7 @@ export default function Home() {
 
 function FeatureBlock({ title, desc, icon }) {
     return (
-        <div className="group relative bg-[#18181B] border border-[#27272A] p-8 hover:bg-[#27272A] hover:border-[#3F3F46] transition-all overflow-hidden cursor-pointer">
+        <div className="group relative bg-[#000000] border border-[#27272A] p-8 hover:bg-[#27272A] hover:border-[#3F3F46] transition-all overflow-hidden cursor-pointer">
             <div className="w-12 h-12 bg-[#000000] border border-[#3F3F46] flex items-center justify-center mb-6 text-[#FAFAFA]">
                 {icon}
             </div>

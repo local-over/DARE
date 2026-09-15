@@ -140,20 +140,21 @@ function extractDataBlock(cleanCode) {
     const closeIdx = findClosingBrace(cleanCode, openIdx);
     const content = cleanCode.substring(openIdx + 1, closeIdx - 1).trim();
     
-    if (content.startsWith('{') || content.startsWith('[')) {
-        try {
-            return JSON.parse(content);
-        } catch(e) {
-            console.warn("DARE Warning: Failed to parse embedded @data JSON block.");
-            return null;
-        }
-    } else {
+    let jsonStr = content;
+    if (!content.startsWith('{') && !content.startsWith('[')) {
         const srcMatch = content.match(/src:\s*"([^"]+)"/);
         if (srcMatch) {
             return { _linkedSrc: srcMatch[1] };
         }
+        jsonStr = `{ ${content} }`;
     }
-    return null;
+
+    try {
+        return JSON.parse(jsonStr);
+    } catch(e) {
+        console.warn("DARE Warning: Failed to parse embedded @data JSON block.");
+        return null;
+    }
 }
 
 /**

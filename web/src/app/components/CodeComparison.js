@@ -137,7 +137,7 @@ export default function CodeComparison() {
     return (
         <div className="w-full max-w-3xl mx-auto">
             {/* Tab switcher */}
-            <div className="flex items-center gap-1 mb-4 p-1 rounded-xl bg-[#09090B] w-fit mx-auto border border-[#27272A]">
+            <div className="flex items-center gap-1 mb-4 p-1 rounded-xl bg-[#000000] w-fit mx-auto border border-[#27272A]">
                 <button
                     onClick={() => setActiveTab('html')}
                     className="relative px-5 py-2 text-[13px] font-medium rounded-lg transition-colors"

@@ -41,7 +41,7 @@ export default function Docs() {
                                 className={`text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
                                     activeSection === sec.id 
                                     ? 'bg-[#FAFAFA] text-[#000000] font-medium' 
-                                    : 'text-[#A1A1AA] hover:text-[#FAFAFA] hover:bg-[#18181B]'
+                                    : 'text-[#A1A1AA] hover:text-[#FAFAFA] hover:bg-[#000000]'
                                 }`}
                             >
                                 {sec.title}
@@ -57,7 +57,7 @@ export default function Docs() {
                     
                     <section id="intro">
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-                            <div className="inline-block px-3 py-1 rounded-full bg-[#09090B] border border-[#27272A] text-[#FAFAFA] text-xs font-bold tracking-wider mb-6">
+                            <div className="inline-block px-3 py-1 rounded-full bg-[#000000] border border-[#27272A] text-[#FAFAFA] text-xs font-bold tracking-wider mb-6">
                                 DARE ENGINE v3.0
                             </div>
                             <h1 className="text-5xl font-black tracking-tight text-[#FAFAFA] mb-6">Encyclopedic Reference</h1>
@@ -74,11 +74,11 @@ export default function Docs() {
                                 Traditional document generation relies on HTML/CSS or verbose JSON structures (like pdfmake). These approaches are token-heavy, prone to hallucination by AI, and slow to render. DARE solves this by enforcing a strict, hierarchical, and extremely compact syntax.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                                <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                                <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                     <h4 className="text-[#FAFAFA] font-bold mb-2">Zero Ambiguity</h4>
                                     <p className="text-sm text-[#A1A1AA]">DARE maps 1:1 to an Abstract Syntax Tree (AST). There are no cascading side-effects or unpredictable layouts.</p>
                                 </div>
-                                <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                                <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                     <h4 className="text-[#FAFAFA] font-bold mb-2">Token Efficient</h4>
                                     <p className="text-sm text-[#A1A1AA]">By utilizing a custom syntax and macro aliases, DARE reduces the token footprint by up to 85% compared to HTML equivalents.</p>
                                 </div>
@@ -91,7 +91,7 @@ export default function Docs() {
                         <p className="text-[#A1A1AA] text-lg leading-relaxed mb-8">
                             A DARE file is strictly divided into three root blocks. Every DARE file must end with a <code>@doc</code> block.
                         </p>
-                        <div className="bg-[#09090B] rounded-2xl border border-[#27272A] p-6 font-mono text-sm">
+                        <div className="bg-[#000000] rounded-2xl border border-[#27272A] p-6 font-mono text-sm">
                             <div className="text-[#52525B] mb-2">// 1. Metadata and Styling Aliases (Optional but recommended)</div>
                             <div className="text-[#FAFAFA] font-bold">@setup {'{'}</div>
                             <div className="pl-6 text-[#D4D4D8]">
@@ -127,19 +127,19 @@ export default function Docs() {
                             The <code>@setup</code> block initializes the document context. You define the page format, orientation, embedded fonts, and CSS-like utility aliases.
                         </p>
                         <ul className="space-y-4 text-[#D4D4D8]">
-                            <li className="flex gap-4 p-4 bg-[#09090B] rounded-xl border border-[#27272A]">
+                            <li className="flex gap-4 p-4 bg-[#000000] rounded-xl border border-[#27272A]">
                                 <code className="text-[#FAFAFA] font-bold shrink-0">format</code>
                                 <div>
                                     <p>Sets the page size. Accepts standard names (<code>A4</code>, <code>LETTER</code>, <code>LEGAL</code>) or custom dimensions (<code>500 800</code>). Combined with orientation: <code>A4 landscape</code>.</p>
                                 </div>
                             </li>
-                            <li className="flex gap-4 p-4 bg-[#09090B] rounded-xl border border-[#27272A]">
+                            <li className="flex gap-4 p-4 bg-[#000000] rounded-xl border border-[#27272A]">
                                 <code className="text-[#FAFAFA] font-bold shrink-0">fonts</code>
                                 <div>
                                     <p>Comma-separated list of fonts to embed (e.g., <code>Helvetica, Times-Roman</code>).</p>
                                 </div>
                             </li>
-                            <li className="flex gap-4 p-4 bg-[#09090B] rounded-xl border border-[#27272A]">
+                            <li className="flex gap-4 p-4 bg-[#000000] rounded-xl border border-[#27272A]">
                                 <code className="text-[#FAFAFA] font-bold shrink-0">$alias</code>
                                 <div>
                                     <p>Define a reusable property bundle starting with <code>$</code>. E.g., <code>$primaryBtn: bg=#000 p=10 rounded color=white;</code>. You can then apply this alias in any component: <code>box($primaryBtn)</code>.</p>
@@ -153,7 +153,7 @@ export default function Docs() {
                         <p className="text-[#D4D4D8] mb-4">
                             The <code>@data</code> block binds context directly into the AST. It accepts raw JSON.
                         </p>
-                        <div className="bg-[#09090B] rounded-xl p-4 font-mono text-sm text-[#D4D4D8] border border-[#27272A] mb-4">
+                        <div className="bg-[#000000] rounded-xl p-4 font-mono text-sm text-[#D4D4D8] border border-[#27272A] mb-4">
                             <span className="text-[#FAFAFA] font-bold">@data</span> {'{'} <br/>
                             &nbsp;&nbsp;"user": {'{'} "name": "Alice", "role": "Admin" {'}'},<br/>
                             &nbsp;&nbsp;"items": ["Sword", "Shield", "Potion"]<br/>
@@ -162,7 +162,7 @@ export default function Docs() {
                         <p className="text-[#D4D4D8] mb-4">
                             Alternatively, link an external source (only works in local CLI environments):
                         </p>
-                        <div className="bg-[#09090B] rounded-xl p-4 font-mono text-sm text-[#D4D4D8] border border-[#27272A] mb-4">
+                        <div className="bg-[#000000] rounded-xl p-4 font-mono text-sm text-[#D4D4D8] border border-[#27272A] mb-4">
                             <span className="text-[#FAFAFA] font-bold">@data</span> {'{'} src: "./mock_data.json" {'}'}
                         </div>
                     </section>
@@ -171,7 +171,7 @@ export default function Docs() {
                         <h2 className="text-3xl font-bold tracking-tight text-[#FAFAFA] mb-6 border-b border-[#27272A] pb-4">6. Containers & Layout</h2>
                         <div className="space-y-6 text-[#D4D4D8]">
                             
-                            <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                            <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                 <div className="flex items-center gap-3 mb-2">
                                     <h3 className="text-xl font-bold text-[#FAFAFA]">page</h3>
                                     <span className="text-xs px-2 py-1 bg-[#000000] border border-[#27272A] rounded-md">Container</span>
@@ -180,7 +180,7 @@ export default function Docs() {
                                 <div className="font-mono text-xs text-[#52525B]">Props: bg, p, pt, pb, pl, pr, mt, mb, ml, mr</div>
                             </div>
 
-                            <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                            <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                 <div className="flex items-center gap-3 mb-2">
                                     <h3 className="text-xl font-bold text-[#FAFAFA]">box</h3>
                                     <span className="text-xs px-2 py-1 bg-[#000000] border border-[#27272A] rounded-md">Container</span>
@@ -190,7 +190,7 @@ export default function Docs() {
                                 <code className="text-xs bg-[#000000] p-2 rounded block border border-[#27272A]">box(bg=#f1f5f9 border=1 borderColor=#e2e8f0 p=10) {'{ ... }'}</code>
                             </div>
 
-                            <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                            <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                 <div className="flex items-center gap-3 mb-2">
                                     <h3 className="text-xl font-bold text-[#FAFAFA]">cols</h3>
                                     <span className="text-xs px-2 py-1 bg-[#000000] border border-[#27272A] rounded-md">Container</span>
@@ -200,7 +200,7 @@ export default function Docs() {
                                 <code className="text-xs bg-[#000000] p-2 rounded block border border-[#27272A]">cols(n=3 gap=5mm) {'{ box(){...} box(){...} box(){...} }'}</code>
                             </div>
 
-                            <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                            <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                 <div className="flex items-center gap-3 mb-2">
                                     <h3 className="text-xl font-bold text-[#FAFAFA]">hdr / ftr</h3>
                                     <span className="text-xs px-2 py-1 bg-[#000000] border border-[#27272A] rounded-md">Container</span>
@@ -215,21 +215,21 @@ export default function Docs() {
                         <h2 className="text-3xl font-bold tracking-tight text-[#FAFAFA] mb-6 border-b border-[#27272A] pb-4">7. Typography & Leafs</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             
-                            <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                            <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                 <h3 className="text-xl font-bold text-[#FAFAFA] mb-2">txt</h3>
                                 <p className="text-sm text-[#A1A1AA] mb-4">Renders strings. Evaluates mustache tags for data interpolation.</p>
                                 <div className="font-mono text-xs text-[#52525B] mb-2">Props: size, color, bold, italic, uppercase, center, right, mt, mb</div>
                                 <code className="text-xs bg-[#000000] p-2 rounded block text-[#FAFAFA] border border-[#27272A]">txt(size=14 bold color=#ef4444) {'{ WARNING: {{ error }} }'}</code>
                             </div>
 
-                            <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                            <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                 <h3 className="text-xl font-bold text-[#FAFAFA] mb-2">tbl</h3>
                                 <p className="text-sm text-[#A1A1AA] mb-4">Renders tabular data natively (supported by engine extensions). Uses CSV-like internal syntax separated by semicolons and commas.</p>
                                 <div className="font-mono text-xs text-[#52525B] mb-2">Props: cols (e.g. "1fr 2fr 1fr")</div>
                                 <code className="text-xs bg-[#000000] p-2 rounded block text-[#FAFAFA] border border-[#27272A]">tbl(cols="1fr 2fr") {'{\n  ID, Name;\n  1, Alice;\n  2, Bob\n}'}</code>
                             </div>
 
-                            <div className="p-6 bg-[#09090B] rounded-2xl border border-[#27272A]">
+                            <div className="p-6 bg-[#000000] rounded-2xl border border-[#27272A]">
                                 <h3 className="text-xl font-bold text-[#FAFAFA] mb-2">list / badge / link</h3>
                                 <p className="text-sm text-[#A1A1AA] mb-4">Semantic leaf nodes. <code>badge</code> creates an inline pill. <code>link</code> wraps text in a hyperlink. <code>list</code> formats content with bullets.</p>
                             </div>
@@ -242,7 +242,7 @@ export default function Docs() {
                         <p className="text-[#D4D4D8] mb-6">Void components do not take children and are self-closing (empty braces <code>{'{ }'}</code>).</p>
                         
                         <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row gap-4 p-4 bg-[#09090B] rounded-xl border border-[#27272A]">
+                            <div className="flex flex-col md:flex-row gap-4 p-4 bg-[#000000] rounded-xl border border-[#27272A]">
                                 <div className="w-48 shrink-0"><code className="text-[#FAFAFA] font-bold text-lg">img</code></div>
                                 <div>
                                     <p className="text-[#D4D4D8] text-sm mb-2">Embeds an image from a URL or local path. Supports JPG/PNG.</p>
@@ -250,7 +250,7 @@ export default function Docs() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col md:flex-row gap-4 p-4 bg-[#09090B] rounded-xl border border-[#27272A]">
+                            <div className="flex flex-col md:flex-row gap-4 p-4 bg-[#000000] rounded-xl border border-[#27272A]">
                                 <div className="w-48 shrink-0"><code className="text-[#FAFAFA] font-bold text-lg">qr</code></div>
                                 <div>
                                     <p className="text-[#D4D4D8] text-sm mb-2">Generates a native high-res QR code on the fly.</p>
@@ -258,7 +258,7 @@ export default function Docs() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col md:flex-row gap-4 p-4 bg-[#09090B] rounded-xl border border-[#27272A]">
+                            <div className="flex flex-col md:flex-row gap-4 p-4 bg-[#000000] rounded-xl border border-[#27272A]">
                                 <div className="w-48 shrink-0"><code className="text-[#FAFAFA] font-bold text-lg">bar / pie / line</code></div>
                                 <div>
                                     <p className="text-[#D4D4D8] text-sm mb-2">Compiles beautiful native charts dynamically using QuickChart API under the hood.</p>
@@ -272,7 +272,7 @@ export default function Docs() {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col md:flex-row gap-4 p-4 bg-[#09090B] rounded-xl border border-[#27272A]">
+                            <div className="flex flex-col md:flex-row gap-4 p-4 bg-[#000000] rounded-xl border border-[#27272A]">
                                 <div className="w-48 shrink-0"><code className="text-[#FAFAFA] font-bold text-lg">hr / sp / shape</code></div>
                                 <div>
                                     <p className="text-[#D4D4D8] text-sm mb-2">Layout utilities. <code>hr</code> draws a line. <code>sp</code> adds precise vertical space.</p>
