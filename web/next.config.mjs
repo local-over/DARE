@@ -12,6 +12,10 @@ const nextConfig = {
         stream: false,
         crypto: false,
         zlib: false,
+        async_hooks: false,
+        util: false,
+        events: false,
+        buffer: false,
       };
     }
     return config;

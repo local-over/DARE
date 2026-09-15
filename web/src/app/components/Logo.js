@@ -9,18 +9,12 @@ export default function Logo({ size = 28, animate = true }) {
             initial={animate ? { scale: 0.5, opacity: 0 } : false}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="flex items-center gap-2.5"
+            className="flex items-center gap-2"
         >
-            <div
-                style={{ width: size, height: size }}
-                className="rounded-full bg-white flex items-center justify-center relative"
-            >
-                <div
-                    style={{ width: size * 0.35, height: size * 0.35 }}
-                    className="rounded-full bg-black"
-                />
+            <div className="flex items-center justify-center font-mono font-bold text-white" style={{ fontSize: size }}>
+                {`{}`}
             </div>
-            <span className="font-bold text-[15px] tracking-tight text-white">
+            <span className="font-bold text-[15px] tracking-tight text-white ml-1">
                 DARE
             </span>
         </motion.div>

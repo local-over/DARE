@@ -58,7 +58,38 @@ export default function Home() {
                 <CodeComparison />
             </motion.section>
 
-            <section className="w-full px-6 py-24 bg-black relative z-10">
+            <section className="w-full px-6 py-24 relative z-10 border-t border-white/5 bg-black/50">
+                <div className="max-w-4xl mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="text-[32px] font-bold tracking-tight text-white mb-4">How It Works</h2>
+                        <p className="text-[16px] text-neutral-400">DARE decouples logic from presentation. It compiles your declarative markup into an AST, which the Edge Engine renders directly to PDF Buffer.</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div className="glass-panel p-8 rounded-2xl flex flex-col items-center">
+                            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4 text-white font-mono font-bold text-xl">{`{}`}</div>
+                            <h4 className="text-white font-semibold mb-2">1. Payload</h4>
+                            <p className="text-[13px] text-neutral-400">Your AI agent generates a compact JSON object containing DARE code and dynamic data variables.</p>
+                        </div>
+                        <div className="glass-panel p-8 rounded-2xl flex flex-col items-center">
+                            <div className="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mb-4">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                            </div>
+                            <h4 className="text-white font-semibold mb-2">2. Edge Compiler</h4>
+                            <p className="text-[13px] text-neutral-400">Cloudflare Workers intercept the payload, bind the data, and compile the AST purely in-memory in 0ms.</p>
+                        </div>
+                        <div className="glass-panel p-8 rounded-2xl flex flex-col items-center">
+                            <div className="w-12 h-12 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mb-4">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                            <h4 className="text-white font-semibold mb-2">3. PDF Buffer</h4>
+                            <p className="text-[13px] text-neutral-400">The API streams back a perfectly rendered, native PDF buffer directly to the user. No headless browser needed.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section className="w-full px-6 py-24 bg-black relative z-10 border-t border-white/5">
                 <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                     <FeatureCard 
                         title="0ms Cold Starts" 
