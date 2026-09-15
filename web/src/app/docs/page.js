@@ -433,7 +433,7 @@ export default function Docs() {
                             <span className="text-emerald-400">curl</span> -X POST https://dare-engine.com/api/render \<br/>
                             &nbsp;&nbsp;-H <span className="text-amber-300">"Content-Type: application/json"</span> \<br/>
                             &nbsp;&nbsp;-d <span className="text-amber-300">'{'{'}</span><br/>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">"code"</span>: <span className="text-amber-300">"@doc { page { box(bg=#000) { txt(color=white) { Hello } } } }"</span>,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">"code"</span>: <span className="text-amber-300">{"\"@doc { page { box(bg=#000) { txt(color=white) { Hello } } } }\""}</span>,<br/>
                             &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">"data"</span>: {'{'} <span className="text-amber-300">"user"</span>: <span className="text-amber-300">"Local Over"</span> {'}'}<br/>
                             &nbsp;&nbsp;<span className="text-amber-300">{'}'}'</span> \<br/>
                             &nbsp;&nbsp;--output result.pdf
