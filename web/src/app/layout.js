@@ -1,5 +1,6 @@
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import Nav from "./components/Nav";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,7 +23,12 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Nav />
+        <div className="flex-1 mt-14 flex flex-col">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

@@ -1,7 +1,7 @@
 const nextConfig = {
+  serverExternalPackages: ['pdfmake'],
   experimental: {
     externalDir: true,
-    serverComponentsExternalPackages: ['pdfmake'],
   },
   webpack: (config, { isServer, nextRuntime }) => {
     if (nextRuntime === 'edge') {
