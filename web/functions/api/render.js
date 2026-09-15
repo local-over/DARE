@@ -1,12 +1,9 @@
-import { compile } from '../../../../../src/parser.js';
-import { renderPdf } from '../../../../../src/renderers/pdf.js';
+import { compile } from '../../../src/parser.js';
+import { renderPdf } from '../../../src/renderers/pdf.js';
 
-export const runtime = 'edge';
-export const dynamic = 'force-dynamic';
-
-export async function POST(request) {
+export async function onRequestPost(context) {
     try {
-        const body = await request.json();
+        const body = await context.request.json();
         const code = body.code || '';
         const data = body.data || {};
         
