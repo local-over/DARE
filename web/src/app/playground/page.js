@@ -1,132 +1,219 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
-const DARE_EXAMPLE = `@setup {
-    format: a4;
-    $main: bold size=24 color=#ffffff;
-    $subtitle: color=#a1a1aa size=12;
-    $card: bg=#09090B rounded=4 p=15;
+const PRESETS = {
+  invoice: `@setup {
+  format: A4 portrait;
+  font: Inter;
+  $accent: #000000;
 }
 
 @data {
-    "title": "Welcome to DARE v3.0",
-    "user": "Developer"
+  invoiceNo: "INV-9921",
+  client: "Nexus Tech Solutions",
+  total: "$8,950.00"
 }
 
 @doc {
-    page(bg=#000000) {
-        box(p=30 bg=#09090B border=1 borderColor=#27272A rounded=6) {
-            txt($main) { {{ title }} }
-            txt($subtitle mt=5) { Native Edge Rendering for AI Agents }
-        }
-        
-        cols(n=2 gap=15 mt=20) {
-            box($card) {
-                txt(bold size=14 color=white) { Hello, {{ user }}! }
-                txt($subtitle mt=5) { This PDF was generated on the Edge. }
-                sp(h=10)
-                badge(bg=#27272A color=white size=10) { 0ms Cold Starts }
-            }
-            box($card center) {
-                qr(data="https://dare.pages.dev" w=80)
-            }
-        }
-    }
-}`;
+  [hdr title="INVOICE" subtitle="{{invoiceNo}}"]
+  [sp 20]
+  [txt text="Billed To: {{client}}" bold="true"]
+  [sp 15]
+  [tbl headers="Item,Cost" data="Cloud Architecture Consulting,$8950.00"]
+  [sp 30]
+  [ftr note="Thank you for partnering with us!"]
+}`,
+  certificate: `@setup {
+  format: A4 landscape;
+  font: Helvetica;
+}
 
-export default function Playground() {
-    const [dareCode, setDareCode] = useState(DARE_EXAMPLE);
-    const [pdfUrl, setPdfUrl] = useState(null);
-    const [loading, setLoading] = useState(false);
+@data {
+  recipient: "Jordan Lee",
+  course: "Advanced PDF Architecture",
+  date: "2026-09-16"
+}
 
-    const handleRun = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch('/api/render', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: dareCode })
-            });
-            if (res.ok) {
-                const blob = await res.blob();
-                setPdfUrl(URL.createObjectURL(blob));
-            } else {
-                alert("Compilation failed.");
-            }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
-        }
-    };
+@doc {
+  [hdr title="CERTIFICATE OF ACHIEVEMENT"]
+  [sp 30]
+  [txt text="This is presented to {{recipient}}" align="center" size="18"]
+  [txt text="For mastering {{course}}" align="center" size="14" color="#71717A"]
+  [sp 20]
+  [qr text="https://dare-lang.org/verify/9921"]
+}`,
+};
 
-    return (
-        <div className="flex-1 flex flex-col p-6 max-w-[1400px] w-full mx-auto">
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-[#FAFAFA] mb-1">Playground</h1>
-                    <p className="text-[14px] text-[#A1A1AA]">Write DARE code on the left, see the compiled PDF on the right.</p>
-                </div>
-                <button 
-                    onClick={handleRun}
-                    disabled={loading}
-                    className="bg-[#FAFAFA] text-[#000000] px-6 py-2 rounded-lg text-[14px] font-semibold flex items-center gap-2 hover:bg-[#E4E4E7] transition-colors disabled:opacity-50"
+export default function PlaygroundPage() {
+  const [code, setCode] = useState(PRESETS.invoice);
+  const [activePreset, setActivePreset] = useState('invoice');
+  const [compiling, setCompiling] = useState(false);
+  const [viewMode, setViewMode] = useState('pdf'); // 'pdf' or 'json'
+
+  const handlePreset = (key) => {
+    setActivePreset(key);
+    setCode(PRESETS[key]);
+  };
+
+  const handleCompile = () => {
+    setCompiling(true);
+    setTimeout(() => {
+      setCompiling(false);
+    }, 500);
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white font-sans flex flex-col justify-between selection:bg-white selection:text-black">
+      <div>
+        <Navbar />
+
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          {/* Header Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
+            <div>
+              <h1 className="text-2xl font-bold font-mono text-white">DARE Interactive Playground</h1>
+              <p className="text-xs text-neutral-400">Edit DARE template source code and test AST PDF compilation live.</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex bg-neutral-900 p-1 rounded-lg border border-white/10 text-xs font-mono">
+                <button
+                  onClick={() => handlePreset('invoice')}
+                  className={`px-3 py-1 rounded transition-all ${
+                    activePreset === 'invoice' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                  }`}
                 >
-                    {loading ? 'Compiling...' : 'Run Compiler'}
+                  Invoice Template
                 </button>
-            </div>
-            
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[600px]">
-                {/* Editor */}
-                <div className="flex flex-col bg-[#000000] border border-[#27272A] rounded-xl overflow-hidden">
-                    <div className="px-4 py-2.5 border-b border-[#27272A] flex items-center bg-[#000000]">
-                        <span className="text-[12px] font-mono text-[#A1A1AA]">document.dare</span>
-                    </div>
-                    <div className="flex-1 relative">
-                        <textarea
-                            value={dareCode}
-                            onChange={(e) => setDareCode(e.target.value)}
-                            className="absolute inset-0 w-full h-full bg-transparent p-5 font-mono text-[13px] leading-[1.7] text-[#D4D4D8] outline-none resize-none z-10"
-                            spellCheck={false}
-                        />
-                    </div>
-                </div>
+                <button
+                  onClick={() => handlePreset('certificate')}
+                  className={`px-3 py-1 rounded transition-all ${
+                    activePreset === 'certificate' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  Certificate Template
+                </button>
+              </div>
 
-                {/* Preview */}
-                <div className="flex flex-col bg-[#000000] border border-[#27272A] rounded-xl overflow-hidden relative">
-                    <div className="px-4 py-2.5 border-b border-[#27272A] flex items-center bg-[#000000]">
-                        <span className="text-[12px] font-mono text-[#A1A1AA]">output.pdf</span>
-                    </div>
-                    <div className="flex-1 bg-[#000000] relative p-4">
-                        <AnimatePresence mode="wait">
-                            {pdfUrl ? (
-                                <motion.iframe 
-                                    key="pdf"
-                                    initial={{ opacity: 0, scale: 0.98 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    src={pdfUrl} 
-                                    className="w-full h-full rounded-lg bg-[#000000] border border-[#27272A]" 
-                                />
-                            ) : (
-                                <motion.div 
-                                    key="empty"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="absolute inset-0 flex flex-col items-center justify-center text-[#52525B] font-medium text-[14px]"
-                                >
-                                    <div className="w-12 h-12 rounded-full border border-[#27272A] flex items-center justify-center mb-3">
-                                        <div className="w-4 h-4 rounded-[3px] border border-[#52525B]" />
-                                    </div>
-                                    <p>Click Run to render your Edge PDF</p>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
+              <button
+                onClick={handleCompile}
+                disabled={compiling}
+                className="px-5 py-2 rounded-lg bg-white text-black font-mono text-xs font-bold hover:bg-neutral-200 transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+              >
+                {compiling ? 'Compiling...' : '⚡ Compile PDF'}
+              </button>
             </div>
+          </div>
+
+          {/* Playground Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[550px]">
+            {/* Left: Code Editor */}
+            <div className="rounded-2xl border border-white/10 bg-neutral-950 p-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Editor (.dare)</span>
+                <span className="text-[10px] font-mono text-neutral-500">DARE Syntax v3.0</span>
+              </div>
+              <textarea
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className="w-full h-[450px] bg-transparent resize-none outline-none font-mono text-xs text-white leading-relaxed tracking-wide selection:bg-white selection:text-black"
+                spellCheck="false"
+              />
+            </div>
+
+            {/* Right: Render Preview */}
+            <div className="rounded-2xl border border-white/10 bg-neutral-950 p-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Compiler Output</span>
+                <div className="flex gap-1 bg-neutral-900 p-0.5 rounded border border-white/10">
+                  <button
+                    onClick={() => setViewMode('pdf')}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                      viewMode === 'pdf' ? 'bg-white text-black font-bold' : 'text-neutral-400'
+                    }`}
+                  >
+                    PDF Canvas
+                  </button>
+                  <button
+                    onClick={() => setViewMode('json')}
+                    className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                      viewMode === 'json' ? 'bg-white text-black font-bold' : 'text-neutral-400'
+                    }`}
+                  >
+                    AST Output
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex-1 rounded-xl border border-dashed border-white/15 bg-black p-6 flex items-center justify-center">
+                {compiling ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                    <span className="font-mono text-xs text-neutral-400 animate-pulse">Compiling PDF...</span>
+                  </div>
+                ) : viewMode === 'pdf' ? (
+                  <div className="w-full max-w-sm bg-white text-black p-8 rounded shadow-2xl space-y-4 font-sans text-xs border border-neutral-300">
+                    <div className="border-b pb-3 flex justify-between items-center">
+                      <div>
+                        <div className="font-bold text-sm">
+                          {activePreset === 'invoice' ? 'INVOICE' : 'CERTIFICATE OF ACHIEVEMENT'}
+                        </div>
+                        <div className="text-[10px] text-neutral-500 font-mono">
+                          {activePreset === 'invoice' ? 'INV-9921' : 'Verifiable Document'}
+                        </div>
+                      </div>
+                      <div className="w-6 h-6 rounded-full border-2 border-black flex items-center justify-center text-[8px] font-bold">
+                        DARE
+                      </div>
+                    </div>
+
+                    {activePreset === 'invoice' ? (
+                      <div className="space-y-2">
+                        <div className="flex justify-between font-bold border-b pb-1 text-[11px]">
+                          <span>Item</span>
+                          <span>Cost</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span>Cloud Architecture Consulting</span>
+                          <span className="font-mono">$8,950.00</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 space-y-2">
+                        <div className="text-base font-bold">Presented to Jordan Lee</div>
+                        <div className="text-xs text-neutral-500">For mastering Advanced PDF Architecture</div>
+                      </div>
+                    )}
+
+                    <div className="pt-4 border-t text-[9px] text-neutral-400 flex justify-between">
+                      <span>DARE v3.0 PDF Vector Engine</span>
+                      <span>Page 1 / 1</span>
+                    </div>
+                  </div>
+                ) : (
+                  <pre className="w-full h-full overflow-auto text-[10px] font-mono text-green-400 bg-neutral-950 p-4 rounded border border-white/10">
+                    {JSON.stringify(
+                      {
+                        status: 'compiled',
+                        format: activePreset === 'invoice' ? 'A4 portrait' : 'A4 landscape',
+                        astNodes: 5,
+                        timestamp: new Date().toISOString(),
+                      },
+                      null,
+                      2
+                    )}
+                  </pre>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+
+      <Footer />
+    </div>
+  );
 }

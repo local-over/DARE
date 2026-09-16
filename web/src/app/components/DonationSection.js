@@ -1,0 +1,107 @@
+'use client';
+
+import { useState } from 'react';
+
+export default function DonationSection() {
+  const [copied, setCopied] = useState(null);
+
+  const cryptoWallets = [
+    { name: 'Bitcoin (BTC)', address: 'bc1qdareengine2026btcxxxx' },
+    { name: 'Ethereum (ETH/USDT)', address: '0xdareengine2026ethxxxx' },
+    { name: 'Solana (SOL)', address: 'DAREengine2026solxxxx' },
+  ];
+
+  const handleCopy = (text, name) => {
+    navigator.clipboard.writeText(text);
+    setCopied(name);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
+  return (
+    <section id="donations" className="w-full py-20 border-t border-white/10 bg-neutral-950/60">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-white">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            Support Open Source DARE Development
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white font-sans">
+            Fuel the Future of DARE
+          </h2>
+          <p className="text-neutral-400 text-sm leading-relaxed">
+            DARE is 100% free, open-source software built for developers, AI agents, and document automation. Your contributions help maintain core development, edge infrastructure, and AI Skill packages.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          {/* GitHub Sponsors */}
+          <div className="p-8 rounded-2xl border border-white/10 bg-black/80 flex flex-col justify-between hover:border-white/30 transition-all duration-300">
+            <div className="space-y-4">
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono font-bold text-white text-lg">
+                ♥
+              </div>
+              <h3 className="text-lg font-bold text-white font-mono">GitHub Sponsors</h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                Sponsor DARE directly on GitHub to support ongoing core engine development and release builds.
+              </p>
+            </div>
+            <a
+              href="https://github.com/sponsors"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-8 w-full py-2.5 rounded-xl bg-white text-black font-mono text-xs font-bold text-center hover:bg-neutral-200 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+            >
+              Sponsor on GitHub →
+            </a>
+          </div>
+
+          {/* Buy Me a Coffee */}
+          <div className="p-8 rounded-2xl border border-white/10 bg-black/80 flex flex-col justify-between hover:border-white/30 transition-all duration-300">
+            <div className="space-y-4">
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono font-bold text-white text-lg">
+                ☕
+              </div>
+              <h3 className="text-lg font-bold text-white font-mono">Buy Us a Coffee</h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                One-time quick support for developer coffee and server test instances.
+              </p>
+            </div>
+            <a
+              href="https://buymeacoffee.com"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-8 w-full py-2.5 rounded-xl bg-white/10 text-white font-mono text-xs font-bold text-center border border-white/20 hover:bg-white/20 transition-all"
+            >
+              Buy a Coffee ☕
+            </a>
+          </div>
+
+          {/* Crypto Supporters */}
+          <div className="p-8 rounded-2xl border border-white/10 bg-black/80 flex flex-col justify-between hover:border-white/30 transition-all duration-300">
+            <div className="space-y-4">
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono font-bold text-white text-lg">
+                ⚡
+              </div>
+              <h3 className="text-lg font-bold text-white font-mono">Crypto Donations</h3>
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                Direct decentralized support via Bitcoin, Ethereum, or Solana wallet addresses.
+              </p>
+            </div>
+            <div className="mt-6 space-y-2">
+              {cryptoWallets.map((w) => (
+                <button
+                  key={w.name}
+                  onClick={() => handleCopy(w.address, w.name)}
+                  className="w-full text-left p-2 rounded bg-neutral-900 border border-white/10 hover:border-white/30 transition-all flex items-center justify-between font-mono text-[10px]"
+                >
+                  <span className="text-neutral-300">{w.name}</span>
+                  <span className="text-white font-bold">{copied === w.name ? 'Copied! ✓' : 'Copy'}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

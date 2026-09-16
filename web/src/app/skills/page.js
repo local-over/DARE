@@ -1,85 +1,96 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Head from "next/head";
-import { motion } from "framer-motion";
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function SkillsPage() {
-    const [copied, setCopied] = useState(false);
-    
-    const installPrompt = `curl -sSL https://raw.githubusercontent.com/local-over/DARE/main/dare-skill.md --create-dirs -o .agents/skills/dare/SKILL.md && echo "DARE skill installed. Use the online API if CLI is unavailable."`;
+  const skills = [
+    {
+      id: 'ui-ux-pro-max',
+      name: 'UI/UX Pro Max Skill',
+      handle: 'nextlevelbuilder/ui-ux-pro-max-skill',
+      command: '/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill\n/plugin install ui-ux-pro-max@ui-ux-pro-max-skill',
+      desc: 'Strict heuristic framework to prevent AI UI slop and enforce world-class typography, monochrome themes, and sleek micro-interactions.',
+      badge: 'POPULAR',
+    },
+    {
+      id: 'dare-engine',
+      name: 'DARE Engine Skill',
+      handle: 'dare-engine/dare-engine-skill',
+      command: '/plugin install dare-engine',
+      desc: 'Equips AI agents with native DARE PDF generation syntax, AST compilation, and live PDF rendering capability.',
+      badge: 'OFFICIAL',
+    },
+    {
+      id: 'pdf-qa-auditor',
+      name: 'PDF QA Auditor Skill',
+      handle: 'dare-engine/pdf-qa-auditor',
+      command: '/plugin install pdf-qa-auditor',
+      desc: 'Automated document QA skill that inspects rendered PDF page dimensions, layout margins, font embedding, and vector alignment.',
+      badge: 'UTILITY',
+    },
+  ];
 
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(installPrompt);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error("Failed to copy:", err);
-        }
-    };
+  return (
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black">
+      <Navbar />
 
-    return (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#000000] text-[#FAFAFA]">
-            <Head>
-                <title>DARE Engine - Skills</title>
-            </Head>
-            
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="max-w-3xl w-full mx-auto bg-[#000000] border border-[#27272A] rounded-2xl overflow-hidden mt-12"
-            >
-                <div className="p-8 md:p-12">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#000000] border border-[#27272A] text-[#FAFAFA] text-xs font-bold tracking-wide mb-6">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                        AGENT TOOL
-                    </div>
-                    
-                    <h1 className="text-4xl font-bold mb-4 tracking-tight text-[#FAFAFA]">DARE AI Skill</h1>
-                    <p className="text-[#A1A1AA] mb-10 text-lg leading-relaxed">
-                        Install the DARE skill into your AI agent's workspace. This teaches any LLM how to write perfectly valid, token-efficient DARE syntax and compile it directly to PDF via our native Edge API.
-                    </p>
-
-                    <div className="bg-[#000000] border border-[#27272A] rounded-xl p-6 mb-10 relative">
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="text-sm font-bold text-[#52525B] uppercase tracking-wider">Install Prompt</span>
-                            <button 
-                                onClick={handleCopy}
-                                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                                    copied 
-                                    ? "bg-[#FAFAFA] text-[#000000] border border-[#FAFAFA]" 
-                                    : "bg-[#000000] hover:bg-[#27272A] text-[#FAFAFA] border border-[#27272A]"
-                                }`}
-                            >
-                                {copied ? "Copied!" : "Copy Prompt"}
-                            </button>
-                        </div>
-                        <code className="block whitespace-pre-wrap break-all text-[13px] leading-relaxed font-mono text-[#D4D4D8]">
-                            {installPrompt}
-                        </code>
-                    </div>
-
-                    <div className="border-t border-[#27272A] pt-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2 text-[#FAFAFA]">Manual Download</h2>
-                            <p className="text-[#A1A1AA] text-sm">
-                                Download the raw <code>SKILL.md</code> file directly to your agent's directory.
-                            </p>
-                        </div>
-                        <a 
-                            href="https://raw.githubusercontent.com/local-over/DARE/main/dare-skill.md"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-transparent border border-[#27272A] hover:border-[#FAFAFA] hover:text-[#FAFAFA] text-[#FAFAFA] rounded-lg font-bold transition-all group shrink-0"
-                        >
-                            View SKILL.md 
-                            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                        </a>
-                    </div>
-                </div>
-            </motion.div>
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/15 text-xs font-mono text-neutral-300">
+            ⚡ AI Agent Extension Protocol
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold font-mono tracking-tight text-white">
+            DARE AI Skills
+          </h1>
+          <p className="text-neutral-400 text-base leading-relaxed">
+            Supercharge your AI coding assistant with official DARE Skills. Enable agents to generate, audit, and design vector PDFs directly inside your conversation context.
+          </p>
         </div>
-    );
+
+        {/* Skills Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+          {skills.map((s) => (
+            <div
+              key={s.id}
+              className="p-8 rounded-2xl border border-white/10 bg-neutral-950 flex flex-col justify-between hover:border-white/30 transition-all duration-300 space-y-6 shadow-2xl"
+            >
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-white/10 text-white border border-white/10">
+                    {s.badge}
+                  </span>
+                  <span className="text-[10px] font-mono text-neutral-500">{s.handle}</span>
+                </div>
+
+                <h3 className="text-xl font-bold font-mono text-white">{s.name}</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">{s.desc}</p>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Install Plugin Command</span>
+                <pre className="p-3 rounded-xl bg-black border border-white/10 font-mono text-[11px] text-green-400 overflow-x-auto whitespace-pre-wrap">
+                  {s.command}
+                </pre>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* How Skills Work */}
+        <div className="p-10 rounded-3xl border border-white/10 bg-neutral-950/60 max-w-4xl mx-auto text-center space-y-6">
+          <h2 className="text-2xl font-bold font-mono text-white">How Agent Skills Work</h2>
+          <p className="text-neutral-400 text-sm leading-relaxed max-w-2xl mx-auto">
+            DARE Skills provide structured `SKILL.md` rules, helper tools, and reference documentation that automatically trigger when your AI assistant works on document layout and PDF generation tasks.
+          </p>
+          <div className="inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-white/20 bg-white text-black font-mono text-xs font-bold shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            Equip Skills in your AI Agent Workspace →
+          </div>
+        </div>
+      </div>
+
+      <Footer />
+    </div>
+  );
 }
