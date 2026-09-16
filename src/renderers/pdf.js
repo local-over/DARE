@@ -225,25 +225,40 @@ class PDFRenderer {
                 fontColor = '#000000';
             }
             
-            let text = content || '';
-            if (props.uppercase) text = text.toUpperCase();
-            
+            let rawText = content || '';
+            if (props.uppercase) rawText = rawText.toUpperCase();
+
             const font = props.bold ? this.fontBold : (props.italic ? this.fontItalic : this.fontNormal);
             
-            const words = text.split(' ');
+            // Clean unencodable WinAnsi characters
+            const cleanChar = (s) => String(s).replace(/[^\x20-\x7E\xA0-\xFF]/g, '');
+            
+            // Split by line breaks first, then word wrap
+            const rawParagraphs = String(rawText).split(/\r\n|\r|\n/);
             let lines = [];
-            let currentLine = '';
-            for (let word of words) {
-                const testLine = currentLine ? currentLine + ' ' + word : word;
-                const testWidth = font.widthOfTextAtSize(testLine, fontSize);
-                if (testWidth > width && currentLine) {
-                    lines.push(currentLine);
-                    currentLine = word;
-                } else {
-                    currentLine = testLine;
+            
+            for (let rawPara of rawParagraphs) {
+                const words = cleanChar(rawPara).split(' ');
+                let currentLine = '';
+                for (let word of words) {
+                    if (!word) continue;
+                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                    let testWidth = 0;
+                    try {
+                        testWidth = font.widthOfTextAtSize(testLine, fontSize);
+                    } catch (e) {
+                        testWidth = testLine.length * (fontSize * 0.6);
+                    }
+                    if (width > 0 && testWidth > width && currentLine) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
                 }
+                if (currentLine) lines.push(currentLine);
             }
-            if (currentLine) lines.push(currentLine);
+            if (lines.length === 0) lines.push('');
 
             const lineHeight = fontSize * 1.2;
             const textHeight = lines.length * lineHeight;
