@@ -1,72 +1,93 @@
-// DARE v2 — REST API Server
+// DARE v3 — Express API Server & Direct Compiler Pipeline
 const express = require('express');
 const { compile } = require('./src/parser');
-const { renderPdf, closeBrowser } = require('./src/renderer');
+const { renderPdf } = require('./src/renderers/pdf');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Accept both text and JSON bodies
-app.use(express.text({ type: 'text/*', limit: '5mb' }));
-app.use(express.json({ limit: '5mb' }));
+app.use(express.text({ type: 'text/*', limit: '10mb' }));
+app.use(express.json({ limit: '10mb' }));
 
 // CORS headers
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
     next();
 });
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', engine: 'DARE v2.0' });
+    res.json({ status: 'ok', engine: 'DARE v3.0 (Node.js Engine)' });
 });
 
 // Render DARE to PDF
 app.post('/api/render', async (req, res) => {
     try {
-        // Accept DARE code from body text or JSON { code: "..." }
-        const dareCode = typeof req.body === 'string' ? req.body : req.body?.code;
-        if (!dareCode) {
-            return res.status(400).json({ error: 'No DARE code provided. Send code as text body or JSON { "code": "..." }' });
+        let code = '';
+        let data = {};
+
+        if (typeof req.body === 'string') {
+            try {
+                const parsed = JSON.parse(req.body);
+                if (parsed && parsed.code) {
+                    code = parsed.code;
+                    data = parsed.data || {};
+                } else {
+                    code = req.body;
+                }
+            } catch {
+                code = req.body;
+            }
+        } else if (req.body && typeof req.body === 'object') {
+            code = req.body.code || '';
+            data = req.body.data || {};
         }
 
-        const { html, format } = await compile(dareCode);
-        const buffer = await renderPdf(html, format);
-
-        res.set('Content-Type', 'application/pdf');
-        res.set('Content-Disposition', 'inline; filename="output.pdf"');
-        res.send(buffer);
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-});
-
-// Compile DARE to HTML (for preview)
-app.post('/api/preview', async (req, res) => {
-    try {
-        const dareCode = typeof req.body === 'string' ? req.body : req.body?.code;
-        if (!dareCode) {
+        if (!code.trim()) {
             return res.status(400).json({ error: 'No DARE code provided.' });
         }
-        const { html, format } = await compile(dareCode);
-        res.json({ html, format });
+
+        const astData = await compile(code, data);
+        const buffer = await renderPdf(astData);
+
+        res.set('Content-Type', 'application/pdf');
+        res.set('Content-Disposition', 'inline; filename="document.pdf"');
+        res.send(buffer);
+    } catch (e) {
+        console.error("Render Error:", e);
+        res.status(500).json({ error: e.message || 'Internal Compiler Error' });
+    }
+});
+
+// AST Preview
+app.post('/api/preview', async (req, res) => {
+    try {
+        let code = typeof req.body === 'string' ? req.body : req.body?.code;
+        let data = req.body?.data || {};
+
+        if (!code) {
+            return res.status(400).json({ error: 'No DARE code provided.' });
+        }
+
+        const astData = await compile(code, data);
+        res.json(astData);
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 });
 
-const server = app.listen(PORT, () => {
-    console.log(`\n  ⚡ DARE Engine v2.0 — API Server`);
-    console.log(`  ─────────────────────────────────`);
-    console.log(`  🌐 http://localhost:${PORT}`);
-    console.log(`  📡 POST /api/render  → PDF`);
-    console.log(`  📡 POST /api/preview → HTML`);
-    console.log(`  💚 GET  /health      → Status\n`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`\n  ⚡ DARE Engine v3.0 — Core Server`);
+        console.log(`  ─────────────────────────────────`);
+        console.log(`  🌐 http://localhost:${PORT}`);
+        console.log(`  📡 POST /api/render  → PDF Binary`);
+        console.log(`  📡 POST /api/preview → AST Structure`);
+        console.log(`  💚 GET  /health      → Engine Status\n`);
+    });
+}
 
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-    await closeBrowser();
-    server.close();
-});
+module.exports = app;

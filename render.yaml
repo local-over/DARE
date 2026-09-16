@@ -1,9 +1,10 @@
 services:
   - type: web
     name: dare-api-server
-    env: docker
+    env: node
     plan: free
-    dockerfilePath: Dockerfile
+    buildCommand: npm install
+    startCommand: node server.js
     envVars:
       - key: PORT
         value: 10000

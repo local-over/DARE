@@ -1,7 +1,7 @@
+import { compile } from '../../../../../src/parser.js';
+
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
-
-const LIVE_PREVIEW_API = 'https://dare-api-server.onrender.com/api/preview';
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -15,24 +15,41 @@ export async function OPTIONS() {
 
 export async function POST(request) {
     try {
-        const bodyText = await request.text();
-        const response = await fetch(LIVE_PREVIEW_API, {
-            method: 'POST',
-            headers: {
-                'Content-Type': request.headers.get('content-type') || 'application/json',
-            },
-            body: bodyText,
-        });
+        const contentType = request.headers.get('content-type') || '';
+        let code = '';
+        let data = {};
 
-        const json = await response.json();
-        return Response.json(json, {
-            status: response.status,
-            headers: CORS_HEADERS,
-        });
+        if (contentType.includes('application/json')) {
+            const body = await request.json();
+            code = body.code || '';
+            data = body.data || {};
+        } else {
+            const text = await request.text();
+            try {
+                const parsed = JSON.parse(text);
+                if (typeof parsed === 'object' && parsed !== null && parsed.code) {
+                    code = parsed.code;
+                    data = parsed.data || {};
+                } else {
+                    code = text;
+                }
+            } catch {
+                code = text;
+            }
+        }
+
+        if (!code.trim()) {
+            return Response.json(
+                { error: 'No DARE code provided.' },
+                { status: 400, headers: CORS_HEADERS }
+            );
+        }
+
+        const astData = await compile(code, data);
+        return Response.json(astData, { headers: CORS_HEADERS });
     } catch (error) {
-        console.error("Preview Proxy Error:", error);
         return Response.json(
-            { error: error.message || 'Internal Proxy Error' },
+            { error: error.message || 'Internal Server Error' },
             { status: 500, headers: CORS_HEADERS }
         );
     }
