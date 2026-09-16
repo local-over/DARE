@@ -1,5 +1,7 @@
 const pdfmake = require('pdfmake/build/pdfmake');
 const pdfFonts = require('pdfmake/build/vfs_fonts');
+const pdfParse = require('pdf-parse');
+
 if (pdfFonts && pdfFonts.pdfMake && pdfFonts.pdfMake.vfs) {
     pdfmake.vfs = pdfFonts.pdfMake.vfs;
 } else if (pdfFonts && pdfFonts.vfs) {
@@ -49,24 +51,30 @@ function isDarkColor(color) {
     return luminance < 0.4;
 }
 
-function parseSize(val) {
-    if (!val) return 0;
-    if (typeof val === 'number') return val;
+function parseSize(val, isPt = false) {
+    if (val === undefined || val === null || val === '') return 0;
     const str = val.toString();
-    if (str.endsWith('mm')) {
-        return parseFloat(str) * 2.83465;
-    }
-    if (str.endsWith('px')) {
-        return parseFloat(str) * 0.75;
-    }
-    if (str.endsWith('%')) {
-        return str;
-    }
-    return parseFloat(str);
+    if (str.endsWith('mm')) return parseFloat(str) * 2.83465;
+    if (str.endsWith('px')) return parseFloat(str) * 0.75;
+    if (str.endsWith('pt')) return parseFloat(str);
+    if (str.endsWith('%')) return str;
+    
+    const num = parseFloat(str);
+    if (isNaN(num)) return 0;
+    
+    return isPt ? num : num * 2.83465;
 }
 
-function buildPdfMakeNode(node) {
+let lastRenderedLogicalPage = 0;
+
+function buildPdfMakeNode(node, parentTag) {
+    if (!node || typeof node !== 'object') return { text: '' };
     const { tag, props = {}, children, content, qrData } = node;
+
+    // Normalize alignment shorthands
+    if (props.center && !props.ta) props.ta = 'center';
+    if (props.right && !props.ta) props.ta = 'right';
+    if (props.left && !props.ta) props.ta = 'left';
 
     // Common margins mapping
     const mt = parseSize(props.mt);
@@ -86,8 +94,17 @@ function buildPdfMakeNode(node) {
     }
 
     if (tag === 'page') {
+        const stackItems = [];
+        if (props._isPass1) {
+            stackItems.push({ text: `DARE_LOGICAL_PAGE_${props._pageIndex}`, color: 'white', fontSize: 0.1 });
+        }
+        
+        if (children) {
+            stackItems.push(...children.map(c => buildPdfMakeNode(c, tag)));
+        }
+        
         const pageContent = {
-            stack: children ? children.map(buildPdfMakeNode) : [],
+            stack: stackItems,
             margin: margin
         };
         // If not the first page, insert a page break before
@@ -99,7 +116,7 @@ function buildPdfMakeNode(node) {
 
     if (tag === 'box' || tag === 'cols') {
         const isRow = props.row || tag === 'cols';
-        const mappedChildren = children ? children.map(buildPdfMakeNode) : [];
+        const mappedChildren = children ? children.map(c => buildPdfMakeNode(c, tag)) : [];
         
         let container = {};
         
@@ -112,10 +129,27 @@ function buildPdfMakeNode(node) {
             
             if (props.between && mappedChildren.length === 2) {
                 let w1 = 'auto', w2 = 'auto';
-                if (children[0].props.w) w1 = parseSize(children[0].props.w);
-                if (children[1].props.w) w2 = parseSize(children[1].props.w);
-                widths = [w1, '*', w2];
-                updatedChildren = [mappedChildren[0], { text: '' }, mappedChildren[1]];
+                let sumPct = 0;
+                if (children[0].props.w) {
+                    w1 = parseSize(children[0].props.w);
+                    if (w1.toString().endsWith('%')) sumPct += parseFloat(w1);
+                }
+                if (children[1].props.w) {
+                    w2 = parseSize(children[1].props.w);
+                    if (w2.toString().endsWith('%')) sumPct += parseFloat(w2);
+                }
+                
+                if (sumPct >= 95) {
+                    if (props.gap) {
+                        w1 = (parseFloat(w1) * 0.95) + '%';
+                        w2 = (parseFloat(w2) * 0.95) + '%';
+                    }
+                    widths = [w1, w2];
+                    updatedChildren = [mappedChildren[0], mappedChildren[1]];
+                } else {
+                    widths = [w1, '*', w2];
+                    updatedChildren = [mappedChildren[0], { text: '' }, mappedChildren[1]];
+                }
             } else if (props.between && mappedChildren.length > 2) {
                 // space-between with more than 2 children: use star widths with spacers
                 for (let i = 0; i < children.length; i++) {
@@ -135,7 +169,13 @@ function buildPdfMakeNode(node) {
                 for (let i = 0; i < children.length; i++) {
                     const cProps = children[i].props || {};
                     if (cProps.w) {
-                        widths.push(parseSize(cProps.w));
+                        let w = parseSize(cProps.w);
+                        if (props.gap && w.toString().endsWith('%')) {
+                            // Scale down proportionally to make room for gaps
+                            const scale = children.length === 2 ? 0.92 : 0.85;
+                            w = (parseFloat(w) * scale) + '%';
+                        }
+                        widths.push(w);
                     } else if (cProps.flex) {
                         widths.push('*');
                     } else if (nCols > 0) {
@@ -169,13 +209,13 @@ function buildPdfMakeNode(node) {
 
         } else {
             // Stack (Vertical)
-            if (props.gap && mappedChildren.length > 1) {
-                const gapPt = parseSize(props.gap);
+            const gapPt = props.gap ? parseSize(props.gap) : 2; // Default 2pt stack gap
+            if (mappedChildren.length > 1) {
                 for (let i = 0; i < mappedChildren.length - 1; i++) {
                     if (!mappedChildren[i].margin) {
                         mappedChildren[i].margin = [0, 0, 0, gapPt];
                     } else {
-                        mappedChildren[i].margin[3] = Math.max(mappedChildren[i].margin[3], gapPt);
+                        mappedChildren[i].margin[3] = Math.max(mappedChildren[i].margin[3] || 0, gapPt);
                     }
                 }
             }
@@ -186,7 +226,8 @@ function buildPdfMakeNode(node) {
 
         // Apply background/border using a single-cell table wrapper
         if (props.bg || props.border || px || py || props.w || props.h) {
-            let tableWidths = ['*'];
+            let tableWidths = ['100%'];
+            if (isRow) tableWidths = ['*']; // rows still need flexible table widths
             let tableHeights = undefined;
             if (props.w) tableWidths = [parseSize(props.w)];
             if (props.h) tableHeights = [parseSize(props.h)];
@@ -254,7 +295,7 @@ function buildPdfMakeNode(node) {
             textColor = '#ffffff';
         }
         
-        let txtSize = parseSize(props.size) || 12;
+        let txtSize = parseSize(props.size, true) || 12;
         let finalMargin = (props.bg || props.border || px || py) ? [0, 0, 0, 0] : [...margin];
         
         if (txtSize > 14 && finalMargin[3] === 0 && !props.mb && !(props.bg || props.border || px || py)) {
@@ -269,6 +310,7 @@ function buildPdfMakeNode(node) {
             color: textColor,
             margin: finalMargin
         };
+        if (props.lh) txtObj.lineHeight = parseFloat(props.lh);
         if (props.ta) txtObj.alignment = props.ta;
         if (props.uppercase) txtObj.text = txtObj.text.toUpperCase();
 
@@ -308,7 +350,7 @@ function buildPdfMakeNode(node) {
             link: props.url || '#',
             color: textColor,
             decoration: 'underline',
-            fontSize: parseSize(props.size) || 12,
+            fontSize: parseSize(props.size, true) || 12,
             margin: margin
         };
     }
@@ -319,7 +361,7 @@ function buildPdfMakeNode(node) {
         return {
             table: {
                 widths: ['auto'],
-                body: [[{ text: content || '', color: fg, fontSize: parseSize(props.size) || 10, bold: true }]]
+                body: [[{ text: content || '', color: fg, fontSize: parseSize(props.size, true) || 10, bold: true }]]
             },
             layout: {
                 hLineWidth: () => 0,
@@ -342,7 +384,7 @@ function buildPdfMakeNode(node) {
     }
 
     if (tag === 'list') {
-        const items = content ? content.trim().split('\n').map(s => s.trim()).filter(Boolean) : [];
+        const items = content ? content.trim().split('\n').map(s => s.trim().replace(/;$/, '')).filter(Boolean) : [];
         const isOrdered = props.type === 'ol' || props.type === 'ordered';
         let textColor = parseColor(props.color) || '#000000';
         if (props._parentBg && isDarkColor(parseColor(props._parentBg))) {
@@ -350,7 +392,7 @@ function buildPdfMakeNode(node) {
         }
         const listObj = {
             margin: margin,
-            fontSize: parseSize(props.size) || 12,
+            fontSize: parseSize(props.size, true) || 12,
             color: textColor
         };
         if (isOrdered) {
@@ -379,29 +421,33 @@ function buildPdfMakeNode(node) {
     }
 
     if (tag === 'qr') {
+        let qrObj = { text: '[QR Code]', margin };
         if (qrData) {
-            return {
+            qrObj = {
                 image: qrData,
                 width: parseSize(props.w) || parseSize(props.h) || 100,
                 margin: margin
             };
         }
-        return { text: '[QR Code]', margin };
+        if (props.ta === 'center' || props.center) qrObj.alignment = 'center';
+        else if (props.ta === 'right' || props.right) qrObj.alignment = 'right';
+        else if (props.ta) qrObj.alignment = props.ta;
+        return qrObj;
     }
 
     if (tag === 'img' || tag === 'bar' || tag === 'pie') {
+        let imgObj = { text: `[${tag} missing]`, margin, color: '#94a3b8', italics: true };
         if (node.imgData) {
-            const imgObj = {
+            imgObj = {
                 image: node.imgData,
                 width: parseSize(props.w) || parseSize(props.h) || 200,
                 margin: margin
             };
-            if (props.ta === 'center' || props.center) {
-                imgObj.alignment = 'center';
-            }
-            return imgObj;
         }
-        return { text: `[${tag} missing]`, margin, color: '#94a3b8', italics: true };
+        if (props.ta === 'center' || props.center) imgObj.alignment = 'center';
+        else if (props.ta === 'right' || props.right) imgObj.alignment = 'right';
+        else if (props.ta) imgObj.alignment = props.ta;
+        return imgObj;
     }
 
     if (tag === 'shape') {
@@ -433,19 +479,11 @@ function buildPdfMakeNode(node) {
             shapeDef.lineColor = lineColor;
         }
 
-        const canvasObj = {
-            table: {
-                widths: [w],
-                heights: [h],
-                body: [[ { canvas: [ shapeDef ], margin: [0,0,0,0] } ]]
-            },
-            layout: 'noBorders',
-            margin: margin
-        };
-        if (props.ta === 'center' || props.center) canvasObj.alignment = 'center';
-        else if (props.ta) canvasObj.alignment = props.ta;
-        
-        return canvasObj;
+        let shapeObj = { canvas: [shapeDef], margin };
+        if (props.ta === 'center' || props.center) shapeObj.alignment = 'center';
+        else if (props.ta === 'right' || props.right) shapeObj.alignment = 'right';
+        else if (props.ta) shapeObj.alignment = props.ta;
+        return shapeObj;
     }
 
     if (tag === 'tbl') {
@@ -510,7 +548,7 @@ function buildPdfMakeNode(node) {
                 headerRows: 1,
                 widths: widths,
                 body: rows,
-                dontBreakRows: true
+                dontBreakRows: false
             },
             layout: {
                 hLineWidth: function (i, node) { return i === 0 || i === node.table.body.length ? 0 : 1; },
@@ -528,56 +566,77 @@ function buildPdfMakeNode(node) {
     return { text: '' };
 }
 
-/**
- * Walk the AST and propagate parent background color downward
- * so children can auto-invert text color on dark backgrounds.
- */
-function propagateParentBg(nodes, parentBg) {
+function propagateProps(nodes, parentBg, parentTa) {
     if (!nodes) return;
     for (const node of nodes) {
-        const bg = (node.props && node.props.bg) ? node.props.bg : parentBg;
-        if (bg && node.props) {
-            node.props._parentBg = bg;
+        if (!node.props) node.props = {};
+        const bg = node.props.bg || parentBg;
+        let ta = node.props.ta;
+        if (!ta) {
+            if (node.props.center) ta = 'center';
+            else if (node.props.right) ta = 'right';
+            else if (node.props.left) ta = 'left';
+            else ta = parentTa;
         }
+        
+        node.props._parentBg = bg;
+        
+        if (!node.props.ta && !node.props.center && !node.props.right && !node.props.left) {
+            if (['qr', 'img', 'bar', 'pie', 'shape'].includes(node.tag)) {
+                node.props.ta = ta;
+            }
+        }
+        
         if (node.children) {
-            propagateParentBg(node.children, bg);
+            propagateProps(node.children, bg, ta);
         }
     }
 }
 
 async function renderPdf(astData, outputPath) {
-    // Pre-pass: propagate background colors for auto-inversion
-    propagateParentBg(astData.ast, null);
+    // Pre-pass: propagate background colors and alignment
+    propagateProps(astData.ast, null, null);
     
-    let headerNode = null;
-    let footerNode = null;
+    const fonts = {
+        Roboto: {
+            normal: 'Roboto-Regular.ttf',
+            bold: 'Roboto-Medium.ttf',
+            italics: 'Roboto-Italic.ttf',
+            bolditalics: 'Roboto-MediumItalic.ttf'
+        }
+    };
     
-    const mainContent = [];
+    let firstPagePadding = null;
     let pageIndex = 0;
     for (const node of astData.ast) {
-        if (node.tag === 'page' && node.children) {
+        if (node.tag === 'page') {
+            node.props = node.props || {};
             node.props._pageIndex = pageIndex;
-            const pageChildren = [];
-            for (const child of node.children) {
-                if (child.tag === 'hdr') {
-                    headerNode = buildPdfMakeNode({ ...child, tag: 'box' });
-                } else if (child.tag === 'ftr') {
-                    footerNode = buildPdfMakeNode({ ...child, tag: 'box' });
-                } else {
-                    pageChildren.push(child);
-                }
+            
+            if (pageIndex === 0) {
+                const px = (node.props.px !== undefined) ? parseSize(node.props.px) : (node.props.p !== undefined ? parseSize(node.props.p) : null);
+                const py = (node.props.py !== undefined) ? parseSize(node.props.py) : (node.props.p !== undefined ? parseSize(node.props.p) : null);
+                if (px !== null || py !== null) firstPagePadding = { px: px || 0, py: py || 0 };
             }
-            node.children = pageChildren;
-            mainContent.push(buildPdfMakeNode(node));
             pageIndex++;
-        } else if (node.tag === 'hdr') {
-            headerNode = buildPdfMakeNode({ ...node, tag: 'box' });
-        } else if (node.tag === 'ftr') {
-            footerNode = buildPdfMakeNode({ ...node, tag: 'box' });
-        } else {
-            mainContent.push(buildPdfMakeNode(node));
         }
     }
+
+    let sideMargin = 40;
+    let topMargin = 40;
+    let bottomMargin = 40;
+    
+    if (firstPagePadding) {
+        sideMargin = firstPagePadding.px !== null ? firstPagePadding.px : 40;
+        topMargin = firstPagePadding.py !== null ? firstPagePadding.py : 40;
+        bottomMargin = firstPagePadding.py !== null ? firstPagePadding.py : 40;
+    }
+
+    const hasHeader = astData.ast.some(n => n.tag === 'hdr' || (n.tag === 'page' && n.children && n.children.some(c => c.tag === 'hdr')));
+    const hasFooter = astData.ast.some(n => n.tag === 'ftr' || (n.tag === 'page' && n.children && n.children.some(c => c.tag === 'ftr')));
+    
+    if (hasHeader) topMargin = 65;
+    if (hasFooter) bottomMargin = 55;
 
     let pageSize = astData.format || 'A4';
     let isCustomSize = false;
@@ -588,68 +647,166 @@ async function renderPdf(astData, outputPath) {
             height: parseSize(pageSize.custom[1])
         };
     }
+    const pageOrientation = isCustomSize ? undefined : (astData.orientation || 'portrait');
 
-    // Default to edge-to-edge rendering like HTML
-    let topMargin = headerNode ? 65 : 0;
-    let bottomMargin = footerNode ? 55 : 0;
-    let sideMargin = 0;
-    
-    const docDefinition = {
-        pageSize: pageSize,
-        pageOrientation: isCustomSize ? undefined : (astData.orientation || 'portrait'),
-        pageMargins: [ sideMargin, topMargin, sideMargin, bottomMargin ],
-        background: function(currentPage, pageSize) {
-            const pages = astData.ast.filter(n => n.tag === 'page');
-            const pageNode = pages[currentPage - 1];
-            if (pageNode && pageNode.props && pageNode.props.bg) {
-                return [
-                    {
-                        canvas: [
-                            {
-                                type: 'rect',
-                                x: 0,
-                                y: 0,
-                                w: pageSize.width,
-                                h: pageSize.height,
-                                color: parseColor(pageNode.props.bg)
-                            }
-                        ]
-                    }
-                ];
-            }
-            return null;
-        },
-        content: mainContent,
-        header: headerNode ? function(currentPage, pageCount) { 
-            return { ...headerNode, margin: [sideMargin, 10, sideMargin, 0] }; 
-        } : undefined,
-        footer: footerNode ? function(currentPage, pageCount) { 
-            // Replace {{page}} and {{pages}} placeholders
-            const footerCopy = JSON.parse(JSON.stringify(footerNode));
-            function replacePlaceholders(obj) {
-                if (typeof obj === 'string') {
-                    return obj.replace(/\{\{page\}\}/g, String(currentPage)).replace(/\{\{pages\}\}/g, String(pageCount));
-                }
-                if (Array.isArray(obj)) return obj.map(replacePlaceholders);
-                if (obj && typeof obj === 'object') {
-                    for (const key of Object.keys(obj)) {
-                        obj[key] = replacePlaceholders(obj[key]);
-                    }
-                }
-                return obj;
-            }
-            replacePlaceholders(footerCopy);
-            return { ...footerCopy, margin: [sideMargin, 0, sideMargin, 10] }; 
-        } : undefined,
-        defaultStyle: {
-            font: 'Roboto',
-            lineHeight: 1.4
+    function deepClonePreserve(obj) {
+        if (obj === null || typeof obj !== 'object') return obj;
+        if (Array.isArray(obj)) return obj.map(deepClonePreserve);
+        const cloned = {};
+        for (const key in obj) {
+            cloned[key] = deepClonePreserve(obj[key]);
         }
-    };
+        return cloned;
+    }
 
-    const pdfDoc = pdfmake.createPdf(docDefinition);
-    const uint8Array = await pdfDoc.getBuffer();
-    const buffer = Buffer.from(uint8Array);
+    function processHeaderFooter(node, currentPage, pageCount, sideMargin, isHeader) {
+        if (!node) return null;
+        const copy = deepClonePreserve(node);
+        function replacePlaceholders(obj) {
+            if (typeof obj === 'string') {
+                return obj.replace(/\{\{page\}\}/g, String(currentPage)).replace(/\{\{pages\}\}/g, String(pageCount));
+            }
+            if (Array.isArray(obj)) return obj.map(replacePlaceholders);
+            if (obj && typeof obj === 'object') {
+                for (const key of Object.keys(obj)) {
+                    obj[key] = replacePlaceholders(obj[key]);
+                }
+            }
+            return obj;
+        }
+        const processed = replacePlaceholders(copy);
+        if (isHeader) {
+            processed.margin = [sideMargin, 10, sideMargin, 0];
+        } else {
+            processed.margin = [sideMargin, 0, sideMargin, 10];
+        }
+        return processed;
+    }
+    
+    function buildDocDef(isPass1, physicalPageToLogical) {
+        const pageHeaders = {};
+        const pageFooters = {};
+        let globalHeader = null;
+        let globalFooter = null;
+        
+        const mainContent = [];
+        let pIndex = 0;
+        
+        for (const node of astData.ast) {
+            if (node.tag === 'page') {
+                const nodeCopy = deepClonePreserve(node);
+                nodeCopy.props = nodeCopy.props || {};
+                nodeCopy.props._pageIndex = pIndex;
+                nodeCopy.props._isPass1 = isPass1;
+
+                const pageChildren = [];
+                if (nodeCopy.children) {
+                    for (const child of nodeCopy.children) {
+                        if (child.tag === 'hdr') {
+                            pageHeaders[pIndex] = buildPdfMakeNode({ ...child, tag: 'box' }, 'page');
+                        } else if (child.tag === 'ftr') {
+                            pageFooters[pIndex] = buildPdfMakeNode({ ...child, tag: 'box' }, 'page');
+                        } else {
+                            pageChildren.push(child);
+                        }
+                    }
+                    nodeCopy.children = pageChildren;
+                }
+
+                mainContent.push(buildPdfMakeNode(nodeCopy, 'root'));
+                pIndex++;
+            } else if (node.tag === 'hdr') {
+                globalHeader = buildPdfMakeNode({ ...node, tag: 'box' }, 'root');
+            } else if (node.tag === 'ftr') {
+                globalFooter = buildPdfMakeNode({ ...node, tag: 'box' }, 'root');
+            } else {
+                mainContent.push(buildPdfMakeNode(node, 'root'));
+            }
+        }
+
+        const docDefinition = {
+            pageSize: pageSize,
+            pageOrientation: pageOrientation,
+            pageMargins: [ sideMargin, topMargin, sideMargin, bottomMargin ],
+            background: function(currentPage, pageSize) {
+                if (isPass1) return null;
+                const logicalIndex = physicalPageToLogical[currentPage] !== undefined ? physicalPageToLogical[currentPage] : 0;
+                let pageNode = null;
+                const pages = astData.ast.filter(n => n.tag === 'page');
+                pageNode = pages[logicalIndex];
+                
+                if (pageNode && pageNode.props && pageNode.props.bg) {
+                    return [
+                        {
+                            canvas: [
+                                {
+                                    type: 'rect',
+                                    x: 0,
+                                    y: 0,
+                                    w: pageSize.width,
+                                    h: pageSize.height,
+                                    color: parseColor(pageNode.props.bg)
+                                }
+                            ]
+                        }
+                    ];
+                }
+                return null;
+            },
+            content: mainContent,
+            header: hasHeader && !isPass1 ? function(currentPage, pageCount) { 
+                const logicalIndex = physicalPageToLogical[currentPage] !== undefined ? physicalPageToLogical[currentPage] : 0;
+                let hNode = pageHeaders[logicalIndex];
+                if (!hNode) hNode = globalHeader;
+                return processHeaderFooter(hNode, currentPage, pageCount, sideMargin, true);
+            } : undefined,
+            footer: hasFooter && !isPass1 ? function(currentPage, pageCount) { 
+                const logicalIndex = physicalPageToLogical[currentPage] !== undefined ? physicalPageToLogical[currentPage] : 0;
+                let fNode = pageFooters[logicalIndex];
+                if (!fNode) fNode = globalFooter;
+                return processHeaderFooter(fNode, currentPage, pageCount, sideMargin, false);
+            } : undefined,
+            defaultStyle: {
+                font: 'Roboto',
+                lineHeight: 1.4
+            }
+        };
+        return docDefinition;
+    }
+
+    // Pass 1: Generate dummy PDF to find page boundaries
+    const docDef1 = buildDocDef(true, {});
+    const pdfDoc1 = pdfmake.createPdf(docDef1);
+    const uint8Array1 = await pdfDoc1.getBuffer();
+    const pdfBuffer = Buffer.from(uint8Array1);
+    
+    let physicalPageToLogical = {};
+    let currentPageIndex = 1;
+    let currentLogicalPage = 0;
+    
+    await pdfParse(pdfBuffer, {
+        pagerender: function(pageData) {
+            return pageData.getTextContent().then(function(textContent) {
+                let text = '';
+                for (let item of textContent.items) {
+                    text += item.str;
+                }
+                const match = text.match(/DARE_LOGICAL_PAGE_(\d+)/);
+                if (match) {
+                    currentLogicalPage = parseInt(match[1]);
+                }
+                physicalPageToLogical[currentPageIndex] = currentLogicalPage;
+                currentPageIndex++;
+                return text;
+            });
+        }
+    });
+
+    // Pass 2: Final render with accurate mapping
+    const finalDocDef = buildDocDef(false, physicalPageToLogical);
+    const pdfDoc = pdfmake.createPdf(finalDocDef);
+    const uint8Array2 = await pdfDoc.getBuffer();
+    const buffer = Buffer.from(uint8Array2);
     
     if (outputPath) {
         let fs = eval("require('fs')");

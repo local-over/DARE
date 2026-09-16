@@ -95,8 +95,9 @@ async function fetchChart(chartConfig, retries = 2) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chart: chartConfig,
-                    width: 1000,
-                    height: 500,
+                    width: 500,
+                    height: 250,
+                    devicePixelRatio: 2.0,
                     backgroundColor: 'white',
                     format: 'png'
                 })
@@ -212,6 +213,7 @@ async function parseBlock(str, styleMap, context = {}) {
             
             let chartType = tag;
             if (tag === 'line') chartType = 'line';
+            if (tag === 'pie' && props.type === 'donut') chartType = 'doughnut';
             
             const chartConfig = {
                 type: chartType,
@@ -222,17 +224,21 @@ async function parseBlock(str, styleMap, context = {}) {
                         data: data,
                         backgroundColor: tag === 'pie' 
                             ? ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF']
-                            : (props.bg ? props.bg : 'rgba(54, 162, 235, 0.8)'),
+                            : (props.color || props.bg || 'rgba(54, 162, 235, 0.8)'),
                         borderColor: tag === 'line' ? '#36A2EB' : undefined,
                         fill: tag === 'line' ? false : undefined
                     }]
                 },
                 options: {
-                    plugins: {
-                        legend: { display: tag === 'pie', position: 'bottom' }
-                    },
+                    legend: { display: tag === 'pie', position: 'bottom', labels: { padding: 20, fontSize: 16 } },
+                    title: { display: !!props.title, text: props.title, padding: 20, fontSize: 18 },
                     scales: tag !== 'pie' ? {
-                        y: { beginAtZero: true }
+                        yAxes: [{
+                            ticks: { beginAtZero: true, fontSize: 14 }
+                        }],
+                        xAxes: [{
+                            ticks: { fontSize: 14 }
+                        }]
                     } : undefined
                 }
             };

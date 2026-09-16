@@ -1,0 +1,112 @@
+@setup {
+    format: A4;
+    $hdrStyle: bg=#1e293b color=white p=10mm;
+    $titleStyle: size=24 bold center uppercase;
+    $boxBorder: border=2 color=#cbd5e1 rounded=5 p=5mm;
+    $chartBox: bg=#f8fafc border=1 p=5mm;
+    $badText: color=#ef4444 bold right;
+    $okText: color=#22c55e bold left;
+}
+
+@doc {
+    page {
+        hdr(bg=#3b82f6, p=5mm) {
+            cols(between) {
+                txt(color=white, bold, left) { GLOBAL HEADER }
+                txt(color=white, right) { Page {{page}} of {{pages}} }
+            }
+        }
+        
+        box(p=10mm) {
+            txt($titleStyle, mb=10mm) { Extreme Stress Test }
+            
+            // Test 1: Nested columns with complex widths and gaps
+            box($boxBorder) {
+                txt(bold, mb=2mm) { Test 1: Nested Cols & Gap/Between Math }
+                cols(gap=10mm) {
+                    box(w=50%, bg=#e2e8f0, p=2mm) {
+                        txt(center) { 50% Col 1 }
+                        cols(between, mt=2mm) {
+                            box(w=40%, bg=#94a3b8) { txt(center, color=white) { 40% } }
+                            box(w=60%, bg=#64748b) { txt(center, color=white) { 60% } }
+                        }
+                    }
+                    box(w=50%, bg=#e2e8f0, p=2mm) {
+                        txt(center) { 50% Col 2 }
+                        cols(n=3, gap=2mm, mt=2mm) {
+                            box(bg=#475569) { txt(center, color=white) { 1/3 } }
+                            box(bg=#334155) { txt(center, color=white) { 1/3 } }
+                            box(bg=#1e293b) { txt(center, color=white) { 1/3 } }
+                        }
+                    }
+                }
+            }
+            sp(h=5mm) {}
+            
+            // Test 2: Tables with alignment and spanning (if supported), or just styling
+            box($boxBorder) {
+                txt(bold, mb=2mm) { Test 2: Tables & Line Height }
+                tbl(cols="1fr 2fr 1fr") {
+                    ID, Description, Status;
+                    1, Extremely long description that should wrap properly and demonstrate the new line height property handling if configured correctly., ACTIVE;
+                    2, Short desc, INACTIVE
+                }
+                sp(h=2mm) {}
+                txt(lh=2.0) { This text has a massive line height of 2.0. It should be very obvious visually that the lines are spaced far apart compared to standard text. }
+            }
+            sp(h=5mm) {}
+
+            // Test 3: Charts overriding colors and using donut
+            box($boxBorder) {
+                txt(bold, mb=2mm) { Test 3: Charts (Color Overrides & Donut) }
+                cols(gap=5mm) {
+                    box(w=50%, $chartBox) {
+                        bar(labels="A,B,C", data="10,20,30", color=#ec4899, title="Custom Pink Bar") {}
+                    }
+                    box(w=50%, $chartBox) {
+                        pie(labels="X,Y", data="60,40", type=donut) {}
+                    }
+                }
+            }
+            sp(h=5mm) {}
+            
+            // Test 4: Shapes and QR Alignment
+            box($boxBorder) {
+                txt(bold, mb=2mm) { Test 4: QR Alignment & Shapes }
+                cols(n=3) {
+                    box(left) { qr(data="left", w=20mm) {} }
+                    box(center) { qr(data="center", w=20mm) {} }
+                    box(right) { qr(data="right", w=20mm) {} }
+                }
+                sp(h=2mm) {}
+                cols(n=3, gap=2mm) {
+                    shape(type=circle, w=20mm, h=20mm, bg=#ef4444) {}
+                    shape(type=rect, w=20mm, h=20mm, bg=#eab308) {}
+                    shape(type=triangle, w=20mm, h=20mm, bg=#22c55e) {}
+                }
+            }
+        }
+        
+        ftr(bg=#1e293b, p=5mm) {
+            txt(center, color=white) { GLOBAL FOOTER }
+        }
+    }
+    
+    page(bg=#fef2f2, p=15mm) {
+        hdr(bg=#f87171, p=5mm) {
+            txt(center, color=white, bold) { PAGE 2 LOCAL HEADER }
+        }
+        txt(size=20, bold, center, color=#991b1b, mb=10mm) { Page 2 }
+        txt(lh=1.5, size=12) { This page tests the local header and footer override functionality. The page padding is 15mm, and it has a custom background color. }
+        sp(h=10) {}
+        list(type=ul) {
+            First item with a semicolon;
+            Second item with a semicolon;
+            Third item without a semicolon
+        }
+        
+        ftr(bg=#991b1b, p=5mm) {
+            txt(center, color=white) { PAGE 2 LOCAL FOOTER }
+        }
+    }
+}
