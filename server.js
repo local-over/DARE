@@ -1,10 +1,12 @@
 // DARE v2 — REST API Server
 const express = require('express');
-const { compile } = require('./src/parser');
-const { renderPdf, closeBrowser } = require('./src/renderer');
+const { convertString } = require('./index');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Serve human documentation site
+app.use(express.static('public'));
 
 // Accept both text and JSON bodies
 app.use(express.text({ type: 'text/*', limit: '5mb' }));
@@ -25,14 +27,21 @@ app.get('/health', (req, res) => {
 // Render DARE to PDF
 app.post('/api/render', async (req, res) => {
     try {
-        // Accept DARE code from body text or JSON { code: "..." }
-        const dareCode = typeof req.body === 'string' ? req.body : req.body?.code;
-        if (!dareCode) {
-            return res.status(400).json({ error: 'No DARE code provided. Send code as text body or JSON { "code": "..." }' });
+        let dareCode = '';
+        let data = {};
+        
+        if (typeof req.body === 'string') {
+            dareCode = req.body;
+        } else if (req.body?.code) {
+            dareCode = req.body.code;
+            data = req.body.data || {};
         }
 
-        const { html, format } = await compile(dareCode);
-        const buffer = await renderPdf(html, format);
+        if (!dareCode) {
+            return res.status(400).json({ error: 'No DARE code provided. Send code as text body or JSON { "code": "...", "data": {...} }' });
+        }
+
+        const buffer = await convertString(dareCode, { data });
 
         res.set('Content-Type', 'application/pdf');
         res.set('Content-Disposition', 'inline; filename="output.pdf"');
@@ -42,22 +51,13 @@ app.post('/api/render', async (req, res) => {
     }
 });
 
-// Compile DARE to HTML (for preview)
-app.post('/api/preview', async (req, res) => {
-    try {
-        const dareCode = typeof req.body === 'string' ? req.body : req.body?.code;
-        if (!dareCode) {
-            return res.status(400).json({ error: 'No DARE code provided.' });
-        }
-        const { html, format } = await compile(dareCode);
-        res.json({ html, format });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
+// Legacy Endpoint
+app.post('/api/preview', (req, res) => {
+    res.status(410).json({ error: 'HTML Preview is deprecated in v2.0. The engine is now 100% native PDF. Please use /api/render.' });
 });
 
 const server = app.listen(PORT, () => {
-    console.log(`\n  ⚡ DARE Engine v2.0 — API Server`);
+    console.log(`\n  ⚡ DARE Engine v2.0 — API Server running on port ${PORT}`);
     console.log(`  ─────────────────────────────────`);
     console.log(`  🌐 http://localhost:${PORT}`);
     console.log(`  📡 POST /api/render  → PDF`);

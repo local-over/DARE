@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 // DARE v2 — CLI
 const { convertFile } = require('./index');
-const { closeBrowser } = require('./src/renderer');
 
 const args = process.argv.slice(2);
 
@@ -21,7 +20,6 @@ if (args.includes('--help') || args.includes('-h') || args.length === 0) {
 
   Examples:
     node cli.js document.dare output.pdf
-    node cli.js examples/ultimate.dare report.pdf
 `);
     process.exit(0);
 }
@@ -32,9 +30,16 @@ if (args.includes('--version') || args.includes('-v')) {
     process.exit(0);
 }
 
+let dataPath = null;
+const dataFlagIdx = args.indexOf('--data');
+if (dataFlagIdx !== -1 && args.length > dataFlagIdx + 1) {
+    dataPath = args[dataFlagIdx + 1];
+    args.splice(dataFlagIdx, 2);
+}
+
 if (args.length < 2) {
     console.error('❌ Error: Please provide input and output paths.');
-    console.error('   Usage: node cli.js <input.dare> <output.pdf>');
+    console.error('   Usage: node cli.js <input.dare> <output.pdf> [--data data.json]');
     process.exit(1);
 }
 
@@ -48,16 +53,15 @@ console.log(`  📦 Output: ${outputPath}\n`);
 
 const startTime = Date.now();
 
-convertFile(inputPath, outputPath)
+convertFile(inputPath, outputPath, dataPath)
     .then(() => {
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-        console.log(`  ✅ PDF generated in ${elapsed}s`);
+        console.log(`  ✅ Document generated in ${elapsed}s`);
         console.log(`  📂 Saved to: ${outputPath}\n`);
-        return closeBrowser();
+        process.exit(0);
     })
-    .then(() => process.exit(0))
     .catch((error) => {
-        console.error(`\n  ❌ Compilation failed:`);
-        console.error(`     ${error.message}\n`);
-        closeBrowser().then(() => process.exit(1));
+        console.error(error);
+        process.exit(1);
     });
+
