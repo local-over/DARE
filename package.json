@@ -25,10 +25,9 @@
     "url": "https://github.com/local-over/DARE.git"
   },
   "dependencies": {
-    "express": "^4.22.3",
+    "express": "^4.18.2",
     "mime-types": "^2.1.35",
-    "pdf-lib": "^1.17.1",
-    "pdfkit": "^0.20.2",
-    "qrcode": "^1.5.4"
+    "puppeteer": "^24.34.0",
+    "qrcode": "^1.5.3"
   }
 }
