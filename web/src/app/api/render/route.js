@@ -1,8 +1,7 @@
-import { compile } from '../../../../../src/parser.js';
-import { renderPdf } from '../../../../../src/renderers/pdf.js';
-
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
+
+const RENDER_SERVER_URL = 'https://dare-api-server.onrender.com/api/render';
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -11,60 +10,43 @@ const CORS_HEADERS = {
 };
 
 export async function OPTIONS() {
-    return new Response(null, {
-        status: 204,
-        headers: CORS_HEADERS,
-    });
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
 export async function POST(request) {
     try {
-        const contentType = request.headers.get('content-type') || '';
-        let code = '';
-        let data = {};
+        const bodyText = await request.text();
+        const contentType = request.headers.get('content-type') || 'application/json';
 
-        if (contentType.includes('application/json')) {
-            const body = await request.json();
-            code = body.code || '';
-            data = body.data || {};
-        } else {
-            const text = await request.text();
-            try {
-                const parsed = JSON.parse(text);
-                if (typeof parsed === 'object' && parsed !== null && parsed.code) {
-                    code = parsed.code;
-                    data = parsed.data || {};
-                } else {
-                    code = text;
-                }
-            } catch {
-                code = text;
-            }
+        const upstreamRes = await fetch(RENDER_SERVER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': contentType },
+            body: bodyText,
+        });
+
+        if (!upstreamRes.ok) {
+            const errText = await upstreamRes.text();
+            return new Response(errText, {
+                status: upstreamRes.status,
+                headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+            });
         }
 
-        if (!code.trim()) {
-            return Response.json(
-                { error: 'No DARE code provided. Send code as text body or JSON { "code": "..." }' },
-                { status: 400, headers: CORS_HEADERS }
-            );
-        }
+        const pdfBuffer = await upstreamRes.arrayBuffer();
 
-        const astData = await compile(code, data);
-        const buffer = await renderPdf(astData); 
-
-        return new Response(buffer, {
+        return new Response(pdfBuffer, {
+            status: 200,
             headers: {
                 ...CORS_HEADERS,
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': 'inline; filename="document.pdf"'
-            }
+                'Content-Disposition': 'inline; filename="document.pdf"',
+            },
         });
     } catch (error) {
-        console.error("API Error:", error);
+        console.error("API Proxy Error:", error);
         return Response.json(
             { error: error.message || 'Internal Server Error' },
             { status: 500, headers: CORS_HEADERS }
         );
     }
 }
-

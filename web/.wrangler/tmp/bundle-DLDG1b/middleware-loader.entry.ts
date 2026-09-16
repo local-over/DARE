@@ -3,12 +3,12 @@
 // export dynamically through wrangler, or we can potentially let users directly
 // add them as a sort of "plugin" system.
 
-import ENTRY, { __INTERNAL_WRANGLER_MIDDLEWARE__ } from "/home/hassan/.gemini/antigravity/scratch/DARE/web/.wrangler/tmp/bundle-cS0Dua/middleware-insertion-facade.js";
+import ENTRY, { __INTERNAL_WRANGLER_MIDDLEWARE__ } from "/home/hassan/.gemini/antigravity/scratch/DARE/web/.wrangler/tmp/bundle-DLDG1b/middleware-insertion-facade.js";
 import { __facade_invoke__, __facade_register__, Dispatcher } from "/home/hassan/.npm/_npx/32026684e21afda6/node_modules/wrangler/templates/middleware/common.ts";
-import type { WorkerEntrypointConstructor } from "/home/hassan/.gemini/antigravity/scratch/DARE/web/.wrangler/tmp/bundle-cS0Dua/middleware-insertion-facade.js";
+import type { WorkerEntrypointConstructor } from "/home/hassan/.gemini/antigravity/scratch/DARE/web/.wrangler/tmp/bundle-DLDG1b/middleware-insertion-facade.js";
 
 // Preserve all the exports from the worker
-export * from "/home/hassan/.gemini/antigravity/scratch/DARE/web/.wrangler/tmp/bundle-cS0Dua/middleware-insertion-facade.js";
+export * from "/home/hassan/.gemini/antigravity/scratch/DARE/web/.wrangler/tmp/bundle-DLDG1b/middleware-insertion-facade.js";
 
 class __Facade_ScheduledController__ implements ScheduledController {
 	readonly #noRetry: ScheduledController["noRetry"];

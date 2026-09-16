@@ -1,7 +1,7 @@
 {
   "name": "dare-engine",
-  "version": "3.0.0",
-  "description": "The token-efficient, AI-native markup language that compiles to PDF on the Cloudflare Edge.",
+  "version": "2.0.0",
+  "description": "AI-native, token-efficient markup language for generating pixel-perfect PDF documents",
   "main": "index.js",
   "bin": {
     "dare": "./cli.js"
@@ -27,8 +27,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "mime-types": "^2.1.35",
-    "pdf-lib": "^1.17.1",
-    "pdfmake": "^0.3.11",
+    "puppeteer": "^24.34.0",
     "qrcode": "^1.5.3"
   }
 }

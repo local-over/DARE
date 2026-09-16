@@ -1,7 +1,7 @@
-import { compile } from '../../../../../src/parser.js';
-
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
+
+const PREVIEW_SERVER_URL = 'https://dare-api-server.onrender.com/api/preview';
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -15,38 +15,24 @@ export async function OPTIONS() {
 
 export async function POST(request) {
     try {
-        const contentType = request.headers.get('content-type') || '';
-        let code = '';
-        let data = {};
+        const bodyText = await request.text();
+        const contentType = request.headers.get('content-type') || 'application/json';
 
-        if (contentType.includes('application/json')) {
-            const body = await request.json();
-            code = body.code || '';
-            data = body.data || {};
-        } else {
-            const text = await request.text();
-            try {
-                const parsed = JSON.parse(text);
-                if (typeof parsed === 'object' && parsed !== null && parsed.code) {
-                    code = parsed.code;
-                    data = parsed.data || {};
-                } else {
-                    code = text;
-                }
-            } catch {
-                code = text;
-            }
-        }
+        const upstreamRes = await fetch(PREVIEW_SERVER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': contentType },
+            body: bodyText,
+        });
 
-        if (!code.trim()) {
-            return Response.json(
-                { error: 'No DARE code provided.' },
-                { status: 400, headers: CORS_HEADERS }
-            );
-        }
+        const data = await upstreamRes.text();
 
-        const astData = await compile(code, data);
-        return Response.json(astData, { headers: CORS_HEADERS });
+        return new Response(data, {
+            status: upstreamRes.status,
+            headers: {
+                ...CORS_HEADERS,
+                'Content-Type': 'application/json',
+            },
+        });
     } catch (error) {
         return Response.json(
             { error: error.message || 'Internal Server Error' },

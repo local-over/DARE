@@ -13,6 +13,8 @@ function resolveAttributes(attrStr, styleMap) {
     const parts = attrStr.match(/(?:[^\s,"]+|"[^"]*")+/g) || [];
 
     for (let p of parts) {
+        p = p.replace(/,/g, '');
+
         if (p.startsWith('$')) {
             // Variable: recursively resolve
             const varDef = styleMap[p];
@@ -38,32 +40,18 @@ function resolveAttributes(attrStr, styleMap) {
 function parseSetup(cleanCode) {
     const styleMap = {};
     let paperFormat = 'A4';
-    let orientation = 'portrait';
     let fonts = [];
 
-    const match = cleanCode.match(/@setup\s*\{/);
-    if (match) {
-        const openIdx = match.index + match[0].length - 1;
-        const closeIdx = findClosingBrace(cleanCode, openIdx);
-        const setupContent = cleanCode.substring(openIdx + 1, closeIdx - 1);
-        
-        setupContent.split(';').forEach(line => {
+    const setupMatch = cleanCode.match(/@setup\s*\{([\s\S]*?)\}(?=\s*@doc)/);
+    if (setupMatch) {
+        setupMatch[1].split(';').forEach(line => {
             const colonIdx = line.indexOf(':');
             if (colonIdx === -1) return;
             const k = line.substring(0, colonIdx).trim();
             const v = line.substring(colonIdx + 1).trim();
             if (!k || !v) return;
 
-            if (k === 'format') {
-                const parts = v.toLowerCase().split(' ');
-                if (parts.length >= 2 && parts[0].match(/\d/) && parts[1].match(/\d/)) {
-                    paperFormat = { custom: [parts[0], parts[1]] };
-                } else {
-                    paperFormat = parts[0].toUpperCase();
-                }
-                if (parts.includes('landscape')) orientation = 'landscape';
-                if (parts.includes('portrait')) orientation = 'portrait';
-            }
+            if (k === 'format') paperFormat = v;
             else if (k === 'font' || k === 'fonts') {
                 fonts.push(...v.split(',').map(f => f.trim()));
             }
@@ -71,7 +59,7 @@ function parseSetup(cleanCode) {
         });
     }
 
-    return { styleMap, paperFormat, orientation, fonts };
+    return { styleMap, paperFormat, fonts };
 }
 
 /**
@@ -120,54 +108,23 @@ function* tokenize(str) {
  * Extract the @doc body from clean source code.
  */
 function extractDocBody(cleanCode) {
-    const match = cleanCode.match(/@doc\s*\{/);
-    if (!match) {
+    const docMatch = cleanCode.match(/@doc\s*\{([\s\S]*)\}/);
+    if (!docMatch) {
         throw new Error('DARE Error: Missing @doc block. Every DARE file must have @doc { ... }');
     }
-    const openIdx = match.index + match[0].length - 1;
-    const closeIdx = findClosingBrace(cleanCode, openIdx);
-    return cleanCode.substring(openIdx + 1, closeIdx - 1).trim();
-}
-
-/**
- * Extract and parse the @data block.
- */
-function extractDataBlock(cleanCode) {
-    const match = cleanCode.match(/@data\s*\{/);
-    if (!match) return null;
-    
-    const openIdx = match.index + match[0].length - 1;
-    const closeIdx = findClosingBrace(cleanCode, openIdx);
-    const content = cleanCode.substring(openIdx + 1, closeIdx - 1).trim();
-    
-    let jsonStr = content;
-    if (!content.startsWith('{') && !content.startsWith('[')) {
-        const srcMatch = content.match(/src:\s*"([^"]+)"/);
-        if (srcMatch) {
-            return { _linkedSrc: srcMatch[1] };
-        }
-        jsonStr = `{ ${content} }`;
-    }
-
-    try {
-        return JSON.parse(jsonStr);
-    } catch(e) {
-        console.warn("DARE Warning: Failed to parse embedded @data JSON block.");
-        return null;
-    }
+    return docMatch[1].trim();
 }
 
 /**
  * Remove comments from source code.
  */
 function removeComments(source) {
-    return source.replace(/(^|\s)\/\/.*$/gm, '$1');
+    return source.replace(/\/\/.*$/gm, '');
 }
 
 module.exports = {
     resolveAttributes,
     parseSetup,
-    extractDataBlock,
     findClosingBrace,
     tokenize,
     extractDocBody,
