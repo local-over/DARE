@@ -648,26 +648,15 @@ async function renderPdf(astData, outputPath) {
     };
 
     const pdfDoc = pdfmake.createPdf(docDefinition);
+    const uint8Array = await pdfDoc.getBuffer();
+    const buffer = Buffer.from(uint8Array);
     
-    return new Promise((resolve, reject) => {
-        try {
-            pdfDoc.getBuffer(async (buffer) => {
-                try {
-                    if (outputPath) {
-                        const fs = require('fs');
-                        await fs.promises.writeFile(outputPath, buffer);
-                        resolve(outputPath);
-                    } else {
-                        resolve(buffer);
-                    }
-                } catch (e) {
-                    reject(e);
-                }
-            });
-        } catch (err) {
-            reject(err);
-        }
-    });
+    if (outputPath) {
+        let fs = eval("require('fs')");
+        await fs.promises.writeFile(outputPath, buffer);
+        return outputPath;
+    }
+    return buffer;
 }
 
 module.exports = { renderPdf };
