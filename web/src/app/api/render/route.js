@@ -1,7 +1,7 @@
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-const RENDER_SERVER_URL = 'https://dare-api-server.onrender.com/api/render';
+const LIVE_RENDER_API = 'https://dare-api-server.onrender.com/api/render';
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -16,26 +16,17 @@ export async function OPTIONS() {
 export async function POST(request) {
     try {
         const bodyText = await request.text();
-        const contentType = request.headers.get('content-type') || 'application/json';
-
-        const upstreamRes = await fetch(RENDER_SERVER_URL, {
+        const response = await fetch(LIVE_RENDER_API, {
             method: 'POST',
-            headers: { 'Content-Type': contentType },
+            headers: {
+                'Content-Type': request.headers.get('content-type') || 'application/json',
+            },
             body: bodyText,
         });
 
-        if (!upstreamRes.ok) {
-            const errText = await upstreamRes.text();
-            return new Response(errText, {
-                status: upstreamRes.status,
-                headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-            });
-        }
-
-        const pdfBuffer = await upstreamRes.arrayBuffer();
-
+        const pdfBuffer = await response.arrayBuffer();
         return new Response(pdfBuffer, {
-            status: 200,
+            status: response.status,
             headers: {
                 ...CORS_HEADERS,
                 'Content-Type': 'application/pdf',
@@ -43,9 +34,9 @@ export async function POST(request) {
             },
         });
     } catch (error) {
-        console.error("API Proxy Error:", error);
+        console.error("Render Proxy Error:", error);
         return Response.json(
-            { error: error.message || 'Internal Server Error' },
+            { error: error.message || 'Internal Proxy Error' },
             { status: 500, headers: CORS_HEADERS }
         );
     }

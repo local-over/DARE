@@ -1,7 +1,7 @@
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-const PREVIEW_SERVER_URL = 'https://dare-api-server.onrender.com/api/preview';
+const LIVE_PREVIEW_API = 'https://dare-api-server.onrender.com/api/preview';
 
 const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
@@ -16,26 +16,23 @@ export async function OPTIONS() {
 export async function POST(request) {
     try {
         const bodyText = await request.text();
-        const contentType = request.headers.get('content-type') || 'application/json';
-
-        const upstreamRes = await fetch(PREVIEW_SERVER_URL, {
+        const response = await fetch(LIVE_PREVIEW_API, {
             method: 'POST',
-            headers: { 'Content-Type': contentType },
+            headers: {
+                'Content-Type': request.headers.get('content-type') || 'application/json',
+            },
             body: bodyText,
         });
 
-        const data = await upstreamRes.text();
-
-        return new Response(data, {
-            status: upstreamRes.status,
-            headers: {
-                ...CORS_HEADERS,
-                'Content-Type': 'application/json',
-            },
+        const json = await response.json();
+        return Response.json(json, {
+            status: response.status,
+            headers: CORS_HEADERS,
         });
     } catch (error) {
+        console.error("Preview Proxy Error:", error);
         return Response.json(
-            { error: error.message || 'Internal Server Error' },
+            { error: error.message || 'Internal Proxy Error' },
             { status: 500, headers: CORS_HEADERS }
         );
     }

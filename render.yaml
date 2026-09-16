@@ -3,4 +3,8 @@ services:
     name: dare-api-server
     env: docker
     plan: free
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
     healthCheckPath: /health
