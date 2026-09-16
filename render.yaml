@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: dare-api-server
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health

@@ -205,14 +205,14 @@ export default function DocsPage() {
 
             {/* API */}
             <section id="api" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">8. REST API Reference</h2>
+              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">8. REST API Reference & Cloud Deployment</h2>
               <div className="space-y-4 text-xs font-mono">
                 <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 rounded bg-white text-black font-bold">POST</span>
                     <span className="text-white font-bold">/api/render</span>
                   </div>
-                  <p className="text-neutral-400 text-[11px]">Compiles DARE code string into inline PDF binary.</p>
+                  <p className="text-neutral-400 text-[11px]">Compiles DARE code payload (raw text string or JSON `{` "code": "..." `}`) into inline PDF binary.</p>
                 </div>
 
                 <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
@@ -221,6 +221,28 @@ export default function DocsPage() {
                     <span className="text-white font-bold">/api/preview</span>
                   </div>
                   <p className="text-neutral-400 text-[11px]">Compiles DARE code payload into AST JSON representation.</p>
+                </div>
+
+                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded bg-neutral-800 text-white font-bold">GET</span>
+                    <span className="text-white font-bold">/health</span>
+                  </div>
+                  <p className="text-neutral-400 text-[11px]">Engine health check endpoint returning `{` status: "ok" `}`.</p>
+                </div>
+
+                <div className="p-5 rounded-xl border border-white/15 bg-neutral-950/80 space-y-3">
+                  <div className="text-white font-bold text-sm">Deploying Live API to Render.com</div>
+                  <p className="text-neutral-400 text-[11px] leading-relaxed">
+                    DARE includes a native `render.yaml` Blueprint and `Dockerfile` for hosting your dedicated API server on Render.com or Docker.
+                  </p>
+                  <pre className="p-3 rounded-lg bg-black border border-white/10 text-[11px] text-green-400 overflow-x-auto">
+{`# 1. Connect https://github.com/local-over/DARE to Render.com
+# 2. Render automatically detects render.yaml and deploys:
+#    - Web Service: dare-api-server
+#    - Health check: /health
+#    - Port: 10000 / 3000`}
+                  </pre>
                 </div>
               </div>
             </section>
