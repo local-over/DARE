@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { HeartIcon, CoffeeIcon, ShieldIcon, ArrowRightIcon } from './Icons';
 
 export default function DonationSection() {
   const [copied, setCopied] = useState(null);
@@ -21,15 +22,11 @@ export default function DonationSection() {
     <section id="donations" className="w-full py-20 border-t border-white/10 bg-neutral-950/60">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-white">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            Support Open Source DARE Development
-          </div>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-white font-sans">
             Fuel the Future of DARE
           </h2>
           <p className="text-neutral-400 text-sm leading-relaxed">
-            DARE is 100% free, open-source software built for developers, AI agents, and document automation. Your contributions help maintain core development, edge infrastructure, and AI Skill packages.
+            DARE is 100% free, open-source software built for developers, AI agents, and document automation. Your contributions help maintain core engine development, edge infrastructure, and AI Skill packages.
           </p>
         </div>
 
@@ -37,8 +34,8 @@ export default function DonationSection() {
           {/* GitHub Sponsors */}
           <div className="p-8 rounded-2xl border border-white/10 bg-black/80 flex flex-col justify-between hover:border-white/30 transition-all duration-300">
             <div className="space-y-4">
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono font-bold text-white text-lg">
-                ♥
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white">
+                <HeartIcon className="w-5 h-5 fill-current" />
               </div>
               <h3 className="text-lg font-bold text-white font-mono">GitHub Sponsors</h3>
               <p className="text-xs text-neutral-400 leading-relaxed">
@@ -49,17 +46,18 @@ export default function DonationSection() {
               href="https://github.com/sponsors"
               target="_blank"
               rel="noreferrer"
-              className="mt-8 w-full py-2.5 rounded-xl bg-white text-black font-mono text-xs font-bold text-center hover:bg-neutral-200 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+              className="mt-8 w-full py-2.5 rounded-xl bg-white text-black font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-neutral-200 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]"
             >
-              Sponsor on GitHub →
+              <span>Sponsor on GitHub</span>
+              <ArrowRightIcon className="w-3.5 h-3.5" />
             </a>
           </div>
 
           {/* Buy Me a Coffee */}
           <div className="p-8 rounded-2xl border border-white/10 bg-black/80 flex flex-col justify-between hover:border-white/30 transition-all duration-300">
             <div className="space-y-4">
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono font-bold text-white text-lg">
-                ☕
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white">
+                <CoffeeIcon className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-bold text-white font-mono">Buy Us a Coffee</h3>
               <p className="text-xs text-neutral-400 leading-relaxed">
@@ -70,17 +68,18 @@ export default function DonationSection() {
               href="https://buymeacoffee.com"
               target="_blank"
               rel="noreferrer"
-              className="mt-8 w-full py-2.5 rounded-xl bg-white/10 text-white font-mono text-xs font-bold text-center border border-white/20 hover:bg-white/20 transition-all"
+              className="mt-8 w-full py-2.5 rounded-xl bg-white/10 text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 border border-white/20 hover:bg-white/20 transition-all"
             >
-              Buy a Coffee ☕
+              <span>Buy a Coffee</span>
+              <CoffeeIcon className="w-3.5 h-3.5" />
             </a>
           </div>
 
           {/* Crypto Supporters */}
           <div className="p-8 rounded-2xl border border-white/10 bg-black/80 flex flex-col justify-between hover:border-white/30 transition-all duration-300">
             <div className="space-y-4">
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-mono font-bold text-white text-lg">
-                ⚡
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white">
+                <ShieldIcon className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-bold text-white font-mono">Crypto Donations</h3>
               <p className="text-xs text-neutral-400 leading-relaxed">
@@ -92,7 +91,7 @@ export default function DonationSection() {
                 <button
                   key={w.name}
                   onClick={() => handleCopy(w.address, w.name)}
-                  className="w-full text-left p-2 rounded bg-neutral-900 border border-white/10 hover:border-white/30 transition-all flex items-center justify-between font-mono text-[10px]"
+                  className="w-full text-left p-2.5 rounded bg-neutral-900 border border-white/10 hover:border-white/30 transition-all flex items-center justify-between font-mono text-[10px]"
                 >
                   <span className="text-neutral-300">{w.name}</span>
                   <span className="text-white font-bold">{copied === w.name ? 'Copied! ✓' : 'Copy'}</span>

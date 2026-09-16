@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import Logo from './components/Logo';
 import CodeRunner from './components/CodeRunner';
 import DonationSection from './components/DonationSection';
+import { ZapIcon, PlayIcon, BookOpenIcon } from './components/Icons';
 
 export default function Home() {
   return (
@@ -13,7 +14,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-20 px-6 overflow-hidden">
+      <section className="relative pt-20 pb-20 px-6 overflow-hidden">
         {/* Background Ambient Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-white/10 rounded-full blur-[140px] pointer-events-none" />
 
@@ -23,12 +24,6 @@ export default function Home() {
             <div className="relative group cursor-pointer animate-[bounce_4s_infinite]">
               <Logo size="xl" animated={true} />
             </div>
-          </div>
-
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-900 border border-white/20 text-xs font-mono text-neutral-300 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            DARE Engine v3.0 Released • Vector AST Direct Architecture
           </div>
 
           {/* Headline */}
@@ -48,21 +43,24 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <Link
               href="/skills"
-              className="px-6 py-3 rounded-full bg-white text-black font-mono text-xs font-bold hover:bg-neutral-200 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105"
+              className="px-6 py-3 rounded-full bg-white text-black font-mono text-xs font-bold hover:bg-neutral-200 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-105 flex items-center gap-2"
             >
-              ⚡ Explore AI Skills
+              <ZapIcon className="w-4 h-4 fill-current" />
+              <span>Explore AI Skills</span>
             </Link>
             <Link
               href="/playground"
-              className="px-6 py-3 rounded-full bg-neutral-900 text-white border border-white/20 font-mono text-xs font-medium hover:bg-neutral-800 hover:border-white/40 transition-all duration-300 hover:scale-105"
+              className="px-6 py-3 rounded-full bg-neutral-900 text-white border border-white/20 font-mono text-xs font-medium hover:bg-neutral-800 hover:border-white/40 transition-all duration-300 hover:scale-105 flex items-center gap-2"
             >
-              🎮 Open Playground
+              <PlayIcon className="w-4 h-4" />
+              <span>Open Playground</span>
             </Link>
             <Link
               href="/docs"
-              className="px-6 py-3 rounded-full bg-neutral-900 text-neutral-300 border border-white/10 font-mono text-xs font-medium hover:text-white hover:bg-neutral-800 transition-all duration-300"
+              className="px-6 py-3 rounded-full bg-neutral-900 text-neutral-300 border border-white/10 font-mono text-xs font-medium hover:text-white hover:bg-neutral-800 transition-all duration-300 flex items-center gap-2"
             >
-              📖 Documentation
+              <BookOpenIcon className="w-4 h-4" />
+              <span>Documentation</span>
             </Link>
           </div>
         </div>
@@ -73,11 +71,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* What's New Section */}
+      {/* Why DARE Feature Section */}
       <section className="py-20 border-t border-white/10 bg-neutral-950/40">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight font-mono text-white">What's New in DARE v3</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight font-mono text-white">Why DARE Engine?</h2>
             <p className="text-neutral-400 text-sm">Engineered for zero-latency AST compilation & AI Skill integration.</p>
           </div>
 
@@ -88,7 +86,7 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-bold font-mono text-white">Native AST PDF Compiler</h3>
               <p className="text-xs text-neutral-400 leading-relaxed">
-                Direct vector PDF generation via `pdf-lib` AST compilation. Zero browser overhead, zero latency.
+                Direct vector PDF generation via direct AST compilation. Zero browser overhead, zero latency.
               </p>
             </div>
 

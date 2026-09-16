@@ -1,6 +1,5 @@
 import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Nav from "./components/Nav";
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-inter", // keeping variable name to avoid refactoring global components
@@ -24,9 +23,8 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${ibmPlexSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
-        <Nav />
-        <div className="flex-1 mt-14 flex flex-col">
+      <body className="min-h-full flex flex-col font-sans bg-black text-white">
+        <div className="flex-1 flex flex-col">
           {children}
         </div>
       </body>

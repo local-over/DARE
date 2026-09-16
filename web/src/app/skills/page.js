@@ -2,6 +2,7 @@
 
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { ZapIcon, ArrowRightIcon } from '../components/Icons';
 
 export default function SkillsPage() {
   const skills = [
@@ -38,9 +39,6 @@ export default function SkillsPage() {
       <div className="max-w-7xl mx-auto px-6 py-16">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/15 text-xs font-mono text-neutral-300">
-            ⚡ AI Agent Extension Protocol
-          </div>
           <h1 className="text-4xl md:text-6xl font-extrabold font-mono tracking-tight text-white">
             DARE AI Skills
           </h1>
@@ -82,10 +80,12 @@ export default function SkillsPage() {
         <div className="p-10 rounded-3xl border border-white/10 bg-neutral-950/60 max-w-4xl mx-auto text-center space-y-6">
           <h2 className="text-2xl font-bold font-mono text-white">How Agent Skills Work</h2>
           <p className="text-neutral-400 text-sm leading-relaxed max-w-2xl mx-auto">
-            DARE Skills provide structured `SKILL.md` rules, helper tools, and reference documentation that automatically trigger when your AI assistant works on document layout and PDF generation tasks.
+            DARE Skills provide structured SKILL.md rules, helper tools, and reference documentation that automatically trigger when your AI assistant works on document layout and PDF generation tasks.
           </p>
-          <div className="inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-white/20 bg-white text-black font-mono text-xs font-bold shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-            Equip Skills in your AI Agent Workspace →
+          <div className="inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-white/20 bg-white text-black font-mono text-xs font-bold gap-2 shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+            <ZapIcon className="w-4 h-4 fill-current" />
+            <span>Equip Skills in your AI Agent Workspace</span>
+            <ArrowRightIcon className="w-3.5 h-3.5" />
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { ZapIcon } from '../components/Icons';
 
 const PRESETS = {
   invoice: `@setup {
@@ -51,7 +52,7 @@ export default function PlaygroundPage() {
   const [code, setCode] = useState(PRESETS.invoice);
   const [activePreset, setActivePreset] = useState('invoice');
   const [compiling, setCompiling] = useState(false);
-  const [viewMode, setViewMode] = useState('pdf'); // 'pdf' or 'json'
+  const [viewMode, setViewMode] = useState('pdf');
 
   const handlePreset = (key) => {
     setActivePreset(key);
@@ -101,9 +102,10 @@ export default function PlaygroundPage() {
               <button
                 onClick={handleCompile}
                 disabled={compiling}
-                className="px-5 py-2 rounded-lg bg-white text-black font-mono text-xs font-bold hover:bg-neutral-200 transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                className="px-5 py-2 rounded-lg bg-white text-black font-mono text-xs font-bold hover:bg-neutral-200 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
               >
-                {compiling ? 'Compiling...' : '⚡ Compile PDF'}
+                <ZapIcon className="w-3.5 h-3.5 fill-current" />
+                <span>{compiling ? 'Compiling...' : 'Compile PDF'}</span>
               </button>
             </div>
           </div>
@@ -114,7 +116,7 @@ export default function PlaygroundPage() {
             <div className="rounded-2xl border border-white/10 bg-neutral-950 p-6 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Editor (.dare)</span>
-                <span className="text-[10px] font-mono text-neutral-500">DARE Syntax v3.0</span>
+                <span className="text-[10px] font-mono text-neutral-500">DARE Syntax</span>
               </div>
               <textarea
                 value={code}
@@ -189,7 +191,7 @@ export default function PlaygroundPage() {
                     )}
 
                     <div className="pt-4 border-t text-[9px] text-neutral-400 flex justify-between">
-                      <span>DARE v3.0 PDF Vector Engine</span>
+                      <span>DARE PDF Vector Engine</span>
                       <span>Page 1 / 1</span>
                     </div>
                   </div>
