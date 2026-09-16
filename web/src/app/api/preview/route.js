@@ -1,5 +1,4 @@
 import { compile } from '../../../../../src/parser.js';
-import { renderPdf } from '../../../../../src/renderers/pdf.js';
 
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
@@ -11,10 +10,7 @@ const CORS_HEADERS = {
 };
 
 export async function OPTIONS() {
-    return new Response(null, {
-        status: 204,
-        headers: CORS_HEADERS,
-    });
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
 export async function POST(request) {
@@ -44,27 +40,17 @@ export async function POST(request) {
 
         if (!code.trim()) {
             return Response.json(
-                { error: 'No DARE code provided. Send code as text body or JSON { "code": "..." }' },
+                { error: 'No DARE code provided.' },
                 { status: 400, headers: CORS_HEADERS }
             );
         }
 
         const astData = await compile(code, data);
-        const buffer = await renderPdf(astData); 
-
-        return new Response(buffer, {
-            headers: {
-                ...CORS_HEADERS,
-                'Content-Type': 'application/pdf',
-                'Content-Disposition': 'inline; filename="document.pdf"'
-            }
-        });
+        return Response.json(astData, { headers: CORS_HEADERS });
     } catch (error) {
-        console.error("API Error:", error);
         return Response.json(
             { error: error.message || 'Internal Server Error' },
             { status: 500, headers: CORS_HEADERS }
         );
     }
 }
-
