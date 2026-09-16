@@ -1,7 +1,7 @@
 // DARE v3 — Express API Server & Direct Compiler Pipeline
 const express = require('express');
-const { compile } = require('./src/parser');
-const { renderPdf } = require('./src/renderers/pdf');
+const { compileToDocument } = require('./src/document');
+const { renderPdf } = require('./src/renderers-pdf');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', engine: 'DARE v3.0 (Node.js Engine)' });
+    res.json({ status: 'ok', engine: 'DARE v3.0 (PDFKit Direct Engine)' });
 });
 
 // Render DARE to PDF
@@ -50,8 +50,8 @@ app.post('/api/render', async (req, res) => {
             return res.status(400).json({ error: 'No DARE code provided.' });
         }
 
-        const astData = await compile(code, data);
-        const buffer = await renderPdf(astData);
+        const doc = compileToDocument(code);
+        const buffer = await renderPdf(doc);
 
         res.set('Content-Type', 'application/pdf');
         res.set('Content-Disposition', 'inline; filename="document.pdf"');
@@ -66,14 +66,13 @@ app.post('/api/render', async (req, res) => {
 app.post('/api/preview', async (req, res) => {
     try {
         let code = typeof req.body === 'string' ? req.body : req.body?.code;
-        let data = req.body?.data || {};
 
         if (!code) {
             return res.status(400).json({ error: 'No DARE code provided.' });
         }
 
-        const astData = await compile(code, data);
-        res.json(astData);
+        const doc = compileToDocument(code);
+        res.json(doc);
     } catch (e) {
         res.status(500).json({ error: e.message });
     }

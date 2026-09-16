@@ -1,175 +1,92 @@
 // DARE v2 — Tokenizer
-// Parses DARE source into a structured AST with error tracking
 
-/**
- * Resolve attribute string into a props object.
- * Recursively unpacks $variables from the style map.
- */
-function resolveAttributes(attrStr, styleMap) {
-    const combined = {};
-    if (!attrStr) return combined;
-
-    // Split by comma or space, preserving quoted strings
-    const parts = attrStr.match(/(?:[^\s,"]+|"[^"]*")+/g) || [];
-
-    for (let p of parts) {
-        if (p.startsWith('$')) {
-            // Variable: recursively resolve
-            const varDef = styleMap[p];
-            if (varDef) {
-                Object.assign(combined, resolveAttributes(varDef, styleMap));
-            }
-        } else if (p.includes('=')) {
-            const eqIdx = p.indexOf('=');
-            const k = p.substring(0, eqIdx);
-            const v = p.substring(eqIdx + 1).replace(/"/g, '');
-            combined[k] = v;
-        } else {
-            // Boolean flag (bold, italic, center, etc.)
-            combined[p] = true;
-        }
-    }
-    return combined;
+function splitTokens(input, separator = /[\s,]+/) {
+  const out = []; let current = ''; let quote = null;
+  for (const ch of String(input || '')) {
+    if (quote) { current += ch; if (ch === quote) quote = null; continue; }
+    if (ch === '"' || ch === "'") { quote = ch; current += ch; continue; }
+    if (separator.test(ch)) { if (current) { out.push(current); current = ''; } }
+    else current += ch;
+  }
+  if (quote) throw new Error('DARE Syntax Error: Unclosed quote in attributes');
+  if (current) out.push(current);
+  return out;
 }
 
-/**
- * Parse @setup block into styleMap and config.
- */
+function splitOutsideQuotes(input, delimiter) {
+  const out = []; let current = ''; let quote = null;
+  for (const ch of String(input || '')) {
+    if (quote) { current += ch; if (ch === quote) quote = null; continue; }
+    if (ch === '"' || ch === "'") { quote = ch; current += ch; continue; }
+    if (ch === delimiter) { out.push(current); current = ''; } else current += ch;
+  }
+  if (quote) throw new Error('DARE Syntax Error: Unclosed quote');
+  out.push(current); return out;
+}
+
+function unquote(value) { return String(value ?? '').replace(/^(["'])([\s\S]*)\1$/, '$2'); }
+
+function resolveAttributes(attrStr, styleMap, resolving = new Set()) {
+  const combined = {};
+  for (let token of splitTokens(attrStr)) {
+    token = token.replace(/,$/, '');
+    if (!token) continue;
+    if (token.startsWith('$')) {
+      if (resolving.has(token)) throw new Error(`DARE Error: Circular style variable ${token}`);
+      if (styleMap[token]) Object.assign(combined, resolveAttributes(styleMap[token], styleMap, new Set([...resolving, token])));
+    } else {
+      const eq = token.indexOf('=');
+      if (eq >= 0) combined[token.slice(0, eq).trim()] = unquote(token.slice(eq + 1).trim());
+      else combined[token] = true;
+    }
+  }
+  return combined;
+}
+
 function parseSetup(cleanCode) {
-    const styleMap = {};
-    let paperFormat = 'A4';
-    let orientation = 'portrait';
-    let fonts = [];
-
-    const match = cleanCode.match(/@setup\s*\{/);
-    if (match) {
-        const openIdx = match.index + match[0].length - 1;
-        const closeIdx = findClosingBrace(cleanCode, openIdx);
-        const setupContent = cleanCode.substring(openIdx + 1, closeIdx - 1);
-        
-        setupContent.split(';').forEach(line => {
-            const colonIdx = line.indexOf(':');
-            if (colonIdx === -1) return;
-            const k = line.substring(0, colonIdx).trim();
-            const v = line.substring(colonIdx + 1).trim();
-            if (!k || !v) return;
-
-            if (k === 'format') {
-                const parts = v.toLowerCase().split(' ');
-                if (parts.length >= 2 && parts[0].match(/\d/) && parts[1].match(/\d/)) {
-                    paperFormat = { custom: [parts[0], parts[1]] };
-                } else {
-                    paperFormat = parts[0].toUpperCase();
-                }
-                if (parts.includes('landscape')) orientation = 'landscape';
-                if (parts.includes('portrait')) orientation = 'portrait';
-            }
-            else if (k === 'font' || k === 'fonts') {
-                fonts.push(...v.split(',').map(f => f.trim()));
-            }
-            else styleMap[k] = v;
-        });
-    }
-
-    return { styleMap, paperFormat, orientation, fonts };
+  const styleMap = {}; let paperFormat = 'A4'; let fonts = [];
+  const match = cleanCode.match(/@setup\s*\{([\s\S]*?)\}(?=\s*@doc)/);
+  if (!match) return { styleMap, paperFormat, fonts };
+  for (const raw of splitOutsideQuotes(match[1], ';')) {
+    const colon = raw.indexOf(':'); if (colon < 0) continue;
+    const key = raw.slice(0, colon).trim(); const value = raw.slice(colon + 1).trim(); if (!key || !value) continue;
+    if (key === 'format') paperFormat = unquote(value);
+    else if (key === 'font' || key === 'fonts') fonts.push(...splitOutsideQuotes(unquote(value), ',').map(v => v.trim()).filter(Boolean));
+    else styleMap[key] = value;
+  }
+  return { styleMap, paperFormat, fonts };
 }
 
-/**
- * Find the matching closing brace for an opening brace.
- */
 function findClosingBrace(str, openIndex) {
-    let bal = 1;
-    let j = openIndex + 1;
-    while (j < str.length && bal > 0) {
-        if (str[j] === '{') bal++;
-        if (str[j] === '}') bal--;
-        j++;
-    }
-    if (bal !== 0) {
-        throw new Error(`DARE Syntax Error: Unmatched brace near position ${openIndex}`);
-    }
-    return j;
+  let balance = 1; let quote = null;
+  for (let i = openIndex + 1; i < str.length; i++) {
+    const ch = str[i];
+    if (quote) { if (ch === quote && str[i - 1] !== '\\') quote = null; continue; }
+    if (ch === '"') { quote = ch; continue; }
+    if (ch === '{') balance++;
+    if (ch === '}' && --balance === 0) return i + 1;
+  }
+  throw new Error(`DARE Syntax Error: Unmatched brace near position ${openIndex}`);
 }
 
-/**
- * Parse a block of DARE code, finding tags and their content.
- * Yields { tag, attrStr, innerContent } for each found tag.
- */
 function* tokenize(str) {
-    let i = 0;
-    while (i < str.length) {
-        const tail = str.substring(i);
-        const match = tail.match(/^([a-z][a-z0-9]*)\s*(?:\(([\s\S]*?)\))?\s*\{/);
-
-        if (match) {
-            const tag = match[1];
-            const attrStr = match[2] || '';
-            const openBraceIndex = i + match[0].length - 1;
-            const closeIndex = findClosingBrace(str, openBraceIndex);
-            const innerContent = str.substring(openBraceIndex + 1, closeIndex - 1);
-
-            yield { tag, attrStr, innerContent, start: i, end: closeIndex };
-            i = closeIndex;
-        } else {
-            i++;
-        }
-    }
+  let i = 0;
+  while (i < str.length) {
+    const match = str.slice(i).match(/^\s*([a-z][a-z0-9]*)\s*(?:\(([\s\S]*?)\))?\s*\{/i);
+    if (!match) { i++; continue; }
+    const start = i + match[0].search(/[a-z]/i); const open = i + match[0].length - 1; const end = findClosingBrace(str, open);
+    yield { tag: match[1].toLowerCase(), attrStr: match[2] || '', innerContent: str.slice(open + 1, end - 1), start, end };
+    i = end;
+  }
 }
 
-/**
- * Extract the @doc body from clean source code.
- */
 function extractDocBody(cleanCode) {
-    const match = cleanCode.match(/@doc\s*\{/);
-    if (!match) {
-        throw new Error('DARE Error: Missing @doc block. Every DARE file must have @doc { ... }');
-    }
-    const openIdx = match.index + match[0].length - 1;
-    const closeIdx = findClosingBrace(cleanCode, openIdx);
-    return cleanCode.substring(openIdx + 1, closeIdx - 1).trim();
+  const start = cleanCode.search(/@doc\s*\{/); if (start < 0) throw new Error('DARE Error: Missing @doc block. Every DARE file must have @doc { ... }');
+  const open = cleanCode.indexOf('{', start); const end = findClosingBrace(cleanCode, open); return cleanCode.slice(open + 1, end - 1).trim();
 }
 
-/**
- * Extract and parse the @data block.
- */
-function extractDataBlock(cleanCode) {
-    const match = cleanCode.match(/@data\s*\{/);
-    if (!match) return null;
-    
-    const openIdx = match.index + match[0].length - 1;
-    const closeIdx = findClosingBrace(cleanCode, openIdx);
-    const content = cleanCode.substring(openIdx + 1, closeIdx - 1).trim();
-    
-    let jsonStr = content;
-    if (!content.startsWith('{') && !content.startsWith('[')) {
-        const srcMatch = content.match(/src:\s*"([^"]+)"/);
-        if (srcMatch) {
-            return { _linkedSrc: srcMatch[1] };
-        }
-        jsonStr = `{ ${content} }`;
-    }
-
-    try {
-        return JSON.parse(jsonStr);
-    } catch(e) {
-        console.warn("DARE Warning: Failed to parse embedded @data JSON block.");
-        return null;
-    }
-}
-
-/**
- * Remove comments from source code.
- */
 function removeComments(source) {
-    return source.replace(/(^|\s)\/\/.*$/gm, '$1');
+  return String(source).replace(/(^|\s)\/\/.*$/gm, '$1');
 }
 
-module.exports = {
-    resolveAttributes,
-    parseSetup,
-    extractDataBlock,
-    findClosingBrace,
-    tokenize,
-    extractDocBody,
-    removeComments,
-};
+module.exports = { resolveAttributes, parseSetup, findClosingBrace, tokenize, extractDocBody, removeComments, splitOutsideQuotes };

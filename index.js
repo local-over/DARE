@@ -1,52 +1,40 @@
-// DARE v2 — Main Entry Point
-const { compile } = require('./src/parser');
-const { renderPdf } = require('./src/renderers/pdf');
+// DARE v2 — Layered public API
 const fs = require('fs').promises;
-const path = require('path');
+const { compileToDocument } = require('./src/document');
+const { renderHtml } = require('./src/renderers-html');
+const { renderPdf } = require('./src/renderers-pdf');
+const { renderPdf: renderChromiumPdf, closeBrowser } = require('./src/renderers-chromium');
 
-/**
- * Convert a .dare file to PDF.
- * @param {string} inputPath - Path to .dare file
- * @param {string} outputPath - Path for output file (.pdf)
- * @returns {Promise<string>} Output path
- */
-async function convertFile(inputPath, outputPath, dataPath) {
-    const source = await fs.readFile(inputPath, 'utf8');
-    
-    let contextData = {};
-    if (dataPath) {
-        try {
-            const resolvedDataPath = path.resolve(process.cwd(), dataPath);
-            const dataStr = await fs.readFile(resolvedDataPath, 'utf8');
-            contextData = JSON.parse(dataStr);
-        } catch(e) {
-            console.error(`❌ Error: Failed to read or parse data file ${dataPath}`);
-            console.error(e.message);
-            process.exit(1);
-        }
+async function compile(sourceCode, options = {}) {
+    options = options || {};
+    const document = compileToDocument(sourceCode);
+    const renderer = options.renderer || 'pdf';
+    if (renderer === 'document') return document;
+    if (renderer === 'html') return renderHtml(document);
+    if (renderer === 'pdf') return { format: options.format || document.format, buffer: await renderPdf(document, null, options) };
+    if (renderer === 'chromium' || renderer === 'puppeteer') {
+        const html = await renderHtml(document);
+        return { format: options.format || document.format, html: html.html, buffer: await renderChromiumPdf(html.html, options.format || document.format) };
     }
+    throw new Error(`DARE Error: Unknown renderer "${renderer}". Use document, html, pdf, or chromium.`);
+}
 
-    const astData = await compile(source, contextData, inputPath);
-    await renderPdf(astData, outputPath);
+async function convertFile(inputPath, outputPath, options = {}) {
+    options = options || {};
+    const source = await fs.readFile(inputPath, 'utf8');
+    const renderer = options.renderer || 'pdf';
+    if (renderer === 'chromium' || renderer === 'puppeteer') {
+        const result = await compile(source, options);
+        await fs.writeFile(outputPath, result.buffer);
+    } else {
+        await renderPdf(compileToDocument(source), outputPath, options);
+    }
     return outputPath;
 }
 
-/**
- * Convert a DARE code string directly to a PDF buffer. (legacy support, simplified)
- * @param {string} dareCode - DARE source code
- * @param {object} [options] - Optional settings
- * @returns {Promise<Buffer>}
- */
 async function convertString(dareCode, options = {}) {
-    const contextData = options.data || {};
-    const basePath = options.basePath || '';
-    const astData = await compile(dareCode, contextData, basePath);
-    const tmpPath = `/tmp/dare_render_tmp_${Date.now()}_${Math.floor(Math.random()*1000)}.pdf`;
-    await renderPdf(astData, tmpPath);
-    const buffer = await fs.readFile(tmpPath);
-    // Clean up temp file
-    try { await fs.unlink(tmpPath); } catch (e) {}
-    return buffer;
+    const result = await compile(dareCode, { ...options, renderer: options.renderer || 'pdf' });
+    return result.buffer || result.html || result;
 }
 
-module.exports = { convertFile, convertString };
+module.exports = { compile, compileToDocument, convertFile, convertString, closeBrowser };
