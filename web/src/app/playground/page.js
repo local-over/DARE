@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ZapIcon } from '../components/Icons';
+
+const RENDER_API_URL = 'https://dare-api-server.onrender.com/api/render';
+const PREVIEW_API_URL = 'https://dare-api-server.onrender.com/api/preview';
 
 const PRESETS = {
   invoice: `@setup {
@@ -52,19 +55,51 @@ export default function PlaygroundPage() {
   const [code, setCode] = useState(PRESETS.invoice);
   const [activePreset, setActivePreset] = useState('invoice');
   const [compiling, setCompiling] = useState(false);
-  const [viewMode, setViewMode] = useState('pdf');
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [astJson, setAstJson] = useState(null);
+  const [viewMode, setViewMode] = useState('pdf'); // 'pdf' or 'json'
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const handlePreset = (key) => {
     setActivePreset(key);
     setCode(PRESETS[key]);
   };
 
-  const handleCompile = () => {
+  const handleCompile = async () => {
     setCompiling(true);
-    setTimeout(() => {
+    setErrorMsg(null);
+    try {
+      if (viewMode === 'json') {
+        const res = await fetch(PREVIEW_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        const data = await res.json();
+        setAstJson(data);
+      } else {
+        const res = await fetch(RENDER_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url);
+      }
+    } catch (err) {
+      console.error("Compile error:", err);
+      setErrorMsg(err.message || "Failed to render PDF");
+    } finally {
       setCompiling(false);
-    }, 500);
+    }
   };
+
+  useEffect(() => {
+    handleCompile();
+  }, [activePreset]);
 
   return (
     <div className="min-h-screen bg-black text-white font-sans flex flex-col justify-between selection:bg-white selection:text-black">
@@ -76,7 +111,7 @@ export default function PlaygroundPage() {
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
             <div>
               <h1 className="text-2xl font-bold font-mono text-white">DARE Interactive Playground</h1>
-              <p className="text-xs text-neutral-400">Edit DARE template source code and test AST PDF compilation live.</p>
+              <p className="text-xs text-neutral-400">Connected to Live Render API Server (https://dare-api-server.onrender.com)</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -105,7 +140,7 @@ export default function PlaygroundPage() {
                 className="px-5 py-2 rounded-lg bg-white text-black font-mono text-xs font-bold hover:bg-neutral-200 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
               >
                 <ZapIcon className="w-3.5 h-3.5 fill-current" />
-                <span>{compiling ? 'Compiling...' : 'Compile PDF'}</span>
+                <span>{compiling ? 'Compiling...' : 'Compile via API'}</span>
               </button>
             </div>
           </div>
@@ -116,7 +151,7 @@ export default function PlaygroundPage() {
             <div className="rounded-2xl border border-white/10 bg-neutral-950 p-6 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Editor (.dare)</span>
-                <span className="text-[10px] font-mono text-neutral-500">DARE Syntax</span>
+                <span className="text-[10px] font-mono text-neutral-500">Live Syntax</span>
               </div>
               <textarea
                 value={code}
@@ -129,10 +164,10 @@ export default function PlaygroundPage() {
             {/* Right: Render Preview */}
             <div className="rounded-2xl border border-white/10 bg-neutral-950 p-6 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Compiler Output</span>
+                <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider">Live Render API Output</span>
                 <div className="flex gap-1 bg-neutral-900 p-0.5 rounded border border-white/10">
                   <button
-                    onClick={() => setViewMode('pdf')}
+                    onClick={() => { setViewMode('pdf'); handleCompile(); }}
                     className={`px-2 py-0.5 rounded text-[10px] font-mono ${
                       viewMode === 'pdf' ? 'bg-white text-black font-bold' : 'text-neutral-400'
                     }`}
@@ -140,7 +175,7 @@ export default function PlaygroundPage() {
                     PDF Canvas
                   </button>
                   <button
-                    onClick={() => setViewMode('json')}
+                    onClick={() => { setViewMode('json'); handleCompile(); }}
                     className={`px-2 py-0.5 rounded text-[10px] font-mono ${
                       viewMode === 'json' ? 'bg-white text-black font-bold' : 'text-neutral-400'
                     }`}
@@ -150,64 +185,26 @@ export default function PlaygroundPage() {
                 </div>
               </div>
 
-              <div className="flex-1 rounded-xl border border-dashed border-white/15 bg-black p-6 flex items-center justify-center">
+              <div className="flex-1 rounded-xl border border-dashed border-white/15 bg-black p-6 flex items-center justify-center overflow-hidden min-h-[450px]">
                 {compiling ? (
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                    <span className="font-mono text-xs text-neutral-400 animate-pulse">Compiling PDF...</span>
+                    <span className="font-mono text-xs text-neutral-400 animate-pulse">Compiling PDF on Render Server...</span>
                   </div>
-                ) : viewMode === 'pdf' ? (
-                  <div className="w-full max-w-sm bg-white text-black p-8 rounded shadow-2xl space-y-4 font-sans text-xs border border-neutral-300">
-                    <div className="border-b pb-3 flex justify-between items-center">
-                      <div>
-                        <div className="font-bold text-sm">
-                          {activePreset === 'invoice' ? 'INVOICE' : 'CERTIFICATE OF ACHIEVEMENT'}
-                        </div>
-                        <div className="text-[10px] text-neutral-500 font-mono">
-                          {activePreset === 'invoice' ? 'INV-9921' : 'Verifiable Document'}
-                        </div>
-                      </div>
-                      <div className="w-6 h-6 rounded-full border-2 border-black flex items-center justify-center text-[8px] font-bold">
-                        DARE
-                      </div>
-                    </div>
-
-                    {activePreset === 'invoice' ? (
-                      <div className="space-y-2">
-                        <div className="flex justify-between font-bold border-b pb-1 text-[11px]">
-                          <span>Item</span>
-                          <span>Cost</span>
-                        </div>
-                        <div className="flex justify-between text-[11px]">
-                          <span>Cloud Architecture Consulting</span>
-                          <span className="font-mono">$8,950.00</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-6 space-y-2">
-                        <div className="text-base font-bold">Presented to Jordan Lee</div>
-                        <div className="text-xs text-neutral-500">For mastering Advanced PDF Architecture</div>
-                      </div>
-                    )}
-
-                    <div className="pt-4 border-t text-[9px] text-neutral-400 flex justify-between">
-                      <span>DARE PDF Vector Engine</span>
-                      <span>Page 1 / 1</span>
-                    </div>
-                  </div>
-                ) : (
-                  <pre className="w-full h-full overflow-auto text-[10px] font-mono text-green-400 bg-neutral-950 p-4 rounded border border-white/10">
-                    {JSON.stringify(
-                      {
-                        status: 'compiled',
-                        format: activePreset === 'invoice' ? 'A4 portrait' : 'A4 landscape',
-                        astNodes: 5,
-                        timestamp: new Date().toISOString(),
-                      },
-                      null,
-                      2
-                    )}
+                ) : errorMsg ? (
+                  <div className="text-red-400 font-mono text-xs p-4 text-center">{errorMsg}</div>
+                ) : viewMode === 'pdf' && pdfUrl ? (
+                  <iframe
+                    src={pdfUrl}
+                    className="w-full h-full min-h-[450px] border-0 rounded-lg"
+                    title="Live Render PDF Preview"
+                  />
+                ) : astJson ? (
+                  <pre className="w-full h-full max-h-[450px] overflow-auto text-[10px] font-mono text-green-400 bg-neutral-950 p-4 rounded border border-white/10">
+                    {JSON.stringify(astJson, null, 2)}
                   </pre>
+                ) : (
+                  <div className="text-xs font-mono text-neutral-500">Ready to compile</div>
                 )}
               </div>
             </div>
