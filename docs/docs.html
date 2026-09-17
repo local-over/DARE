@@ -1,859 +1,368 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DARE ENGINE v2 | Documentation — The AI-Native PDF Language</title>
-    <meta name="description"
-        content="Complete documentation for DARE Engine v2. Learn the syntax, components, and tooling for AI-native PDF generation.">
-
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* --- 1. DESIGN TOKENS (Theme) --- */
-        :root {
-            --bg-body: #020617;
-            --bg-sidebar: #0f172a;
-            --bg-card: #1e293b;
-            --bg-code: #01040e;
-
-            --accent: #38bdf8;
-            --accent-dim: rgba(56, 189, 248, 0.1);
-            --accent-orange: #f7931a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-
-            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-            --font-mono: 'JetBrains Mono', 'Consolas', monospace;
-
-            --sidebar-width: 280px;
-        }
-
-        /* --- 2. GLOBAL RESET & STYLING --- */
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg-body);
-            color: var(--text-main);
-            font-family: var(--font-sans);
-            line-height: 1.6;
-            display: flex;
-        }
-
-        a {
-            text-decoration: none;
-            color: var(--accent);
-            transition: 0.2s;
-        }
-
-        a:hover {
-            filter: brightness(1.2);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-body);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
-
-        /* --- 3. SIDEBAR NAVIGATION --- */
-        aside {
-            width: var(--sidebar-width);
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-            padding: 30px 20px;
-            z-index: 100;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 40px;
-            text-decoration: none;
-        }
-
-        .brand-text {
-            font-family: var(--font-mono);
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .brand i {
-            color: var(--accent);
-            font-size: 1.8rem;
-        }
-
-        .nav-group {
-            margin-bottom: 30px;
-        }
-
-        .nav-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            font-weight: bold;
-            margin: 25px 0 15px 12px;
-            display: block;
-        }
-
-        .nav-link {
-            display: block;
-            color: var(--text-muted);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            margin-bottom: 4px;
-            text-decoration: none;
-        }
-
-        .nav-link:hover {
-            background: var(--accent-dim);
-            color: var(--accent);
-        }
-
-        .nav-link.active {
-            background: var(--accent);
-            color: #000;
-            font-weight: bold;
-        }
-
-        .cta-btn {
-            display: block;
-            text-align: center;
-            background: var(--accent);
-            color: black;
-            font-weight: bold;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            text-decoration: none;
-            transition: transform 0.2s;
-        }
-
-        .cta-btn:hover {
-            transform: translateY(-2px);
-            background: white;
-        }
-
-        .donate-btn {
-            display: block;
-            text-align: center;
-            background: linear-gradient(135deg, #f7931a 0%, #ffb74d 100%);
-            color: white;
-            font-weight: bold;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-            text-decoration: none;
-            transition: transform 0.2s;
-            box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
-        }
-
-        .donate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(247, 147, 26, 0.5);
-        }
-
-        /* --- 4. MAIN CONTENT --- */
-        main {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 0 80px;
-            max-width: 1200px;
-        }
-
-        main section {
-            padding: 60px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        main section:last-child {
-            border-bottom: none;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
-            margin: 0 0 20px 0;
-            letter-spacing: -1.5px;
-            color: white;
-            line-height: 1.1;
-        }
-
-        h2 {
-            font-size: 2.2rem;
-            margin: 20px 0 30px 0;
-            color: white;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 15px;
-        }
-
-        h3 {
-            font-size: 1.5rem;
-            margin: 40px 0 15px 0;
-            color: var(--accent);
-        }
-
-        p {
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            font-size: 1.05rem;
-            max-width: 80ch;
-        }
-
-        /* --- 5. CODE BLOCKS --- */
-        .code-wrapper {
-            position: relative;
-            margin: 25px 0;
-        }
-
-        pre {
-            background: var(--bg-code);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 25px;
-            overflow-x: auto;
-            font-family: var(--font-mono);
-            font-size: 0.9rem;
-            color: #e2e8f0;
-            line-height: 1.7;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--text-muted);
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .copy-btn:hover {
-            background: var(--accent);
-            color: black;
-        }
-
-        /* Syntax Highlighting Tokens */
-        .tk-kw {
-            color: #f472b6;
-            font-weight: bold;
-        }
-
-        .tk-tag {
-            color: #38bdf8;
-            font-weight: bold;
-        }
-
-        .tk-attr {
-            color: #a5b4fc;
-        }
-
-        .tk-str {
-            color: #a3e635;
-        }
-
-        .tk-var {
-            color: #fbbf24;
-        }
-
-        .tk-cm {
-            color: #64748b;
-            font-style: italic;
-        }
-
-        /* --- 6. MISC & CARDS --- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 30px 0;
-            font-size: 0.95rem;
-        }
-
-        th {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 2px solid var(--border);
-            color: white;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-muted);
-        }
-
-        code.inline {
-            background: var(--bg-card);
-            padding: 3px 7px;
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            color: var(--accent);
-            font-size: 0.9rem;
-        }
-
-        /* --- 7. DONATE CARD STYLES --- */
-        .donate-card {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 2px solid rgba(247, 147, 26, 0.4);
-            padding: 40px;
-            border-radius: 16px;
-            margin-top: 50px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .donate-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #f7931a, #ffb74d);
-        }
-
-        .donate-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .donate-card h3 {
-            color: white;
-            border: none;
-            margin: 0 0 10px 0;
-            padding: 0;
-        }
-
-        .donate-card p {
-            margin-bottom: 25px;
-        }
-
-        .wallet-address {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 8px;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            word-break: break-all;
-            cursor: pointer;
-            border: 2px dashed var(--accent-orange);
-            color: #fbbf24;
-            transition: 0.3s;
-        }
-
-        .wallet-address:hover {
-            border-color: #ffb74d;
-            background: rgba(247, 147, 26, 0.15);
-            transform: scale(1.02);
-        }
-
-        .wallet-label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .copy-success {
-            display: none;
-            color: #22c55e;
-            font-size: 0.85rem;
-            margin-top: 10px;
-        }
-
-        .wallet-address.copied {
-            border-color: #22c55e;
-            color: #22c55e;
-        }
-
-        .wallet-address.copied+.copy-success {
-            display: block;
-        }
-    </style>
-</head>
-
-<body>
-
-    <aside>
-        <a href="index.html" class="brand">
-            <i class="fa fa-book"></i>
-            <span class="brand-text">DARE</span>
-        </a>
-        <a href="comp.html" class="cta-btn" target="_blank">🚀 LIVE SIMULATOR</a>
-        <a href="#donate" class="donate-btn">
-            <i class="fa-solid fa-mug-hot"></i> Donate ☕
-        </a>
-
-        <div class="nav-group">
-            <span class="nav-label">Introduction</span>
-            <a href="#welcome" class="nav-link active">What is DARE?</a>
-            <a href="#quickstart" class="nav-link">Quick Start</a>
-        </div>
-
-        <div class="nav-group">
-            <span class="nav-label">Core Concepts</span>
-            <a href="#structure" class="nav-link">File Structure</a>
-            <a href="#variables" class="nav-link">Variables ($)</a>
-            <a href="#layout" class="nav-link">Layout System</a>
-        </div>
-
-        <div class="nav-group">
-            <span class="nav-label">Component API</span>
-            <a href="#primitives" class="nav-link">Primitives</a>
-            <a href="#components" class="nav-link">Components</a>
-            <a href="#v2-components" class="nav-link" style="color:#a855f7">V2 Components ✨</a>
-        </div>
-
-        <div class="nav-group">
-            <span class="nav-label">Tooling</span>
-            <a href="#cli" class="nav-link">CLI</a>
-            <a href="#api" class="nav-link">REST API</a>
-            <a href="#library" class="nav-link">Node.js Library</a>
-        </div>
-
-        <div class="nav-group">
-            <span class="nav-label">For AI Agents</span>
-            <a href="#ai-prompt" class="nav-link" style="color:var(--accent)">System Prompt</a>
-        </div>
-
-        <div class="nav-group">
-            <span class="nav-label">Support</span>
-            <a href="#author" class="nav-link">Author</a>
-            <a href="#donate" class="nav-link">Donate</a>
-        </div>
-    </aside>
-
-    <main>
-        <section id="welcome">
-            <span
-                style="color:var(--accent); font-family:var(--font-mono); font-size:0.9rem; background: rgba(56,189,248,0.1); padding: 4px 12px; border-radius: 4px;">VERSION
-                2.0</span>
-            <h1>The AI-Native PDF Language.</h1>
-            <p>DARE is a high-fidelity, token-efficient markup language designed specifically for AI Agents to generate
-                perfect PDF documents. It replaces the verbosity and unpredictability of HTML/CSS with a strict,
-                minimalist, and deterministic system.</p>
-            <p style="color: var(--accent); font-weight: 600;">V2 ships with 16 built-in components, professional chart
-                rendering, and a live web compiler.</p>
-        </section>
-
-        <section id="quickstart">
-            <h2>Quick Start</h2>
-            <p>The entire DARE Engine is a self-contained Node.js project. Get it running in under a minute.</p>
-            <h3>1. Setup</h3>
-            <div class="code-wrapper">
-                <pre>
-<span class="tk-cm"># Clone the project repository</span>
-git clone https://github.com/local-over/dare-engine.git dare-engine
-cd dare-engine
-
-<span class="tk-cm"># Install dependencies (will download a headless Chrome instance)</span>
-npm install
-</pre>
-            </div>
-
-            <h3>2. Run Your First Compilation</h3>
-            <p>Use the command-line tool to compile the example file.</p>
-            <div class="code-wrapper">
-                <pre>
-node cli.js examples/ultimate.dare report.pdf
-</pre>
-            </div>
-        </section>
-
-        <section id="structure">
-            <h2>File Structure</h2>
-            <p>A DARE file has two main blocks: <code class="inline">@setup</code> and <code class="inline">@doc</code>.
-            </p>
-            <div class="code-wrapper">
-                <pre>
-<span class="tk-kw">@setup</span> {
-  <span class="tk-cm">// Global settings like paper size & variables</span>
-  <span class="tk-attr">format</span>: A4;
-  <span class="tk-var">$brand</span>: <span class="tk-attr">color</span>=<span class="tk-str">#0ea5e9</span>;
+<html
+<div class="generated-docs">
+
+<section id="why" class="reveal">
+<h1>DARE Engine Documentation</h1>
+<p>Welcome to the official documentation for the <strong>DARE Engine</strong>, an AI-native, token-efficient markup language explicitly designed for generating pixel-perfect PDF documents. </p>
+<h2>Deep Introduction</h2>
+<p>DARE (Document Assembly and Rendering Engine) was born out of the need to bridge the gap between AI generation and precise document rendering. Traditional tools like HTML/CSS or LaTeX are often too verbose, unpredictable, or difficult for AI models to reliably construct into perfect PDFs without running into token limits or layout hallucinations. </p>
+<p>DARE introduces a minimalistic, token-efficient syntax that Large Language Models (LLMs) can easily write, paired with a robust rendering engine built on top of <code>pdfmake</code>. The engine compiles DARE markup directly into high-quality PDFs, ensuring that the visual output matches the AI&#39;s structural intent.</p>
+<h2>Why DARE?</h2>
+<ul>
+<li><strong>Token-Efficient</strong>: Minimalist syntax heavily reduces the token footprint, making it cheaper and faster for AI to generate complex documents.</li>
+<li><strong>AI-Native</strong>: Designed specifically for LLMs. The syntax avoids deeply nested tags or complex layout calculations, which often trip up models.</li>
+<li><strong>Pixel-Perfect PDF Rendering</strong>: 100% native PDF generation. What you declare is exactly what gets rendered. No HTML intermediary, ensuring consistent styling.</li>
+<li><strong>Data Binding</strong>: Built-in support for injecting external JSON data directly into the document.</li>
+<li><strong>Developer Friendly</strong>: Easily embeddable as a Node.js library, a CLI tool, or a REST API.</li>
+</ul>
+<h2>Architecture</h2>
+<p>The DARE Engine architecture consists of three main stages:</p>
+<ol>
+<li><strong>Parser</strong>: The <code>src/parser.js</code> module reads the <code>.dare</code> file, resolves external data (if provided), and constructs an Abstract Syntax Tree (AST) representing the document&#39;s structure and styling.</li>
+<li><strong>Compiler</strong>: The AST is transformed into a robust internal schema compatible with the underlying PDF generation library.</li>
+<li><strong>Renderer</strong>: The <code>src/renderers/pdf.js</code> module takes the compiled schema and generates the final binary PDF output buffer.</li>
+</ol>
+<h2>Anatomy of a DARE File</h2>
+<p>A standard DARE file is divided into three distinct sections, separated by <code>@</code> decorators. This separation of concerns allows for clean, readable, and maintainable documents.</p>
+<h3>1. <code>@setup</code></h3>
+<p>The <code>@setup</code> block defines global document settings and styling parameters. This includes page size, margins, default fonts, and global color variables.</p>
+<pre><code class="language-dare">@setup
+page_size: A4
+margin: 40
+font_family: Helvetica
+primary_color: #FF5733
+</code></pre>
+<h3>2. <code>@data</code></h3>
+<p>The <code>@data</code> block is used to declare inline JSON data or map external data variables. This is incredibly useful for templating, allowing you to reuse the same <code>.dare</code> file for different datasets.</p>
+<pre><code class="language-dare">@data
+{
+  &quot;user&quot;: {
+    &quot;name&quot;: &quot;Jane Doe&quot;,
+    &quot;role&quot;: &quot;Software Engineer&quot;
+  },
+  &quot;company&quot;: &quot;TechCorp&quot;
 }
+</code></pre>
+<h3>3. <code>@doc</code></h3>
+<p>The <code>@doc</code> block is where the actual document content and structure are declared. It uses a token-efficient markup syntax to define layout elements like containers, text blocks, images, tables, and loops, referencing the data defined in the <code>@data</code> block.</p>
+<pre><code class="language-dare">@doc
+container[width: 100%, background: primary_color]:
+  text[size: 24, bold: true]: &quot;Invoice for {{user.name}}&quot;
+  text[size: 14]: &quot;Company: {{company}}&quot;
+  
+  table[columns: 2]:
+    row:
+      cell: &quot;Item&quot;
+      cell: &quot;Price&quot;
+    row:
+      cell: &quot;DARE Engine License&quot;
+      cell: &quot;$0.00&quot;
+</code></pre>
 
-<span class="tk-kw">@doc</span> {
-  <span class="tk-cm">// Visual content, structured into pages</span>
-  <span class="tk-tag">page</span> {
-    <span class="tk-tag">txt</span>(<span class="tk-var">$brand</span>) { Hello World }
-  }
-}
-</pre>
-            </div>
-        </section>
+</section>
+<section id="components" class="reveal">
+<h1>DARE Components Reference</h1>
+<p>This document provides a highly comprehensive overview of all supported DARE components, including containers, text elements, media, and shapes.</p>
+<h2>Containers</h2>
+<p>Containers wrap other components and dictate their layout.</p>
+<h3><code>page</code></h3>
+<p>Defines a page break or a specific page context. You can style the background of a page or its margins.</p>
+<ul>
+<li><strong>Props</strong>: <code>bg</code>, <code>p</code>, <code>px</code>, <code>py</code> (for first page padding overrides).</li>
+</ul>
+<h3><code>box</code></h3>
+<p>A versatile block container. Can be used for backgrounds, borders, or stacking content.</p>
+<ul>
+<li><strong>Props</strong>: <code>bg</code>, <code>border</code>, <code>borderColor</code>, <code>p</code>, <code>px</code>, <code>py</code>, <code>w</code>, <code>h</code>, <code>unbreakable</code> (prevents page breaks inside the box).</li>
+</ul>
+<h3><code>cols</code></h3>
+<p>A flex-like row container used to place elements side-by-side. </p>
+<ul>
+<li><strong>Props</strong>: <code>gap</code> (spacing between columns), <code>n</code> (number of equal-width columns), <code>between</code> (space-between layout), <code>w</code> (column widths).</li>
+<li><strong>Usage</strong>: Automatically evenly distributes children or respects <code>w</code> property of children. <code>cols(n=3)</code> creates 3 equal columns.</li>
+</ul>
+<h3><code>hdr</code> &amp; <code>ftr</code></h3>
+<p>Page header and footer components. Can be placed inside a <code>page</code> for page-specific headers/footers, or at the root level for global headers/footers.</p>
+<h3><code>each</code></h3>
+<p>Loops over an array in the data context.</p>
+<ul>
+<li><strong>Usage</strong>: <code>each(item in items) { txt(item.name) }</code></li>
+</ul>
+<h3><code>if</code></h3>
+<p>Conditionally renders its content based on a truthy value in the data context.</p>
+<ul>
+<li><strong>Usage</strong>: <code>if(showDetails) { txt(&quot;Details...&quot;) }</code></li>
+</ul>
+<h2>Text Elements</h2>
+<p>Elements designed for text rendering and formatting.</p>
+<h3><code>txt</code></h3>
+<p>Standard text block.</p>
+<ul>
+<li><strong>Props</strong>: <code>size</code> (or <code>fs</code>), <code>color</code>, <code>bold</code>, <code>italic</code>, <code>uppercase</code>, <code>ta</code> (text-align), <code>lh</code> (line-height).</li>
+</ul>
+<h3><code>tbl</code></h3>
+<p>Creates a table. Data is provided as semicolon-separated rows, with comma-separated cells.</p>
+<ul>
+<li><strong>Props</strong>: <code>cols</code> (e.g., <code>cols=&quot;2fr 1fr&quot;</code> for column widths), <code>unbreakable</code>.</li>
+<li><strong>Usage</strong>: <code>tbl(cols=&quot;1fr 1fr&quot;) { Header1, Header2; Row1Col1, Row1Col2 }</code></li>
+</ul>
+<h3><code>list</code></h3>
+<p>Creates an unordered or ordered list.</p>
+<ul>
+<li><strong>Props</strong>: <code>type=&quot;ol&quot;</code> or <code>type=&quot;ordered&quot;</code> for numbered lists, <code>size</code>, <code>color</code>.</li>
+</ul>
+<h3><code>badge</code></h3>
+<p>A small inline badge with a background color.</p>
+<ul>
+<li><strong>Props</strong>: <code>bg</code>, <code>color</code>, <code>size</code>.</li>
+</ul>
+<h3><code>link</code></h3>
+<p>A hyperlinked text element.</p>
+<ul>
+<li><strong>Props</strong>: <code>url</code>, <code>color</code>, <code>size</code>.</li>
+</ul>
+<h2>Media Elements</h2>
+<p>Elements for rendering images, charts, and codes.</p>
+<h3><code>img</code></h3>
+<p>Renders an image from a URL or local file path.</p>
+<ul>
+<li><strong>Props</strong>: <code>src</code>, <code>w</code>, <code>h</code>, <code>center</code>, <code>right</code>, <code>left</code>.</li>
+</ul>
+<h3><code>bar</code> &amp; <code>pie</code> &amp; <code>line</code></h3>
+<p>Renders charts using the QuickChart API.</p>
+<ul>
+<li><strong>Props</strong>: <code>labels</code> (comma-separated), <code>data</code> (comma-separated numbers), <code>data2</code>, <code>title</code>, <code>color</code>, <code>bg</code>.</li>
+<li><strong>Specifics</strong>: <code>type=&quot;donut&quot;</code> for pie charts.</li>
+</ul>
+<h3><code>qr</code></h3>
+<p>Generates a QR code.</p>
+<ul>
+<li><strong>Props</strong>: <code>data</code>, <code>w</code>, <code>h</code>, <code>center</code>.</li>
+</ul>
+<h2>Shapes &amp; Dividers</h2>
+<h3><code>shape</code></h3>
+<p>Draws a geometric shape.</p>
+<ul>
+<li><strong>Props</strong>: <code>type</code> (<code>rect</code>, <code>triangle</code>, <code>circle</code>), <code>w</code>, <code>h</code>, <code>bg</code>, <code>color</code>, <code>border</code>.</li>
+</ul>
+<h3><code>hr</code> &amp; <code>line</code></h3>
+<p>Draws a horizontal rule/line.</p>
+<ul>
+<li><strong>Props</strong>: <code>h</code> (thickness), <code>color</code>.</li>
+</ul>
+<h3><code>sp</code></h3>
+<p>Spacer element to add vertical space.</p>
+<ul>
+<li><strong>Props</strong>: <code>h</code> (height).</li>
+</ul>
 
-        <section id="variables">
-            <h2>Variables ($)</h2>
-            <p>Variables are the key to DARE's efficiency. Define complex styles once in <code
-                    class="inline">@setup</code> and reuse them with a single token.</p>
-            <div class="code-wrapper">
-                <pre>
-<span class="tk-kw">@setup</span> {
-  <span class="tk-var">$card</span>: <span class="tk-attr">bg</span>=<span class="tk-str">#1e293b</span> <span class="tk-attr">border</span>=1 <span class="tk-attr">rounded</span>=5mm <span class="tk-attr">p</span>=10mm;
-}
+</section>
+<section id="styling" class="reveal">
+<h1>DARE Styling Reference</h1>
+<p>This document covers all styling properties, shorthand mappings, typography, and layout flags supported by DARE.</p>
+<h2>Shorthand CSS Mappings</h2>
+<p>DARE provides an extensive set of shorthand attributes for quick and token-efficient styling.</p>
+<h3>Dimensions</h3>
+<ul>
+<li><code>w</code>: width</li>
+<li><code>h</code>: height</li>
+<li><code>minw</code>, <code>minh</code>: min-width, min-height</li>
+<li><code>maxw</code>, <code>maxh</code>: max-width, max-height</li>
+</ul>
+<h3>Padding &amp; Margin</h3>
+<ul>
+<li><code>p</code>: padding (all sides)</li>
+<li><code>pt</code>, <code>pb</code>, <code>pl</code>, <code>pr</code>: padding top, bottom, left, right</li>
+<li><code>px</code>: padding horizontal (left/right)</li>
+<li><code>py</code>: padding vertical (top/bottom)</li>
+<li><code>m</code>: margin (all sides)</li>
+<li><code>mt</code>, <code>mb</code>, <code>ml</code>, <code>mr</code>: margin top, bottom, left, right</li>
+<li><code>mx</code>: margin horizontal</li>
+<li><code>my</code>: margin vertical</li>
+</ul>
+<h3>Colors &amp; Backgrounds</h3>
+<ul>
+<li><code>bg</code>: background color</li>
+<li><code>color</code>: text color</li>
+<li><code>borderColor</code>: border color</li>
+</ul>
+<h3>Borders</h3>
+<ul>
+<li><code>border</code>: border width/style</li>
+<li><code>r</code> or <code>rounded</code>: border-radius</li>
+</ul>
+<h3>Typography Shorthands</h3>
+<ul>
+<li><code>size</code> or <code>fs</code>: font-size (automatically mapped to <code>pt</code>)</li>
+<li><code>font</code> or <code>ff</code>: font-family</li>
+<li><code>line</code> or <code>lh</code>: line-height</li>
+<li><code>ta</code>: text-align</li>
+<li><code>td</code>: text-decoration</li>
+<li><code>tt</code>: text-transform</li>
+<li><code>ls</code>: letter-spacing</li>
+<li><code>ws</code>: white-space</li>
+<li><code>fw</code>: font-weight</li>
+</ul>
+<h2>Typography Flags</h2>
+<p>Boolean flags can be used directly on elements to apply typography styles instantly:</p>
+<ul>
+<li><code>bold</code>: Applies bold font-weight.</li>
+<li><code>italic</code>: Applies italic font-style.</li>
+<li><code>underline</code>: Applies underline text-decoration.</li>
+<li><code>strikethrough</code>: Applies line-through text-decoration.</li>
+<li><code>uppercase</code>: Transforms text to uppercase.</li>
+<li><code>lowercase</code>: Transforms text to lowercase.</li>
+<li><code>capitalize</code>: Capitalizes the first letter of each word.</li>
+</ul>
+<h2>Layout Flags</h2>
+<p>These boolean flags control how elements are arranged and displayed:</p>
+<ul>
+<li><code>center</code>: Centers the element or its text. For boxes, it centers the box in its parent.</li>
+<li><code>left</code>, <code>right</code>: Aligns content or the container itself to the left or right.</li>
+<li><code>row</code>: Forces a flex row layout (children side-by-side).</li>
+<li><code>col</code>: Forces a flex column layout (stack).</li>
+<li><code>between</code>: Applies <code>space-between</code> alignment for rows/columns.</li>
+<li><code>around</code>: Applies <code>space-around</code> alignment.</li>
+<li><code>evenly</code>: Applies <code>space-evenly</code> alignment.</li>
+<li><code>wrap</code>, <code>nowrap</code>: Controls flex wrapping.</li>
+<li><code>stretch</code>, <code>start</code>, <code>end</code>: Controls cross-axis alignment.</li>
+<li><code>unbreakable</code> or <code>nobreak</code>: Prevents page breaks from occurring inside the component (highly useful for <code>box</code> and <code>tbl</code>).</li>
+</ul>
+<h2>Unit Auto-Completion</h2>
+<p>By default, numeric values for dimensions (like <code>w=&quot;50&quot;</code>) are automatically appended with <code>mm</code> in the CSS renderer, or accurately converted to points (<code>pt</code>) in the PDF renderer. Certain properties (like <code>opacity</code>, <code>z-index</code>, <code>line-height</code>, <code>flex</code>) are unitless.</p>
 
-<span class="tk-kw">@doc</span> {
-  <span class="tk-tag">page</span> {
-    <span class="tk-tag">box</span>(<span class="tk-var">$card</span>) { ... }
-  }
-}
-</pre>
-            </div>
-        </section>
+</section>
+<section id="api" class="reveal">
+<h1>DARE Engine Usage</h1>
+<p>The DARE Engine is highly flexible and can be integrated into your workflow in three primary ways: as a Command Line Interface (CLI), as a Node.js Library, or as a standalone REST API.</p>
+<hr>
+<h2>1. CLI Usage</h2>
+<p>The Command Line Interface is the easiest way to compile <code>.dare</code> files into PDFs directly from your terminal.</p>
+<h3>Basic Compilation</h3>
+<p>You can run the engine using <code>npx</code> (if installed globally or via package scripts) or directly via Node:</p>
+<pre><code class="language-sh"># Using npx (if configured)
+npx dare compile input.dare -o output.pdf
 
-        <section id="layout">
-            <h2>Layout System</h2>
-            <p>DARE's layout is powered by a simplified Flexbox and a physical unit system. This combination ensures
-                layouts are both powerful and predictable.</p>
+# Or directly using the CLI script
+node cli.js input.dare output.pdf
+</code></pre>
+<h3>Passing JSON Data</h3>
+<p>DARE supports data binding. You can pass an external JSON file to populate variables within your <code>.dare</code> document using the <code>--data</code> flag.</p>
+<pre><code class="language-sh">node cli.js input.dare output.pdf --data data.json
+</code></pre>
+<p><strong>Options</strong>:</p>
+<ul>
+<li><code>--help, -h</code>: Show help message and usage examples.</li>
+<li><code>--version, -v</code>: Show the current version of the DARE Engine.</li>
+</ul>
+<hr>
+<h2>2. Node.js Library</h2>
+<p>You can embed the DARE Engine directly into your Node.js applications to generate PDFs programmatically. The engine exposes two main functions: <code>convertFile</code> and <code>convertString</code>.</p>
+<h3>Installation</h3>
+<p>Make sure to require the library in your project:</p>
+<pre><code class="language-javascript">const { convertFile, convertString } = require(&#39;dare-engine&#39;);
+</code></pre>
+<h3><code>convertFile(inputPath, outputPath, dataPath)</code></h3>
+<p>Reads a <code>.dare</code> file from disk and saves the resulting PDF.</p>
+<pre><code class="language-javascript">const path = require(&#39;path&#39;);
+const { convertFile } = require(&#39;dare-engine&#39;);
 
-            <h3>Flexbox</h3>
-            <p>Use <code class="inline">display=flex</code> on a <code class="inline">box</code> to arrange its
-                children. Combine with <code class="inline">justify</code> and <code class="inline">align</code> for
-                precise control.</p>
-            <div class="code-wrapper">
-                <pre>
-<span class="tk-tag">box</span>(<span class="tk-attr">display</span>=flex, <span class="tk-attr">justify</span>=space-between) {
-  <span class="tk-tag">txt</span>{Left}
-  <span class="tk-tag">txt</span>{Right}
-}
-</pre>
-            </div>
+async function generateInvoice() {
+    const input = path.join(__dirname, &#39;invoice.dare&#39;);
+    const output = path.join(__dirname, &#39;invoice.pdf&#39;);
+    const data = path.join(__dirname, &#39;customer.json&#39;); // Optional
 
-            <h3>The Fill Command</h3>
-            <p>For perfect header/footer layouts, set one box to <code class="inline">h=fill</code>. The engine will
-                automatically calculate and stretch this box to fill all remaining vertical space on the page.</p>
-            <div class="code-wrapper">
-                <pre>
-<span class="tk-tag">page</span> {
-  <span class="tk-tag">box</span>(<span class="tk-attr">h</span>=25mm) { <span class="tk-cm">/* Header */</span> }
-  <span class="tk-tag">box</span>(<span class="tk-attr">h</span>=fill) { <span class="tk-cm">/* Body */</span> }
-  <span class="tk-tag">box</span>(<span class="tk-attr">h</span>=20mm) { <span class="tk-cm">/* Footer */</span> }
-}
-</pre>
-            </div>
-        </section>
-
-        <section id="primitives">
-            <h2>Primitives</h2>
-            <p>The basic building blocks of any DARE document.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Primitive</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code class="inline">page</code></td>
-                        <td>The root container for each page. Creates a hard boundary for content.</td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">box</code></td>
-                        <td>The fundamental container for layout and styling (like a `div`).</td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">txt</code></td>
-                        <td>The container for all text content.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section id="components">
-            <h2>Components</h2>
-            <p>DARE provides built-in "smart" components for common document needs.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Component</th>
-                        <th>Description</th>
-                        <th>Example</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code class="inline">img</code></td>
-                        <td>Embeds an image. Supports local and remote URLs.</td>
-                        <td><code class="inline">img(src="logo.png") {}</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">qr</code></td>
-                        <td>Generates a vector QR code from a data string.</td>
-                        <td><code class="inline">qr(data="url") {}</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">bar</code></td>
-                        <td>Renders a high-fidelity SVG bar chart.</td>
-                        <td><code class="inline">bar(data="A:10;B:20") {}</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">tbl</code></td>
-                        <td>Creates a grid-based table from CSV-like data.</td>
-                        <td><code class="inline">tbl{H1,H2; R1,R2}</code></td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section id="v2-components">
-            <h2>✨ V2 Components</h2>
-            <p>New in DARE v2 — professional components for complete document control.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Component</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                        <th>Example</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code class="inline">pie</code></td>
-                        <td>Void</td>
-                        <td>SVG pie/donut chart with legend.</td>
-                        <td><code class="inline">pie(data="A:40;B:60") {}</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">badge</code></td>
-                        <td>Leaf</td>
-                        <td>Pill-shaped status label.</td>
-                        <td><code class="inline">badge(bg=#22c55e) { LIVE }</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">list</code></td>
-                        <td>Leaf</td>
-                        <td>Auto-formatted bullet or numbered list.</td>
-                        <td><code class="inline">list { Item 1; Item 2 }</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">link</code></td>
-                        <td>Leaf</td>
-                        <td>Styled hyperlink with underline.</td>
-                        <td><code class="inline">link(href="url") { Click }</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">line</code></td>
-                        <td>Void</td>
-                        <td>Horizontal rule / divider.</td>
-                        <td><code class="inline">line(color=#e2e8f0) {}</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">sp</code></td>
-                        <td>Void</td>
-                        <td>Vertical spacer.</td>
-                        <td><code class="inline">sp(h=10) {}</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">cols</code></td>
-                        <td>Container</td>
-                        <td>Multi-column grid layout.</td>
-                        <td><code class="inline">cols(n=3, gap=5mm) { ... }</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">hdr</code></td>
-                        <td>Container</td>
-                        <td>Page header with flex layout.</td>
-                        <td><code class="inline">hdr(bg=#1e293b) { ... }</code></td>
-                    </tr>
-                    <tr>
-                        <td><code class="inline">ftr</code></td>
-                        <td>Container</td>
-                        <td>Page footer, auto-sticks to bottom.</td>
-                        <td><code class="inline">ftr(bg=#f8fafc) { ... }</code></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Component Types</h3>
-            <p><strong>Container</strong> — Children are recursively parsed (<code class="inline">page</code>, <code
-                    class="inline">box</code>, <code class="inline">cols</code>, <code class="inline">hdr</code>, <code
-                    class="inline">ftr</code>).<br>
-                <strong>Leaf</strong> — Inner content is raw text (<code class="inline">txt</code>, <code
-                    class="inline">tbl</code>, <code class="inline">badge</code>, <code class="inline">list</code>,
-                <code class="inline">link</code>).<br>
-                <strong>Void</strong> — No meaningful children (<code class="inline">img</code>, <code
-                    class="inline">qr</code>, <code class="inline">bar</code>, <code class="inline">pie</code>, <code
-                    class="inline">line</code>, <code class="inline">sp</code>).
-            </p>
-        </section>
-
-        <section id="cli">
-            <h2>Tooling: CLI</h2>
-            <p>Use the command line for local development and automated scripting. The tool is globally available in the
-                project via `node cli.js`.</p>
-            <div class="code-wrapper">
-                <pre>
-<span class="tk-cm"># Usage</span>
-node cli.js <input.dare> <output.pdf>
-
-<span class="tk-cm"># Example</span>
-node cli.js examples/ultimate.dare report.pdf
-</pre>
-            </div>
-        </section>
-
-        <section id="api">
-            <h2>Tooling: REST API</h2>
-            <p>Start a production-ready API server for on-demand PDF generation from any application.</p>
-            <h3>1. Start the Server</h3>
-            <div class="code-wrapper">
-                <pre>node server.js</pre>
-            </div>
-            <h3>2. Send a POST Request</h3>
-            <p>Send your raw DARE code in the body of a POST request to <code class="inline">/api/render</code>.</p>
-            <div class="code-wrapper">
-                <pre>
-curl -X POST http://localhost:3000/api/render \
-     -H "Content-Type: text/plain" \
-     --data-binary "@examples/ultimate.dare" \
-     --output api_result.pdf
-</pre>
-            </div>
-        </section>
-
-        <section id="library">
-            <h2>Tooling: Node.js Library</h2>
-            <p>Integrate the DARE engine directly into your Node.js backend for maximum control.</p>
-            <div class="code-wrapper">
-                <pre>
-<span class="tk-kw">const</span> dare = <span class="tk-kw">require</span>(<span class="tk-str">'./index.js'</span>);
-<span class="tk-kw">const</span> fs = <span class="tk-kw">require</span>(<span class="tk-str">'fs'</span>);
-
-<span class="tk-kw">async function</span> generate() {
-  <span class="tk-kw">const</span> dareCode = <span class="tk-str">'@doc{ page{ txt{Hello} } }'</span>;
-
-  <span class="tk-cm">// convertString returns a PDF buffer</span>
-  <span class="tk-kw">const</span> pdfBuffer = <span class="tk-kw">await</span> dare.convertString(dareCode);
-  fs.writeFileSync(<span class="tk-str">'from_lib.pdf'</span>, pdfBuffer);
-}
-</pre>
-            </div>
-        </section>
-
-        <section id="ai-prompt">
-            <h2>🤖 For AI Agents: System Prompt</h2>
-            <p>This is the master prompt to teach any LLM how to write perfect DARE code. Use it as the system prompt or
-                at the beginning of your conversation.</p>
-
-            <div class="code-wrapper" style="border: 2px solid var(--accent);">
-                <button class="copy-btn" onclick="copyCode(this)">COPY</button>
-                <pre style="white-space: pre-wrap;">TOOL: DARE v2 PDF Engine
-PURPOSE: Token-efficient markup language for AI-generated PDF documents.
-
-STRUCTURE:
-@setup { format: A4; $var: props; }
-@doc { page { ... } }
-
-UNITS: mm for layout, pt for text size. Bare numbers auto-add mm.
-
-VARIABLES: Define in @setup with $name, reuse anywhere. Composable.
-  @setup { $blue: color=#0ea5e9; $title: size=24 bold $blue; }
-
-PRIMITIVES:
-  page { }           — Fixed page (A4/A5/Letter/Legal/A3)
-  box(props) { }     — Container. h=fill stretches to fill remaining space
-  txt(props) { text } — Text content
-
-COMPONENTS:
-  img(src="path") {}           — Image (local file or URL)
-  tbl(cols="2fr 1fr") { H1,H2; R1,R2 }  — Grid table. ; = row, , = cell
-  bar(data="A:10;B:20") {}     — Bar chart (SVG)
-  pie(data="A:30;B:70") {}     — Pie chart. type=donut for donut
-  qr(data="url") {}            — QR code
-  list { Item 1; Item 2 }      — Bullet list. type=num for numbered
-  hr {}                        — Horizontal divider
-  line(color=#ccc, thick=2) {} — Custom divider
-  sp(h=10) {}                  — Vertical spacer (10mm)
-  badge(bg=#e0f2fe) { TEXT }   — Inline badge/pill
-  link(href="url") { label }   — Clickable link
-  cols(n=3, gap=5) { }         — Quick N-column grid
-  hdr { }                      — Page header (flex, spaced)
-  ftr { }                      — Page footer (flex, spaced)
-
-CSS SHORTHANDS (saves 60%+ tokens vs HTML):
-  w h bg p m mt mb ml mr mx my px py pt pb pl pr
-  rounded/r border gap z opacity pos top bottom left right
-  lh(line-height) ta(text-align) td(text-decoration) tt(text-transform)
-  ls(letter-spacing) fw(font-weight) fs/size(font-size:pt) font/ff(font-family)
-  minw minh maxw maxh shadow ow ox oy
-
-FLAGS (boolean, no value needed):
-  bold italic underline strikethrough uppercase lowercase capitalize
-  center row col wrap nowrap hidden grid inline block
-  between around evenly start end stretch relative absolute fixed nobreak
-
-PATTERNS:
-  Header+Body+Footer:
-    page {
-      box(h=25mm, bg=#111, row, center, px=10) { txt(bold, color=white){Title} }
-      box(h=fill, p=15) { txt(size=12){Content} }
-      box(h=10mm, row, between, px=10) { txt(size=8){Left} txt(size=8){Right} }
+    try {
+        const resultPath = await convertFile(input, output, data);
+        console.log(`PDF successfully generated at: ${resultPath}`);
+    } catch (error) {
+        console.error(&#39;Error generating PDF:&#39;, error);
     }
+}
 
-  Two Columns:
-    cols(n=2, gap=10) { box{...} box{...} }
+generateInvoice();
+</code></pre>
+<h3><code>convertString(dareCode, options)</code></h3>
+<p>Compiles a DARE markup string directly into a PDF buffer, useful for on-the-fly generation without touching the filesystem.</p>
+<pre><code class="language-javascript">const { convertString } = require(&#39;dare-engine&#39;);
+const fs = require(&#39;fs&#39;).promises;
 
-  Card:
-    box(bg=white, border=1, rounded=3, p=8, shadow="0 2px 8px rgba(0,0,0,0.1)") { }
+async function compileString() {
+    const code = `
+    @setup
+    page_size: A4
+    @doc
+    text[size: 20]: &quot;Hello {{name}}!&quot;
+    `;
 
-RULES:
-1. Always wrap content in @doc { page { } }
-2. Use variables ($) for repeated styles — saves massive tokens
-3. Use h=fill on the main content box
-4. Use flags (bold, center, row) instead of verbose CSS
-5. tbl uses ; for rows and , for columns — no nested tags
-6. bar/pie data format: "Label:Value; Label:Value"
-</pre>
-            </div>
-        </section>
+    const options = {
+        data: { name: &quot;World&quot; }
+    };
 
-        <section id="author">
+    try {
+        const pdfBuffer = await convertString(code, options);
+        await fs.writeFile(&#39;hello.pdf&#39;, pdfBuffer);
+        console.log(&#39;PDF saved!&#39;);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+compileString();
+</code></pre>
+<hr>
+<h2>3. REST API</h2>
+<p>The DARE Engine includes an Express-based REST API for rendering documents over HTTP. This is ideal for microservice architectures or remote rendering.</p>
+<h3>Starting the Server</h3>
+<p>Start the server locally using npm or by running the script directly:</p>
+<pre><code class="language-sh">npm start
+# or
+node server.js
+</code></pre>
+<p>The server will start on port <code>3000</code> (or <code>process.env.PORT</code>).</p>
+<h3>Endpoints</h3>
+<h4><code>POST /api/render</code></h4>
+<p>Generates a PDF from DARE code.</p>
+<p><strong>Payload Format 1 (JSON)</strong>:<br>Send a JSON payload containing the <code>code</code> and optional <code>data</code>.</p>
+<pre><code class="language-bash">curl -X POST http://localhost:3000/api/render \
+  -H &quot;Content-Type: application/json&quot; \
+  -d &#39;{
+    &quot;code&quot;: &quot;@setup\npage_size: A4\n@doc\ntext: \&quot;Hello {{name}}\&quot;&quot;,
+    &quot;data&quot;: { &quot;name&quot;: &quot;API User&quot; }
+  }&#39; \
+  --output result.pdf
+</code></pre>
+<p><strong>Payload Format 2 (Plain Text)</strong>:<br>Send the DARE code directly as raw text.</p>
+<pre><code class="language-bash">curl -X POST http://localhost:3000/api/render \
+  -H &quot;Content-Type: text/plain&quot; \
+  -d &#39;@setup
+page_size: A4
+@doc
+text: &quot;Hello World&quot;&#39; \
+  --output result.pdf
+</code></pre>
+<h4><code>POST /api/preview</code></h4>
+<p><em>(Legacy)</em> This endpoint previously returned an HTML preview. In DARE v2.0, this is deprecated as the engine is now 100% native PDF. It will return a <code>410 Gone</code> status indicating you should use <code>/api/render</code>.</p>
+<h4><code>GET /health</code></h4>
+<p>Returns a health check status to ensure the API is running.</p>
+<h3>Deployment on Render.com</h3>
+<p>The DARE Engine is fully configured for deployment on <a href="https://render.com/">Render.com</a>. The repository includes a <code>render.yaml</code> configuration file for a one-click Web Service deployment.</p>
+<p><strong><code>render.yaml</code> spec:</strong></p>
+<ul>
+<li>Type: <code>web</code></li>
+<li>Environment: <code>node</code></li>
+<li>Build Command: <code>npm install</code></li>
+<li>Start Command: <code>node server.js</code></li>
+<li>Port: <code>10000</code> (Customizable via environment variables)</li>
+<li>Health Check: <code>/health</code></li>
+</ul>
+<p>Simply connect your repository to Render, and it will automatically deploy the API server using this configuration.</p>
+
+</section>
+
+</div>
+<section id="author">
             <h2>Author</h2>
             <p>DARE was designed and architected by <a href="https://github.com/local-over" target="_blank">Hassan
                     Elkady</a> as a robust, efficient solution for AI-driven document generation.</p>
