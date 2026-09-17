@@ -85,6 +85,7 @@ tag(attribute=value flag $variable) { content or children }
 - **Dimensions/Spacing:** `p`, `pt`, `pb`, `pl`, `pr`, `m`, `mt`, `mb`, `ml`, `mr`, `w`, `h`, `size`, `gap` (Units: `px`, `mm`, or raw numbers).
 - **Colors:** `color`, `bg`, `borderColor`. Accepts hex (`#ff0000`) or built-in palette (`white`, `black`, `primary`, `secondary`, `surface`, `border`, `muted`, `danger`, `success`).
 - **Typography Flags:** `bold`, `italic`, `uppercase`.
+- **Layout Flags:** `unbreakable` (prevents boxes or tables from splitting across pages).
 - **Variables:** Defined in `@setup` starting with `$` and reused in attributes.
 
 ## Data Interpolation
