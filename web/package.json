@@ -6,7 +6,7 @@
     "dev": "node generateDocs.js && next dev",
     "prebuild": "node generateDocs.js",
     "build": "next build",
-    "pages:build": "node generateDocs.js && npx @cloudflare/next-on-pages && find .vercel/output/static/_worker.js/ -type f -name \"*.js\" -exec sed -i \"s/from\\\"async_hooks\\\"/from\\\"node:async_hooks\\\"/g\" {} + && find .vercel/output/static/_worker.js/ -type f -name \"*.js\" -exec sed -i \"s/from \\\"async_hooks\\\"/from \\\"node:async_hooks\\\"/g\" {} +",
+    "pages:build": "node generateDocs.js && npx -y @cloudflare/next-on-pages && find .vercel/output/static/_worker.js/ -type f -name \"*.js\" -exec sed -i \"s/from\\\"async_hooks\\\"/from\\\"node:async_hooks\\\"/g\" {} + && find .vercel/output/static/_worker.js/ -type f -name \"*.js\" -exec sed -i \"s/from \\\"async_hooks\\\"/from \\\"node:async_hooks\\\"/g\" {} +",
     "start": "next start",
     "lint": "eslint"
   },
