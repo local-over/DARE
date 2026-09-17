@@ -2,19 +2,52 @@
 
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { indexDoc, componentsDoc, stylingDoc, usageDoc } from '../../docsContent';
 
 export default function DocsPage() {
   const sections = [
-    { id: 'why', title: '1. Why DARE?' },
-    { id: 'structure', title: '2. File Structure' },
-    { id: 'setup', title: '3. Setup Block (@setup)' },
-    { id: 'data', title: '4. Data Block (@data)' },
-    { id: 'doc', title: '5. Layout Tree (@doc)' },
-    { id: 'components', title: '6. UI Component Registry' },
-    { id: 'styling', title: '7. Styling & Shorthands' },
-    { id: 'api', title: '8. REST API Reference' },
-    { id: 'cli', title: '9. CLI Reference' },
+    { id: 'intro', title: '1. Introduction' },
+    { id: 'components', title: '2. Components Reference' },
+    { id: 'styling', title: '3. Styling & Layout' },
+    { id: 'usage', title: '4. Usage & APIs' },
   ];
+
+  const MarkdownRenderer = ({ content }) => (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        h1: ({node, ...props}) => <h1 className="text-3xl font-bold font-mono text-white border-b border-white/10 pb-3 mt-12 mb-6" {...props} />,
+        h2: ({node, ...props}) => <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3 mt-10 mb-5" {...props} />,
+        h3: ({node, ...props}) => <h3 className="text-xl font-bold font-mono text-white mt-8 mb-4" {...props} />,
+        p: ({node, ...props}) => <p className="text-neutral-300 text-sm leading-relaxed mb-4" {...props} />,
+        ul: ({node, ...props}) => <ul className="list-disc list-outside ml-5 text-neutral-300 text-sm leading-relaxed mb-4 space-y-2" {...props} />,
+        li: ({node, ...props}) => <li className="text-neutral-300" {...props} />,
+        code: ({node, inline, className, children, ...props}) => {
+          const match = /language-(\w+)/.exec(className || '');
+          return !inline ? (
+            <pre className="p-4 rounded-xl border border-white/10 bg-neutral-950 font-mono text-[11px] md:text-xs text-green-400 overflow-x-auto mb-6">
+              <code className={className} {...props}>
+                {children}
+              </code>
+            </pre>
+          ) : (
+            <code className="px-1.5 py-0.5 rounded bg-white/10 text-blue-300 font-mono text-[11px]" {...props}>
+              {children}
+            </code>
+          )
+        },
+        a: ({node, ...props}) => <a className="text-green-400 hover:text-green-300 underline" {...props} />,
+        table: ({node, ...props}) => <div className="overflow-x-auto mb-6"><table className="w-full text-left border-collapse" {...props} /></div>,
+        th: ({node, ...props}) => <th className="border-b border-white/20 p-2 font-mono text-white text-xs" {...props} />,
+        td: ({node, ...props}) => <td className="border-b border-white/10 p-2 text-neutral-300 text-sm" {...props} />,
+        blockquote: ({node, ...props}) => <blockquote className="border-l-2 border-green-500 pl-4 py-1 my-4 bg-green-500/10 text-green-200 text-sm rounded-r-lg" {...props} />
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black">
@@ -23,9 +56,9 @@ export default function DocsPage() {
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="mb-12 pb-8 border-b border-white/10 space-y-3">
-          <h1 className="text-4xl font-extrabold font-mono tracking-tight text-white">DARE Language Documentation</h1>
+          <h1 className="text-4xl font-extrabold font-mono tracking-tight text-white">DARE Documentation</h1>
           <p className="text-neutral-400 text-sm max-w-2xl">
-            Complete technical specification, syntax reference, component registry, and API endpoints for the DARE Engine.
+            Complete exhaustive technical specification, syntax reference, component registry, and API endpoints.
           </p>
         </div>
 
@@ -49,214 +82,20 @@ export default function DocsPage() {
 
           {/* Main Docs Content */}
           <main className="lg:col-span-3 space-y-16">
-            {/* Why DARE */}
-            <section id="why" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">1. Why DARE?</h2>
-              <p className="text-neutral-300 text-sm leading-relaxed">
-                HTML was designed for fluid, responsive web pages—not for static, rigid PDF documents. Using HTML to generate PDFs causes token inefficiency, rendering instability, and non-deterministic layouts.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs pt-2">
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950">
-                  <div className="font-bold text-white mb-1">Token Economy</div>
-                  <p className="text-neutral-400 text-[11px]">Up to 10x fewer tokens than HTML/CSS boilerplate.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950">
-                  <div className="font-bold text-white mb-1">Deterministic Output</div>
-                  <p className="text-neutral-400 text-[11px]">Exact dimensions with zero cascading style conflicts.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950">
-                  <div className="font-bold text-white mb-1">AI-Native Components</div>
-                  <p className="text-neutral-400 text-[11px]">Built with 16 core tags LLMs understand intuitively.</p>
-                </div>
-              </div>
+            <section id="intro">
+              <MarkdownRenderer content={indexDoc} />
             </section>
-
-            {/* Structure */}
-            <section id="structure" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">2. File Structure</h2>
-              <p className="text-neutral-300 text-sm leading-relaxed">
-                A valid DARE file contains three main blocks: `@setup`, `@data` (optional), and `@doc`.
-              </p>
-              <pre className="p-4 rounded-xl border border-white/10 bg-neutral-950 font-mono text-xs text-green-400">
-{`@setup {
-    format: A4 portrait;
-    font: Helvetica, Inter;
-    $heading: size=20 bold color=primary;
-}
-
-@data {
-    {
-        "title": "Monthly Executive Report",
-        "author": "Alice"
-    }
-}
-
-@doc {
-    page {
-        box(p=20) {
-            txt($heading) { {{ title }} }
-        }
-    }
-}`}
-              </pre>
+            
+            <section id="components">
+              <MarkdownRenderer content={componentsDoc} />
             </section>
-
-            {/* Setup */}
-            <section id="setup" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">3. Setup Block (@setup)</h2>
-              <p className="text-neutral-300 text-sm leading-relaxed">
-                Defines page format (`A4 portrait`, `A5 landscape`, or custom dimensions like `500 500`), font family imports, and reusable style variables starting with `$`.
-              </p>
-              <pre className="p-4 rounded-xl border border-white/10 bg-neutral-950 font-mono text-xs text-green-400">
-{`@setup {
-    format: A4 portrait;
-    font: Inter, Arial;
-    $brand_color: color=#000000;
-    $card_style: p=15 bg=surface border borderColor=border;
-}`}
-              </pre>
+            
+            <section id="styling">
+              <MarkdownRenderer content={stylingDoc} />
             </section>
-
-            {/* Data */}
-            <section id="data" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">4. Data Block (@data)</h2>
-              <p className="text-neutral-300 text-sm leading-relaxed">
-                Embeds JSON data or references an external JSON source. Dynamic values are injected using double curly braces ({'{{path.to.var}}'}).
-              </p>
-              <pre className="p-4 rounded-xl border border-white/10 bg-neutral-950 font-mono text-xs text-green-400">
-{`@data {
-    {
-        "user": "Alice",
-        "orders": [
-            {"id": 1, "total": 100},
-            {"id": 2, "total": 250}
-        ]
-    }
-}`}
-              </pre>
-            </section>
-
-            {/* Doc Tree */}
-            <section id="doc" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">5. Layout Tree (@doc)</h2>
-              <p className="text-neutral-300 text-sm leading-relaxed">
-                The layout tree contains pages, containers, charts, and content nodes. Every DARE file MUST contain a `@doc {'{ ... }'}` block.
-              </p>
-              <pre className="p-4 rounded-xl border border-white/10 bg-neutral-950 font-mono text-xs text-green-400">
-{`@doc {
-    page(bg=white) {
-        box(row gap=10 p=20) {
-            txt(size=18 bold) { Invoice for {{ user }} }
-        }
-    }
-}`}
-              </pre>
-            </section>
-
-            {/* Components */}
-            <section id="components" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">6. UI Component Registry</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="text-white font-bold">page</div>
-                  <p className="text-neutral-400 text-[11px]">Creates a new PDF page container (bg, format).</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="text-white font-bold">box</div>
-                  <p className="text-neutral-400 text-[11px]">Flexible container (`row` flag, `gap`, `p`, `m`, `bg`, `border`).</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="text-white font-bold">cols</div>
-                  <p className="text-neutral-400 text-[11px]">Multi-column grid layout (`n` columns, `gap`).</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="text-white font-bold">tbl</div>
-                  <p className="text-neutral-400 text-[11px]">Data table generator (`headers="A,B"`, `data="1,2"`).</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="text-white font-bold">bar / pie / line</div>
-                  <p className="text-neutral-400 text-[11px]">Vector charts (`data="10,20"`, `labels="Q1,Q2"`).</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="text-white font-bold">qr</div>
-                  <p className="text-neutral-400 text-[11px]">Vector QR code generator (`data="url"`, `w`, `h`).</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="text-white font-bold">each / if</div>
-                  <p className="text-neutral-400 text-[11px]">Loop iterations and conditional rendering blocks.</p>
-                </div>
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="text-white font-bold">sp / line / hr</div>
-                  <p className="text-neutral-400 text-[11px]">Vertical spacers and horizontal rule dividers.</p>
-                </div>
-              </div>
-            </section>
-
-            {/* Styling */}
-            <section id="styling" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">7. Styling & Shorthands</h2>
-              <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 font-mono text-xs text-neutral-300 space-y-2">
-                <div>• Spacing: `p`, `pt`, `pb`, `pl`, `pr`, `m`, `mt`, `mb`, `ml`, `mr`, `gap`</div>
-                <div>• Sizing: `w`, `h`, `size` (supports `px`, `mm`, or raw numbers)</div>
-                <div>• Palette: `white`, `black`, `primary`, `secondary`, `surface`, `border`, `muted`</div>
-                <div>• Typography Flags: `bold`, `italic`, `uppercase`</div>
-              </div>
-            </section>
-
-            {/* API */}
-            <section id="api" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">8. REST API Reference & Cloud Deployment</h2>
-              <div className="space-y-4 text-xs font-mono">
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-white text-black font-bold">POST</span>
-                    <span className="text-white font-bold">/api/render</span>
-                  </div>
-                  <p className="text-neutral-400 text-[11px]">Compiles DARE code payload (raw text string or JSON `{` "code": "..." `}`) into inline PDF binary.</p>
-                </div>
-
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-white text-black font-bold">POST</span>
-                    <span className="text-white font-bold">/api/preview</span>
-                  </div>
-                  <p className="text-neutral-400 text-[11px]">Compiles DARE code payload into AST JSON representation.</p>
-                </div>
-
-                <div className="p-4 rounded-xl border border-white/10 bg-neutral-950 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded bg-neutral-800 text-white font-bold">GET</span>
-                    <span className="text-white font-bold">/health</span>
-                  </div>
-                  <p className="text-neutral-400 text-[11px]">Engine health check endpoint returning `{` status: "ok" `}`.</p>
-                </div>
-
-                <div className="p-5 rounded-xl border border-white/15 bg-neutral-950/80 space-y-3">
-                  <div className="text-white font-bold text-sm">Deploying Live API to Render.com</div>
-                  <p className="text-neutral-400 text-[11px] leading-relaxed">
-                    DARE includes a native `render.yaml` Blueprint and `Dockerfile` for hosting your dedicated API server on Render.com or Docker.
-                  </p>
-                  <pre className="p-3 rounded-lg bg-black border border-white/10 text-[11px] text-green-400 overflow-x-auto">
-{`# 1. Connect https://github.com/local-over/DARE to Render.com
-# 2. Render automatically detects render.yaml and deploys:
-#    - Web Service: dare-api-server
-#    - Health check: /health
-#    - Port: 10000 / 3000`}
-                  </pre>
-                </div>
-              </div>
-            </section>
-
-            {/* CLI */}
-            <section id="cli" className="space-y-4">
-              <h2 className="text-2xl font-bold font-mono text-white border-b border-white/10 pb-3">9. CLI Reference</h2>
-              <pre className="p-4 rounded-xl border border-white/10 bg-neutral-950 font-mono text-xs text-neutral-200">
-{`# Compile .dare file to PDF
-$ npx dare compile input.dare -o output.pdf
-
-# Start local server instance
-$ node server.js`}
-              </pre>
+            
+            <section id="usage">
+              <MarkdownRenderer content={usageDoc} />
             </section>
           </main>
         </div>
