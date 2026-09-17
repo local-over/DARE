@@ -8,7 +8,17 @@
   <img src="https://img.shields.io/badge/built%20with-Node.js-brightgreen.svg" alt="Node.js">
 </p>
 
-# DARE — The Language for AI Documents
+## 📚 Comprehensive Documentation
+
+The DARE engine comes with a massive, exhaustive set of documentation covering every single element, parameter, styling shorthand, and environment integration (API, CLI, Library).
+
+Please refer to the new `docs/` directory for full guides:
+- [📖 Introduction & Architecture](docs/index.md)
+- [🧩 Components Reference](docs/components.md)
+- [🎨 Styling & Layout Flags](docs/styling.md)
+- [🚀 Usage (CLI, Library, API)](docs/usage.md)
+
+## DARE v3.0 Is Live — The Language for AI Documents
 
 **Stop forcing LLMs to write HTML.** DARE is a deterministic, token-efficient markup language designed specifically for the AI era. It generates pixel-perfect PDF documents from simple, structured prompts while using up to **10x fewer tokens** than traditional HTML/CSS workflows.
 
