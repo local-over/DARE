@@ -293,6 +293,7 @@ function buildPdfMakeNode(node, parentTag) {
         }
 
         if (props.ta) finalContainer.alignment = props.ta;
+        if (props.unbreakable) finalContainer.unbreakable = true;
 
         if (props.center) {
             return {
@@ -563,12 +564,12 @@ function buildPdfMakeNode(node, parentTag) {
             widths = rows[0].map(() => '*');
         }
 
-        return {
+        let tblObj = {
             table: {
                 headerRows: 1,
                 widths: widths,
                 body: rows,
-                dontBreakRows: false
+                dontBreakRows: !!props.unbreakable
             },
             layout: {
                 hLineWidth: function (i, node) { return i === 0 || i === node.table.body.length ? 0 : 1; },
@@ -581,6 +582,8 @@ function buildPdfMakeNode(node, parentTag) {
             },
             margin: margin
         };
+        if (props.unbreakable) tblObj.unbreakable = true;
+        return tblObj;
     }
 
     return { text: '' };

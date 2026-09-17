@@ -1,0 +1,22 @@
+@setup {
+  format: A4;
+}
+
+@doc {
+  page {
+    box(h=250mm, bg=#e2e8f0) {
+      txt { This box takes up most of page 1 }
+    }
+    
+    box(unbreakable, bg=#f87171, p=10mm, mt=10mm) {
+      txt { 
+        This is an unbreakable signature box! 
+        Since it doesn't fit on page 1, it should be entirely pushed to page 2,
+        instead of being split awkwardly across both pages.
+      }
+      sp(h=20mm) {}
+      hr {}
+      txt { Signature }
+    }
+  }
+}
