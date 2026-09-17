@@ -1,0 +1,58 @@
+@doc {
+    @setup {
+        format: A4 portrait;
+        bg: #f8fafc;
+        p: 40pt;
+    }
+
+    page {
+        txt(h1, bold, mb=20) { Smart Layout Test }
+
+        box(bg=white, p=20, border=true, mb=20) {
+            txt(mb=10) { This box should fit on page 1. }
+        }
+
+        box(bg=#e0f2fe, p=20, border=true, fill) {
+            txt(bold) { This box has fill=true! }
+            txt { It should perfectly stretch down to exactly the bottom margin of page 1! }
+        }
+    }
+
+    page {
+        txt(h1, bold, mb=20) { Smart Breaking Test }
+
+        box(bg=white, p=20, border=true, mb=650) {
+            txt { Spacer Box to push the next box to the very bottom }
+        }
+
+        box(bg=#fef08a, p=20, border=true) {
+            txt(bold) { Orphan Box }
+            txt { I am a small box at the bottom of Page 2. }
+            txt { I am small enough to fit on one page, but my position pushes me across the boundary to Page 3. }
+            txt { Since the Smart Breaking engine is active, I should NOT be cut! }
+            txt { I should be seamlessly pushed to Page 3! }
+        }
+
+        box(bg=#ffedd5, p=20, border=true) {
+            txt(bold) { Very Tall Box }
+            each(i in items) {
+                txt { Item {{i.name}} - I am intentionally very tall. }
+            }
+            txt(bold) { Because I am taller than a single page, I will be cut normally, rather than truncated. }
+        }
+    }
+}
+@data {
+    {
+        "items": [
+            {"name": "1"}, {"name": "2"}, {"name": "3"}, {"name": "4"}, {"name": "5"},
+            {"name": "6"}, {"name": "7"}, {"name": "8"}, {"name": "9"}, {"name": "10"},
+            {"name": "11"}, {"name": "12"}, {"name": "13"}, {"name": "14"}, {"name": "15"},
+            {"name": "16"}, {"name": "17"}, {"name": "18"}, {"name": "19"}, {"name": "20"},
+            {"name": "21"}, {"name": "22"}, {"name": "23"}, {"name": "24"}, {"name": "25"},
+            {"name": "26"}, {"name": "27"}, {"name": "28"}, {"name": "29"}, {"name": "30"},
+            {"name": "31"}, {"name": "32"}, {"name": "33"}, {"name": "34"}, {"name": "35"},
+            {"name": "36"}, {"name": "37"}, {"name": "38"}, {"name": "39"}, {"name": "40"}
+        ]
+    }
+}

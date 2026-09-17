@@ -1,3 +1,0 @@
-{
-  "code": "@doc { name: \"Test\"; author: \"Test\"; } @page { @txt(\"Hello World\"); }"
-}

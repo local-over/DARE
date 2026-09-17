@@ -3,3 +3,8 @@ node_modules/
 *.log
 /tmp/
 pdf_out/
+*.pdf
+*.png
+docDef*.json
+test_*.js
+.tests_output/

@@ -223,16 +223,28 @@ function buildPdfMakeNode(node, parentTag) {
                 stack: mappedChildren
             };
         }
+        
+        const needsTable = props.bg || props.border || props.fill || 
+            ((props.w || props.h) && parentTag !== 'cols');
 
         // Apply background/border using a single-cell table wrapper
-        if (props.bg || props.border || px || py || props.w || props.h) {
+        let finalContainer;
+        if (needsTable) {
             let tableWidths = ['100%'];
             if (isRow) tableWidths = ['*']; // rows still need flexible table widths
             let tableHeights = undefined;
-            if (props.w) tableWidths = [parseSize(props.w)];
+            if (props.w) {
+                // If this box is inside a cols container, its width is managed by the flex column.
+                // The inner table should fill that column entirely, not calculate a % relative to the page.
+                if (parentTag === 'cols') {
+                    tableWidths = ['*'];
+                } else {
+                    tableWidths = [parseSize(props.w)];
+                }
+            }
             if (props.h) tableHeights = [parseSize(props.h)];
             
-            let finalContainer = {
+            finalContainer = {
                 table: {
                     widths: tableWidths,
                     heights: tableHeights,
@@ -269,23 +281,30 @@ function buildPdfMakeNode(node, parentTag) {
                     margin: margin
                 };
             }
-            return finalContainer;
+        } else {
+            finalContainer = container;
+            if (!needsTable) {
+                margin[0] += px;
+                margin[1] += py;
+                margin[2] += px;
+                margin[3] += py;
+            }
+            finalContainer.margin = margin;
         }
 
-        container.margin = margin;
-        if (props.ta) container.alignment = props.ta;
+        if (props.ta) finalContainer.alignment = props.ta;
 
         if (props.center) {
             return {
                 columns: [
                     { width: '*', text: '' },
-                    { width: 'auto', ...container, margin: [0, 0, 0, 0] },
+                    { width: 'auto', ...finalContainer, margin: [0, 0, 0, 0] },
                     { width: '*', text: '' }
                 ],
                 margin: margin
             };
         }
-        return container;
+        return finalContainer;
     }
 
     if (tag === 'txt') {
@@ -404,19 +423,20 @@ function buildPdfMakeNode(node, parentTag) {
     }
 
     if (tag === 'hr' || tag === 'line') {
+        const h = parseSize(props.h) || 1;
+        const color = parseColor(props.color) || '#cbd5e1';
         return {
-            table: {
-                widths: ['*'],
-                body: [['']],
-            },
-            layout: {
-                hLineWidth: function(i) { return i === 0 ? 1 : 0; },
-                vLineWidth: function() { return 0; },
-                hLineColor: function() { return parseColor(props.color) || '#e2e8f0'; },
-                paddingTop: function() { return 0; },
-                paddingBottom: function() { return 0; }
-            },
-            margin: [0, parseSize(props.mt) || 5, 0, parseSize(props.mb) || 5]
+            stack: [{
+                canvas: [{
+                    type: 'line',
+                    x1: 0, y1: 0,
+                    x2: 500, y2: 0,
+                    lineWidth: h,
+                    lineColor: color
+                }]
+            }],
+            margin: margin,
+            unbreakable: true
         };
     }
 
@@ -479,7 +499,7 @@ function buildPdfMakeNode(node, parentTag) {
             shapeDef.lineColor = lineColor;
         }
 
-        let shapeObj = { canvas: [shapeDef], margin };
+        let shapeObj = { stack: [{ canvas: [shapeDef] }], margin, unbreakable: true };
         if (props.ta === 'center' || props.center) shapeObj.alignment = 'center';
         else if (props.ta === 'right' || props.right) shapeObj.alignment = 'right';
         else if (props.ta) shapeObj.alignment = props.ta;

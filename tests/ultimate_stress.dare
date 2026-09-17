@@ -1,6 +1,6 @@
 @setup {
   format: A4;
-  $h1: size=24 bold color=#ff0000 mt=5mb mb=5mm;
+  $h1: size=24 bold color=#ff0000 mt=5mm mb=5mm;
   $h2: size=18 bold color=#0000ff mt=3mm mb=3mm;
   $h3: size=14 italic color=#00ff00;
   $p: size=10 color=black;

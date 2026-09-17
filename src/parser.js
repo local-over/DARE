@@ -144,7 +144,7 @@ async function parseBlock(str, styleMap, context = {}) {
             if (parts.length === 2) {
                 const loopVar = parts[0].trim();
                 const listPath = parts[1].trim();
-                const listData = getNestedValue(context, listPath) || [];
+                const listData = getNestedValue(context, listPath) || []; 
                 
                 for (const item of listData) {
                     const childContext = { ...context, [loopVar]: item };

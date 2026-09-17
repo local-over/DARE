@@ -31,7 +31,7 @@
       cols(gap=10mm) {
         box(w=50%) {
           txt(bold, mb=2mm) { Traffic Sources }
-          pie(labels="Organic,Direct,Paid,Social", data="45,25,20,10", w=200) {}
+          pie(labels="Organic,Direct,Paid,Social", data="45,25,20,10", w=250pt) {}
         }
         box(w=50%) {
           txt(bold, mb=2mm) { Monthly Revenue }

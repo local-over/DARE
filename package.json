@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "node cli.js examples/invoice.dare /tmp/dare_test.pdf"
+    "test": "node scripts/test_pipeline.js"
   },
   "keywords": [
     "pdf",

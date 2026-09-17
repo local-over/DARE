@@ -3,7 +3,7 @@
     $hdrStyle: bg=#1e293b color=white p=10mm;
     $titleStyle: size=24 bold center uppercase;
     $boxBorder: border=2 color=#cbd5e1 rounded=5 p=5mm;
-    $chartBox: bg=#f8fafc border=1 p=5mm;
+    : bg=#f8fafc border=1 p=5mm;
     $badText: color=#ef4444 bold right;
     $okText: color=#22c55e bold left;
 }
@@ -60,11 +60,11 @@
             box($boxBorder) {
                 txt(bold, mb=2mm) { Test 3: Charts (Color Overrides & Donut) }
                 cols(gap=5mm) {
-                    box(w=50%, $chartBox) {
-                        bar(labels="A,B,C", data="10,20,30", color=#ec4899, title="Custom Pink Bar") {}
+                    box(w=50%, ) {
+                        bar(labels="A,B,C", data="10,20,30", color=#ec4899, title="Custom Pink Bar", ) {}
                     }
-                    box(w=50%, $chartBox) {
-                        pie(labels="X,Y", data="60,40", type=donut) {}
+                    box(w=50%, ) {
+                        pie(labels="X,Y", data="60,40", type=donut, ) {}
                     }
                 }
             }

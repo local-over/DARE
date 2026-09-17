@@ -66,7 +66,6 @@ const server = app.listen(PORT, () => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', async () => {
-    await closeBrowser();
+process.on('SIGTERM', () => {
     server.close();
 });
