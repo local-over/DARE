@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.0.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-3.1.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/built%20with-Node.js-brightgreen.svg" alt="Node.js">
 </p>
@@ -18,7 +18,7 @@ Please refer to the new `docs/` directory for full guides:
 - [🎨 Styling & Layout Flags](docs/styling.md)
 - [🚀 Usage (CLI, Library, API)](docs/usage.md)
 
-## DARE v3.0 Is Live — The Language for AI Documents
+## DARE v3.1 Is Live — The Language for AI Documents
 
 **Stop forcing LLMs to write HTML.** DARE is a deterministic, token-efficient markup language designed specifically for the AI era. It generates pixel-perfect PDF documents from simple, structured prompts while using up to **10x fewer tokens** than traditional HTML/CSS workflows.
 
@@ -38,9 +38,9 @@ HTML was designed for the fluid, responsive web—not for static, rigid PDF docu
 
 ---
 
-## The Vision: V2.0 Professional Engine
+## The Vision: V3 Professional Engine
 
-With the release of **DARE v2**, we have moved beyond a simple parser to a full **Professional Document Engine**.
+With the release of **DARE v3**, we have moved beyond a simple parser to a full **Professional Document Engine**.
 - **Modular Architecture:** A robust tokenizer and component registry.
 - **Advanced Layout Engine:** Native support for 40+ CSS shorthands (px, py, mx, my, r, ta, lh, pos, ...).
 - **Pro Components:** Built-in support for SVG Charts (Bar/Pie), QR Codes, Tables, and Multi-column grids.

@@ -5,14 +5,14 @@
   $role: size=9 color=#64748b;
 }
 @doc {
-  page(bg=#ffffff, p=5mm) {
-    box(bg=#2563eb, p=3mm) {
+  page(bg=#ffffff, p=2mm) {
+    box(bg=#2563eb, p=2mm) {
       txt($h1) { GLOBAL DYNAMICS }
     }
     cols(between) {
       box(w=30%) {
-        box(bg=#e2e8f0, w=20mm, h=25mm, radius=2mm) {
-          txt(size=8, color=#94a3b8, center, mt=10mm) { PHOTO }
+        box(bg=#e2e8f0, w=20mm, h=18mm, radius=2mm) {
+          txt(size=8, color=#94a3b8, center, mt=5mm) { PHOTO }
         }
       }
       box(w=65%) {

@@ -108,6 +108,33 @@ If the local CLI is not available, agents can render DARE files via the online A
 3. **Unmatched Braces:** Pay attention to nested brackets.
 4. **Unsupported Images:** Ensure local image paths are correct or use accessible URLs.
 
+## Agent Feedback System (Diagnostics)
+
+DARE Engine v3.1+ includes a built-in feedback tool to help AI Agents ensure their layout constraints are respected (such as preventing accidental page overflows for fixed formats like business cards, or warning about illegible text).
+
+### How to use the Feedback Tool
+When compiling locally, pass the `--feedback` flag to emit a JSON diagnostics log:
+```bash
+npx dare compile document.dare output.pdf --feedback
+```
+The CLI will output a `[DARE_FEEDBACK_LOG]` block:
+```json
+{
+  "pagesExpected": 1,
+  "pagesGenerated": 2,
+  "warnings": [
+    "Page overflow detected! Expected 1 logical page(s) based on tags, but generated 2 physical pages. Content is likely too large for the layout.",
+    "Extremely small text (size < 6) detected. This may be illegible when printed."
+  ]
+}
+```
+
+### Self-Correction Protocol
+As an AI Agent using DARE, if you encounter warnings in the feedback log, **you must handle the request yourself by actively editing the content**:
+1. **Overflows:** If `pagesGenerated > pagesExpected` (e.g., a business card spilled over to page 2), the content or spacing is too large. **Fix it** by reducing padding (`p`), margins (`mt`, `mb`), font sizes (`size`), or vertical spaces (`sp(h=...)`).
+2. **Small Text:** If warned about text size < 6, increase the font sizes to ensure legibility.
+3. **Re-evaluate:** After modifying the `.dare` code, re-run the compile command with `--feedback` to verify your changes resolved the warnings.
+
 ## Full Example
 ```dare
 @setup {

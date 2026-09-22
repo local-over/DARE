@@ -8,52 +8,64 @@ const PREVIEW_API_URL = 'https://dare-api-server.onrender.com/api/preview';
 
 const EXAMPLES = [
   {
-    id: 'invoice',
-    name: 'Invoice Template',
+    id: 'receipt',
+    name: 'Payment Receipt',
     code: `@setup {
-  format: A4 portrait;
-  font: Helvetica, Inter;
-  $accent: #000000;
-  $border: #E4E4E7;
-}
-
-@data {
-  invoiceNumber: "INV-2026-889",
-  client: "Acme Corp",
-  amount: "$12,450.00",
-  date: "2026-09-16"
+  format: 80mm 150mm;
+  $brand: color=#000;
+  $muted: color=#64748b;
+  $h1: size=16 bold;
+  $txt: size=10;
 }
 
 @doc {
-  [hdr title="TAX INVOICE" subtitle="{{invoiceNumber}}"]
-  [sp 20]
-  [tbl headers="Description,Qty,Total" data="Enterprise License,1,$12450.00"]
-  [sp 30]
-  [ftr note="Thank you for your business!"]
+  page {
+    box(p=8mm) {
+      txt($h1, align=center) { PAYMENT RECEIPT }
+      sp(h=5) {}
+      txt($muted, size=8, align=center) { #REC-2026-999 }
+      
+      sp(h=10) {}
+      line(color=#e2e8f0) {}
+      sp(h=10) {}
+      
+      box(row, between) {
+        txt($txt) { Item }
+        txt($txt) { Price }
+      }
+      sp(h=3) {}
+      box(row, between) {
+        txt($txt, bold) { API Pro Plan }
+        txt($txt, bold) { $99.00 }
+      }
+      
+      sp(h=15) {}
+      qr(data="https://dare-lang.org/rec/999", w=35mm, align=center) {}
+      
+      sp(h=10) {}
+      txt($muted, size=8, align=center) { Thank you for your business! }
+    }
+  }
 }`,
   },
   {
     id: 'badge',
-    name: 'Event Badge',
+    name: 'Business Card',
     code: `@setup {
-  format: A5 portrait;
-  font: Inter;
-}
-
-@data {
-  name: "Alex Vance",
-  role: "Lead Architect",
-  access: "VIP - FULL PASS"
+  format: 90mm 55mm;
+  $accent: color=#38bdf8;
 }
 
 @doc {
-  [hdr title="BUILDER CONF 2026"]
-  [sp 40]
-  [txt text="{{name}}" align="center" size="24" bold="true"]
-  [txt text="{{role}}" align="center" size="14" color="#71717A"]
-  [sp 20]
-  [badge text="{{access}}" color="#000000"]
-  [qr text="https://dare-lang.org/verify/889"]
+  page {
+    box(bg=#0f172a, p=8mm, h=fill, col, justify=center) {
+      txt(size=14, bold, color=white) { DARE ENGINE }
+      txt($accent, size=8) { AI Document Automation }
+      sp(h=5) {}
+      txt(color=#94a3b8, size=7) { hello@dare-engine.dev }
+      txt(color=#94a3b8, size=7) { +1 234 567 8900 }
+    }
+  }
 }`,
   },
 ];
@@ -63,7 +75,7 @@ export default function CodeRunner() {
   const selectedExample = EXAMPLES.find((ex) => ex.id === activeTab) || EXAMPLES[0];
   const [code, setCode] = useState(selectedExample.code);
   const [rendering, setRendering] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfUrl, setPdfUrl] = useState('/cached-receipt.pdf');
   const [astJson, setAstJson] = useState(null);
   const [outputType, setOutputType] = useState('compiled');
   const [errorMsg, setErrorMsg] = useState(null);
@@ -76,13 +88,19 @@ export default function CodeRunner() {
   const handleRun = async () => {
     setRendering(true);
     setErrorMsg(null);
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    
     try {
       if (outputType === 'ast') {
         const res = await fetch(PREVIEW_API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code }),
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
         if (!res.ok) throw new Error(`API returned HTTP ${res.status}`);
         const json = await res.json();
         setAstJson(json);
@@ -91,15 +109,22 @@ export default function CodeRunner() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code }),
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
         if (!res.ok) throw new Error(`API returned HTTP ${res.status}`);
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         setPdfUrl(url);
       }
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error("Live API Error:", err);
-      setErrorMsg(err.message || "Failed to communicate with live API");
+      if (err.name === 'AbortError') {
+        setErrorMsg("API Timeout: The rendering server is cold-starting or unavailable. Please try again in a few moments.");
+      } else {
+        setErrorMsg(err.message || "Failed to communicate with live API");
+      }
     } finally {
       setRendering(false);
     }
@@ -154,7 +179,7 @@ export default function CodeRunner() {
             <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="w-full h-[300px] bg-transparent resize-none outline-none font-mono text-xs text-white leading-relaxed tracking-wide selection:bg-white selection:text-black"
+              className="w-full h-[500px] bg-transparent resize-none outline-none font-mono text-xs text-white leading-relaxed tracking-wide selection:bg-white selection:text-black"
               spellCheck="false"
             />
           </div>
@@ -188,7 +213,7 @@ export default function CodeRunner() {
             </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-center border border-dashed border-white/15 rounded-xl overflow-hidden bg-neutral-950/50 min-h-[300px]">
+          <div className="flex-1 flex items-center justify-center border border-dashed border-white/15 rounded-xl overflow-hidden bg-neutral-950/50 min-h-[500px]">
             {rendering ? (
               <div className="flex flex-col items-center gap-3">
                 <div className="w-8 h-8 rounded-full border-2 border-white border-t-transparent animate-spin" />
@@ -201,11 +226,11 @@ export default function CodeRunner() {
             ) : outputType === 'compiled' && pdfUrl ? (
               <iframe
                 src={pdfUrl}
-                className="w-full h-full min-h-[300px] border-0 rounded-lg"
+                className="w-full h-full min-h-[500px] border-0 rounded-lg"
                 title="Rendered PDF Preview"
               />
             ) : astJson ? (
-              <pre className="w-full h-full max-h-[300px] overflow-auto text-[10px] font-mono text-green-400 bg-neutral-950 p-4 rounded border border-white/10">
+              <pre className="w-full h-full max-h-[500px] overflow-auto text-[10px] font-mono text-green-400 bg-neutral-950 p-4 rounded border border-white/10">
                 {JSON.stringify(astJson, null, 2)}
               </pre>
             ) : (

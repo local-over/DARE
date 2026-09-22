@@ -7,12 +7,11 @@ export default function DonationSection() {
   const [copied, setCopied] = useState(null);
 
   const cryptoWallets = [
-    { name: 'Bitcoin (BTC)', address: 'bc1qdareengine2026btcxxxx' },
-    { name: 'Ethereum (ETH/USDT)', address: '0xdareengine2026ethxxxx' },
-    { name: 'Solana (SOL)', address: 'DAREengine2026solxxxx' },
+    { name: 'USDT (TON Network)', address: 'UQBEJwLa4EGPRmUKw4O1i9d_JjJGmjkJ2myqR5lborzgceT-' }
   ];
 
   const handleCopy = (text, name) => {
+    if (text === 'COMING SOON') return;
     navigator.clipboard.writeText(text);
     setCopied(name);
     setTimeout(() => setCopied(null), 2000);
@@ -42,15 +41,12 @@ export default function DonationSection() {
                 Sponsor DARE directly on GitHub to support ongoing core engine development and release builds.
               </p>
             </div>
-            <a
-              href="https://github.com/sponsors"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-8 w-full py-2.5 rounded-xl bg-white text-black font-mono text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-neutral-200 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+            <button
+              disabled
+              className="mt-8 w-full py-2.5 rounded-xl bg-neutral-800 text-neutral-500 font-mono text-xs font-bold flex items-center justify-center gap-1.5 cursor-not-allowed"
             >
-              <span>Sponsor on GitHub</span>
-              <ArrowRightIcon className="w-3.5 h-3.5" />
-            </a>
+              <span>Coming Soon</span>
+            </button>
           </div>
 
           {/* Buy Me a Coffee */}
@@ -64,15 +60,12 @@ export default function DonationSection() {
                 One-time quick support for developer coffee and server test instances.
               </p>
             </div>
-            <a
-              href="https://buymeacoffee.com"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-8 w-full py-2.5 rounded-xl bg-white/10 text-white font-mono text-xs font-bold flex items-center justify-center gap-1.5 border border-white/20 hover:bg-white/20 transition-all"
+            <button
+              disabled
+              className="mt-8 w-full py-2.5 rounded-xl bg-neutral-800 text-neutral-500 font-mono text-xs font-bold flex items-center justify-center gap-1.5 cursor-not-allowed border border-white/5"
             >
-              <span>Buy a Coffee</span>
-              <CoffeeIcon className="w-3.5 h-3.5" />
-            </a>
+              <span>Coming Soon</span>
+            </button>
           </div>
 
           {/* Crypto Supporters */}
@@ -83,7 +76,7 @@ export default function DonationSection() {
               </div>
               <h3 className="text-lg font-bold text-white font-mono">Crypto Donations</h3>
               <p className="text-xs text-neutral-400 leading-relaxed">
-                Direct decentralized support via Bitcoin, Ethereum, or Solana wallet addresses.
+                Direct decentralized support via cryptocurrency wallet addresses.
               </p>
             </div>
             <div className="mt-6 space-y-2">
@@ -97,6 +90,7 @@ export default function DonationSection() {
                   <span className="text-white font-bold">{copied === w.name ? 'Copied! ✓' : 'Copy'}</span>
                 </button>
               ))}
+              <div className="text-center pt-2 text-[10px] font-mono text-neutral-500">Other Cryptocurrencies: COMING SOON</div>
             </div>
           </div>
         </div>

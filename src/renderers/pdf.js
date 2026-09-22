@@ -645,22 +645,6 @@ async function renderPdf(astData, outputPath) {
         }
     }
 
-    let sideMargin = 40;
-    let topMargin = 40;
-    let bottomMargin = 40;
-    
-    if (firstPagePadding) {
-        sideMargin = firstPagePadding.px !== null ? firstPagePadding.px : 40;
-        topMargin = firstPagePadding.py !== null ? firstPagePadding.py : 40;
-        bottomMargin = firstPagePadding.py !== null ? firstPagePadding.py : 40;
-    }
-
-    const hasHeader = astData.ast.some(n => n.tag === 'hdr' || (n.tag === 'page' && n.children && n.children.some(c => c.tag === 'hdr')));
-    const hasFooter = astData.ast.some(n => n.tag === 'ftr' || (n.tag === 'page' && n.children && n.children.some(c => c.tag === 'ftr')));
-    
-    if (hasHeader) topMargin = 65;
-    if (hasFooter) bottomMargin = 55;
-
     let pageSize = astData.format || 'A4';
     let isCustomSize = false;
     if (typeof pageSize === 'object' && pageSize.custom) {
@@ -671,6 +655,23 @@ async function renderPdf(astData, outputPath) {
         };
     }
     const pageOrientation = isCustomSize ? undefined : (astData.orientation || 'portrait');
+
+    let defaultMargin = isCustomSize ? 0 : 40;
+    let sideMargin = defaultMargin;
+    let topMargin = defaultMargin;
+    let bottomMargin = defaultMargin;
+    
+    if (firstPagePadding) {
+        sideMargin = firstPagePadding.px !== null ? firstPagePadding.px : defaultMargin;
+        topMargin = firstPagePadding.py !== null ? firstPagePadding.py : defaultMargin;
+        bottomMargin = firstPagePadding.py !== null ? firstPagePadding.py : defaultMargin;
+    }
+
+    const hasHeader = astData.ast.some(n => n.tag === 'hdr' || (n.tag === 'page' && n.children && n.children.some(c => c.tag === 'hdr')));
+    const hasFooter = astData.ast.some(n => n.tag === 'ftr' || (n.tag === 'page' && n.children && n.children.some(c => c.tag === 'ftr')));
+    
+    if (hasHeader) topMargin = 65;
+    if (hasFooter) bottomMargin = 55;
 
     function deepClonePreserve(obj) {
         if (obj === null || typeof obj !== 'object') return obj;

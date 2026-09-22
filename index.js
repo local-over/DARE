@@ -28,7 +28,7 @@ async function convertFile(inputPath, outputPath, dataPath) {
 
     const astData = await compile(source, contextData, inputPath);
     await renderPdf(astData, outputPath);
-    return outputPath;
+    return { outputPath, astData };
 }
 
 /**

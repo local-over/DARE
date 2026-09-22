@@ -1,31 +1,31 @@
 @setup {
   format: 180mm 80mm;
-  $h1: size=20 bold color=white;
-  $sub: size=12 color=white;
-  $label: size=9 color=#64748b;
-  $val: size=14 bold color=#0f172a;
+  $h1: size=16 bold color=white;
+  $sub: size=10 color=white;
+  $label: size=8 color=#64748b;
+  $val: size=12 bold color=#0f172a;
 }
 @doc {
-  page(bg=#ffffff, p=5mm) {
+  page(bg=#ffffff, p=3mm) {
     cols(gap=0mm) {
       box(w=30%, bg=#334155, p=5mm) {
         txt($h1) { TECH CONF }
-        txt($sub, mb=15mm) { 2026 }
-        qr(data="TKT-998123", w=30mm) {}
+        txt($sub, mb=5mm) { 2026 }
+        qr(data="TKT-998123", w=25mm) {}
       }
       box(w=70%, bg=#f8fafc, p=5mm) {
-        txt(size=18, bold, color=#334155, mb=10mm) { GENERAL ADMISSION }
+        txt(size=14, bold, color=#334155, mb=3mm) { GENERAL ADMISSION }
         cols(between) {
           box(w=45%) {
             txt($label) { ATTENDEE }
-            txt($val, mb=5mm) { Jane Smith }
+            txt($val, mb=3mm) { Jane Smith }
           }
           box(w=45%) {
             txt($label) { DATE }
-            txt($val, mb=5mm) { Oct 15, 2026 }
+            txt($val, mb=3mm) { Oct 15, 2026 }
           }
         }
-        sp(h=5mm) {}
+        sp(h=2mm) {}
         cols(between) {
           box(w=45%) {
             txt($label) { VENUE }

@@ -39,7 +39,7 @@
                 }
             }
             
-            hr(mt=15 mb=15) {}
+            hr(mt=5 mb=5) {}
             
             cols {
                 txt(w=70% right bold size=14) { TOTAL: }
@@ -48,7 +48,7 @@
         }
         
         if(invoice.is_paid) {
-            box(bg=success, p=10, mt=20) {
+            box(bg=success, p=5, mt=10) {
                 txt(center bold color=white) { PAID IN FULL }
             }
         }

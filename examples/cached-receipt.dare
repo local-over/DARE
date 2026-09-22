@@ -1,0 +1,37 @@
+@setup {
+  format: 80mm 150mm;
+  $brand: color=#000;
+  $muted: color=#64748b;
+  $h1: size=16 bold;
+  $txt: size=10;
+}
+
+@doc {
+  page {
+    box(p=8mm) {
+      txt($h1, align=center) { PAYMENT RECEIPT }
+      sp(h=2) {}
+      txt($muted, size=8, align=center) { #REC-2026-999 }
+      
+      sp(h=5) {}
+      line(color=#e2e8f0) {}
+      sp(h=5) {}
+      
+      box(row, between) {
+        txt($txt) { Item }
+        txt($txt) { Price }
+      }
+      sp(h=2) {}
+      box(row, between) {
+        txt($txt, bold) { API Pro Plan }
+        txt($txt, bold) { $99.00 }
+      }
+      
+      sp(h=5) {}
+      qr(data="https://dare-lang.org/rec/999", w=25mm) {}
+      
+      sp(h=5) {}
+      txt($muted, size=8, align=center) { Thank you for your business! }
+    }
+  }
+}
