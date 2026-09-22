@@ -1,26 +1,21 @@
 # DARE Styling Reference
 
-This document covers all styling properties, shorthand mappings, typography, and layout flags supported by DARE.
+This document covers all styling properties, shorthand mappings, typography, and layout flags supported by DARE v3.1.
 
-## Shorthand CSS Mappings
+## Shorthand Properties
 
 DARE provides an extensive set of shorthand attributes for quick and token-efficient styling.
 
 ### Dimensions
 - `w`: width
 - `h`: height
-- `minw`, `minh`: min-width, min-height
-- `maxw`, `maxh`: max-width, max-height
 
 ### Padding & Margin
 - `p`: padding (all sides)
 - `pt`, `pb`, `pl`, `pr`: padding top, bottom, left, right
 - `px`: padding horizontal (left/right)
 - `py`: padding vertical (top/bottom)
-- `m`: margin (all sides)
 - `mt`, `mb`, `ml`, `mr`: margin top, bottom, left, right
-- `mx`: margin horizontal
-- `my`: margin vertical
 
 ### Colors & Backgrounds
 - `bg`: background color
@@ -28,19 +23,15 @@ DARE provides an extensive set of shorthand attributes for quick and token-effic
 - `borderColor`: border color
 
 ### Borders
-- `border`: border width/style
-- `r` or `rounded`: border-radius
+- `border`: adds a border (e.g. `border=true`)
+- `radius` or `r`: border-radius (e.g. `radius=5mm`)
 
 ### Typography Shorthands
-- `size` or `fs`: font-size (automatically mapped to `pt`)
+- `size` or `fs`: font-size
 - `font` or `ff`: font-family
-- `line` or `lh`: line-height
+- `lh`: line-height
 - `ta`: text-align
-- `td`: text-decoration
-- `tt`: text-transform
 - `ls`: letter-spacing
-- `ws`: white-space
-- `fw`: font-weight
 
 ## Typography Flags
 
@@ -48,27 +39,42 @@ Boolean flags can be used directly on elements to apply typography styles instan
 
 - `bold`: Applies bold font-weight.
 - `italic`: Applies italic font-style.
-- `underline`: Applies underline text-decoration.
-- `strikethrough`: Applies line-through text-decoration.
 - `uppercase`: Transforms text to uppercase.
 - `lowercase`: Transforms text to lowercase.
-- `capitalize`: Capitalizes the first letter of each word.
 
 ## Layout Flags
 
 These boolean flags control how elements are arranged and displayed:
 
-- `center`: Centers the element or its text. For boxes, it centers the box in its parent.
-- `left`, `right`: Aligns content or the container itself to the left or right.
-- `row`: Forces a flex row layout (children side-by-side).
-- `col`: Forces a flex column layout (stack).
+- `center`: Centers the element or its text. 
+- `left`, `right`: Aligns content to the left or right.
+- `row`: Forces a flex row layout (children side-by-side) for boxes.
 - `between`: Applies `space-between` alignment for rows/columns.
-- `around`: Applies `space-around` alignment.
-- `evenly`: Applies `space-evenly` alignment.
-- `wrap`, `nowrap`: Controls flex wrapping.
-- `stretch`, `start`, `end`: Controls cross-axis alignment.
-- `unbreakable` or `nobreak`: Prevents page breaks from occurring inside the component (highly useful for `box` and `tbl`).
+- `unbreakable`: Prevents page breaks from occurring inside the component (highly useful for `box` and `tbl`).
+
+## Reusable Variables (`$`)
+
+In DARE, you can define reusable styles in the `@setup` block and apply them effortlessly using the `$` prefix.
+
+**Definition:**
+```dare
+@setup {
+  $heading_style: size=24 bold uppercase color=#333;
+  $card: bg=#f1f5f9 p=10mm radius=2mm;
+}
+```
+
+**Usage:**
+```dare
+@doc {
+  page {
+    box($card) {
+      txt($heading_style) { My Document }
+    }
+  }
+}
+```
 
 ## Unit Auto-Completion
 
-By default, numeric values for dimensions (like `w="50"`) are automatically appended with `mm` in the CSS renderer, or accurately converted to points (`pt`) in the PDF renderer. Certain properties (like `opacity`, `z-index`, `line-height`, `flex`) are unitless.
+By default, numeric values for dimensions (like `w=50`) are accurately converted to millimeters (`mm`) or points (`pt`) in the PDF renderer. You can also explicitly define units like `w=50%` or `w=20mm`.

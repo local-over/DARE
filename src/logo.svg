@@ -1,0 +1,28 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="400" rx="40" fill="#000000" />
+  
+  <!-- Outer ambient pulsing aura (simulated) -->
+  <circle cx="200" cy="200" r="180" fill="white" fill-opacity="0.2" filter="url(#blur)" />
+  
+  <!-- Rotating orbital ring (simulated) -->
+  <circle cx="200" cy="200" r="150" stroke="white" stroke-width="2" stroke-opacity="0.2" stroke-dasharray="100 20" />
+  <circle cx="200" cy="200" r="150" stroke="white" stroke-width="4" stroke-opacity="0.8" stroke-dasharray="40 800" />
+  
+  <!-- Main White Circle Logo -->
+  <circle cx="200" cy="200" r="140" fill="url(#paint0_linear)" style="filter: drop-shadow(0px 0px 20px rgba(255,255,255,0.6));"/>
+  
+  <!-- Core dark geometric accent -->
+  <circle cx="200" cy="200" r="40" fill="black" />
+  <circle cx="200" cy="200" r="10" fill="white" style="filter: drop-shadow(0px 0px 8px rgba(255,255,255,1));" />
+
+  <defs>
+    <filter id="blur" x="0" y="0" width="400" height="400" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="15" />
+    </filter>
+    <linearGradient id="paint0_linear" x1="60" y1="340" x2="340" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" />
+      <stop offset="0.5" stop-color="#f5f5f5" />
+      <stop offset="1" stop-color="#d4d4d4" />
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,36 +1,39 @@
 # DARE Components Reference
 
-This document provides a highly comprehensive overview of all supported DARE components, including containers, text elements, media, and shapes.
+This document provides a comprehensive overview of all supported DARE components in v3.1, including containers, text elements, media, and shapes.
+
+## Component Format
+```dare
+tag(attribute=value flag $variable) { content or children }
+```
 
 ## Containers
 
 Containers wrap other components and dictate their layout.
 
 ### `page`
-Defines a page break or a specific page context. You can style the background of a page or its margins.
-- **Props**: `bg`, `p`, `px`, `py` (for first page padding overrides).
+Defines a new PDF page. Every document starts with at least one `page`.
+- **Props**: `bg`, `p`, `px`, `py` (padding), `margin` modifiers.
 
 ### `box`
 A versatile block container. Can be used for backgrounds, borders, or stacking content.
-- **Props**: `bg`, `border`, `borderColor`, `p`, `px`, `py`, `w`, `h`, `unbreakable` (prevents page breaks inside the box).
+- **Props**: `bg`, `border`, `borderColor`, `p`, `px`, `py`, `mt`, `mb`, `ml`, `mr`, `w`, `h`, `unbreakable` (prevents page breaks inside the box).
+- **Layout Flags**: `row` (horizontal layout), `col` (vertical layout), `gap` (spacing), `between`, `center`.
 
 ### `cols`
-A flex-like row container used to place elements side-by-side. 
-- **Props**: `gap` (spacing between columns), `n` (number of equal-width columns), `between` (space-between layout), `w` (column widths).
+A specialized flex-like row container used to place elements side-by-side. 
+- **Props**: `gap` (spacing between columns), `n` (number of equal-width columns), `between` (space-between layout).
 - **Usage**: Automatically evenly distributes children or respects `w` property of children. `cols(n=3)` creates 3 equal columns.
-
-### `hdr` & `ftr`
-Page header and footer components. Can be placed inside a `page` for page-specific headers/footers, or at the root level for global headers/footers.
 
 ### `each`
 Loops over an array in the data context.
-- **Usage**: `each(item in items) { txt(item.name) }`
+- **Usage**: `each(item in items) { txt { {{ item.name }} } }`
 
 ### `if`
 Conditionally renders its content based on a truthy value in the data context.
-- **Usage**: `if(showDetails) { txt("Details...") }`
+- **Usage**: `if(showDetails) { txt { Details... } }`
 
-## Text Elements
+## Leafs (Text Elements)
 
 Elements designed for text rendering and formatting.
 
@@ -41,11 +44,13 @@ Standard text block.
 ### `tbl`
 Creates a table. Data is provided as semicolon-separated rows, with comma-separated cells.
 - **Props**: `cols` (e.g., `cols="2fr 1fr"` for column widths), `unbreakable`.
-- **Usage**: `tbl(cols="1fr 1fr") { Header1, Header2; Row1Col1, Row1Col2 }`
-
-### `list`
-Creates an unordered or ordered list.
-- **Props**: `type="ol"` or `type="ordered"` for numbered lists, `size`, `color`.
+- **Usage**: 
+  ```dare
+  tbl(cols="1fr 1fr") { 
+    Header1, Header2; 
+    Row1Col1, Row1Col2;
+  }
+  ```
 
 ### `badge`
 A small inline badge with a background color.
@@ -55,32 +60,31 @@ A small inline badge with a background color.
 A hyperlinked text element.
 - **Props**: `url`, `color`, `size`.
 
-## Media Elements
+## Media Elements (Voids)
 
-Elements for rendering images, charts, and codes.
+Elements for rendering images, charts, and codes (No children).
 
 ### `img`
 Renders an image from a URL or local file path.
 - **Props**: `src`, `w`, `h`, `center`, `right`, `left`.
 
-### `bar` & `pie` & `line`
-Renders charts using the QuickChart API.
-- **Props**: `labels` (comma-separated), `data` (comma-separated numbers), `data2`, `title`, `color`, `bg`.
-- **Specifics**: `type="donut"` for pie charts.
+### `bar`, `pie`, `line`
+Renders charts natively.
+- **Props**: `labels="Jan,Feb,Mar"`, `data="10,20,30"`, `w`, `h`, `title`, `color`, `bg`.
 
 ### `qr`
 Generates a QR code.
-- **Props**: `data`, `w`, `h`, `center`.
+- **Props**: `data`, `w`, `h`, `align` (center/left/right).
 
 ## Shapes & Dividers
 
 ### `shape`
 Draws a geometric shape.
-- **Props**: `type` (`rect`, `triangle`, `circle`), `w`, `h`, `bg`, `color`, `border`.
+- **Props**: `type` (`rect`, `circle`), `w`, `h`, `bg`, `color`, `border`.
 
-### `hr` & `line`
+### `hr` / `line`
 Draws a horizontal rule/line.
-- **Props**: `h` (thickness), `color`.
+- **Props**: `h` (thickness), `color`, `mt`, `mb`.
 
 ### `sp`
 Spacer element to add vertical space.
