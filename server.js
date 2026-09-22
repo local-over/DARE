@@ -12,7 +12,7 @@ app.use(express.json({ limit: '5mb' }));
 // Strict CORS headers for the Web App only
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (origin && (origin.endsWith('.dare-engine.pages.dev') || origin === 'https://dare-engine.pages.dev' || origin === 'http://localhost:3000' || origin === 'http://localhost:3001')) {
+    if (origin && (origin.endsWith('.dare.pages.dev') || origin === 'https://dare.pages.dev' || origin === 'http://localhost:3000' || origin === 'http://localhost:3001')) {
         res.header('Access-Control-Allow-Origin', origin);
         res.header('Access-Control-Allow-Headers', 'Content-Type');
     }
